@@ -1,3 +1,5 @@
+# HOLA! React with Ruby Jumpstart
+
 Ruby version: `3.2.0`
 
 Rails version: `7.0.6`
