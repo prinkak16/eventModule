@@ -1,0 +1,16 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV["RAILS_MAX_THREADS"] || 10 %>
+  timeout: 5000
+
+development:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] || "" %>
+
+test:
+  <<: *default
+  url: <%= (ENV["DATABASE_URL"] || "") + "_test" %>
+
+production:
+  url: <%= ENV["DATABASE_URL"] || "" %>

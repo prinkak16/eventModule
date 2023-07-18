@@ -1,0 +1,18 @@
+defaults: &DEFAULTS
+  auth_server: <%= ENV['AUTH_SERVER'] %>
+  client_id: <%= ENV['CLIENT_ID'] %>
+  callback_url: <%= ENV['SSO_USERNAME'] %>
+  client_app_permission: <%= ENV['CLIENT_APP_PERMISSION'] || '' %>
+  sign_in_url: <%= ENV['SIGN_IN_URL'] %>
+  root_url: <%= ENV['ROOT_URL'] %>
+  sso_username: <%= ENV['SSO_USERNAME'] %>
+  sso_password: <%= ENV['SSO_USERNAME'] %>
+
+development:
+  <<: *DEFAULTS
+
+test:
+  <<: *DEFAULTS
+
+production:
+  <<: *DEFAULTS
