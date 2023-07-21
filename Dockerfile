@@ -1,4 +1,4 @@
-FROM ruby:3.0.2
+FROM ruby:3.2.0
 
 RUN apt-get install -y libxml2-dev libxslt1-dev
 RUN apt-get install -y zlib1g-dev liblzma-dev patch
