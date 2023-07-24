@@ -25,7 +25,7 @@ export default function CreateEvent() {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 400,
+        width: 800,
         bgcolor: 'background.paper',
         border: '2px solid #000',
         boxShadow: 24,
@@ -85,34 +85,9 @@ export default function CreateEvent() {
                                 name="row-radio-buttons-group"
                             >
                                 <FormControlLabel value="open_event" control={<Radio />} label="Open event" />
-                                <FormControlLabel value="csv_upload" onClick={handleOpen} control={<Radio />} label="CSV Upload" />
-                                <FormControlLabel value="user_segmentation" control={<Radio />} label="User Segmenatation" />
                             </RadioGroup>
                         </FormControl>
                     </div>
-                    <Modal
-                        open={open}
-                        onClose={handleClose}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                    >
-                        <Box sx={style}>
-                            <Typography id="modal-modal-title" variant="h6" component="h2">
-                                Upload CSV
-                                <hr/>
-                            </Typography>
-                            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                               <div>
-                                   <div>
-                                       You can download sample file here.
-                                   </div>
-                                   <div>
-                                       You can drag & drop and csv file here.
-                                   </div>
-                               </div>
-                            </Typography>
-                        </Box>
-                    </Modal>
                     <div>
                     </div>
                 </div>
