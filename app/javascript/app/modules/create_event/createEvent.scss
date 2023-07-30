@@ -10,10 +10,12 @@
   width: 49.5%;
 }
 .file-input {
+  position: absolute;
+  margin-top: -10rem;
+  width: 11rem;
+  height: 11rem;
   display: inline-block;
-  width: 10%;
   padding: 120px 0 0 0;
-  height: 100px;
   overflow: hidden;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -23,7 +25,44 @@
   background-size: 45px 46px;
   border-style: dotted;
   border-color: #e1e1e1;
+  opacity: 0;
 }
 .ml-10{
   margin-left: 9px;
+}
+
+
+.image-container {
+  width: 10rem;
+  border: 1.5px dashed;
+  height: 10rem;
+}
+
+.close-icon-img {
+  width: 1.7rem;
+  position: absolute;
+  margin-left: 8rem;
+  margin-top: 0.2rem;
+  z-index: 1000;
+}
+
+.preview-image {
+  height: 9.5rem;
+  width: 9.5rem;
+  padding: 0.1rem;
+  margin: 0.2rem 0.2rem;
+}
+
+.next-btn {
+  width: 4rem;
+  border-radius: 2rem;
+}
+
+.submit-btn {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  font-size: 1.5rem;
 }
