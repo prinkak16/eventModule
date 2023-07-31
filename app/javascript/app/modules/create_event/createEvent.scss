@@ -11,9 +11,9 @@
 }
 .file-input {
   position: absolute;
-  margin-top: -10rem;
-  width: 11rem;
-  height: 11rem;
+  margin-top: -6.5rem;
+  width: 6.5rem;
+  height: 8rem;
   display: inline-block;
   padding: 120px 0 0 0;
   overflow: hidden;
@@ -26,6 +26,7 @@
   border-style: dotted;
   border-color: #e1e1e1;
   opacity: 0;
+
 }
 .ml-10{
   margin-left: 9px;
@@ -33,24 +34,24 @@
 
 
 .image-container {
-  width: 10rem;
+  width: 6.5rem;
   border: 1.5px dashed;
-  height: 10rem;
+  height: 7.3rem;
 }
 
 .close-icon-img {
-  width: 1.7rem;
+  width: 1.5rem;
   position: absolute;
-  margin-left: 8rem;
-  margin-top: 0.2rem;
+  margin-left: 4.5rem;
+  margin-top: 0.5rem;
   z-index: 1000;
 }
 
 .preview-image {
-  height: 9.5rem;
-  width: 9.5rem;
+  height: 3.2rem;
+  width: 3.5rem;
   padding: 0.1rem;
-  margin: 0.2rem 0.2rem;
+  margin: 1.5rem;
 }
 
 .next-btn {

@@ -19,9 +19,11 @@ import axios from "axios";
 import {storage} from "../firebaseConfig";
 import { v4 as uuidv4 } from 'uuid';
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import {toast} from 'react-toastify';
 
 export default function CreateEvent() {
     const [dataLevels, setDataLevels] = useState([]);
+    const [disbledEndDate, setDisbledEndDate] = useState(true)
     const [state, setState] = useState({
         CountryStates:[],
         StateZones:[],
@@ -41,10 +43,12 @@ export default function CreateEvent() {
         BoothId: '',
     });
 
+    const defaultImageUrl = 'https://firebasestorage.googleapis.com/v0/b/bjp-saral.appspot.com/o/9saalbemisaal_stage2b659a1c-849f-4276-be40-5bc60f5de98592615.png?alt=media&token=285898f6-5a72-4fe2-9bae-883b6b92aa4d'
     let isPradesh = useRef(false);
-    const [image, setImage] = useState("https://cdn1.iconfinder.com/data/icons/hawcons/32/698394-icon-130-cloud-upload-512.png")
+    const [image, setImage] = useState(defaultImageUrl)
     const [fieldTypes, setFieldTypes] = useState([])
     const [loader, setLoader] = useState()
+    const [startDate, setStartDate] = useState()
 
     const order = {
         CountryState: ["State"],
@@ -87,10 +91,13 @@ export default function CreateEvent() {
         state_id: '',
         location_type: '',
         location_id: '',
-        event_type: ''
+        event_type: '',
+        image_url: ''
     });
 
-    const abc = {name: "ab", id: "1"};
+    const requiredField = ['start_datetime']
+
+
 
     useEffect(() => {
         getDataLevels();
@@ -162,6 +169,7 @@ export default function CreateEvent() {
     function setFormField(event, field){
         if (field === 'start_datetime' || field === 'end_datetime') {
             formFieldValue[field] = event.$d
+            setEndDateCal(event.$d)
         } else {
             formFieldValue[field] = event.target.value;
         }
@@ -279,7 +287,8 @@ export default function CreateEvent() {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                     if (downloadURL) {
                        setImage(downloadURL)
-                        alert(downloadURL)
+                        console.log(downloadURL)
+                        formFieldValue.image_url = downloadURL
                     }
                 });
             }
@@ -287,14 +296,31 @@ export default function CreateEvent() {
 
     }
 
+    const setEndDateCal = (date) => {
+        setStartDate(dayjs(date));
+        setDisbledEndDate(false)
+    };
+
 
     const removeImage = () =>  {
-        setImage('https://cdn1.iconfinder.com/data/icons/hawcons/32/698394-icon-130-cloud-upload-512.png')
+        formFieldValue.image_url = ''
+        setImage(defaultImageUrl)
     }
 
 
     const submit = () => {
-console.log(formFieldValue)
+        for (let i = 0; i < requiredField.length; i++) {
+           const item = formFieldValue[requiredField[i]]
+            if (!item) {
+                toast.error(`Please enter ${requiredField[i]}`, {
+                    position: "top-center",
+                    autoClose: false,
+                    theme: "colored",
+                })
+                return
+            }
+        }
+        console.log(formFieldValue)
     }
 
     return (
@@ -310,14 +336,22 @@ console.log(formFieldValue)
                             <div className="d-flex justify-content-between">
                                 <DateTimePicker
                                     required={true}
-                                    label="Start date & Time"
+                                    label="Start date & Time *"
                                     className="w-49"
                                     onChange={(event) => setFormField(event, 'start_datetime')}
                                 />
                                 <DateTimePicker
                                     label="End date & Time"
                                     className="w-49"
-                                    onChange={(event) => setFormField(event, 'end_datetime')}
+                                    disabled={disbledEndDate}
+                                    minDateTime={startDate}
+                                    onChange={(event) => {
+                                        if (formFieldValue.start_datetime && event.$d < formFieldValue.start_datetime) {
+                                            alert("End date cannot be earlier than the start date.");
+                                            return;
+                                        }
+                                        setFormField(event, 'end_datetime');
+                                    }}
                                 />
                             </div>
                         </DemoContainer>
@@ -328,7 +362,7 @@ console.log(formFieldValue)
                             <img
                                 onClick={removeImage}
                                 className="close-icon-img"
-                                src={'https://icon-library.com/images/red-cross-icon-png/red-cross-icon-png-27.jpg'}
+                                src={'https://firebasestorage.googleapis.com/v0/b/bjp-saral.appspot.com/o/9saalbemisaal_stagea56e5caf-a095-4905-be45-6057e556d45824903.png?alt=media&token=5fe37d9c-f8a9-4f52-8d5d-383848c84dba'}
                                 alt="cross-icon"/>
                             <img src={image} alt="upload image" className="preview-image"/>
                             <input type="file" className="file-input"  onChange={handleImagesChange}/>
