@@ -16,6 +16,9 @@ import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 import axios from "axios";
+import {storage} from "../firebaseConfig";
+import { v4 as uuidv4 } from 'uuid';
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 
 export default function CreateEvent() {
     const [dataLevels, setDataLevels] = useState([]);
@@ -38,11 +41,10 @@ export default function CreateEvent() {
         BoothId: '',
     });
 
-    const [locations, setLocations] = useState([]);
-    const [level, setLevel] = useState({});
     let isPradesh = useRef(false);
     const [image, setImage] = useState("https://cdn1.iconfinder.com/data/icons/hawcons/32/698394-icon-130-cloud-upload-512.png")
     const [fieldTypes, setFieldTypes] = useState([])
+    const [loader, setLoader] = useState()
 
     const order = {
         CountryState: ["State"],
@@ -88,9 +90,6 @@ export default function CreateEvent() {
         event_type: ''
     });
 
-
-
-    console.log(level)
     const abc = {name: "ab", id: "1"};
 
     useEffect(() => {
@@ -111,13 +110,15 @@ export default function CreateEvent() {
     }
 
     const handleLevelChange = (event, value) => {
-        console.log(value)
-        setLocations([]);
+        for (let i = 0; i < fieldTypes.length; i++) {
+            setFieldvalue(fieldTypes[i],'')
+        }
         formFieldValue.level_id = value.id
         formFieldValue.location_type = value.name
         setFieldTypes(order[value.level_class])
         if (value.id) { getStates(); }
         isPradesh = value.name === 'Pradesh'
+
     }
 
 
@@ -136,8 +137,6 @@ export default function CreateEvent() {
             ...prevState,
             ['CountryStates']: res.data
         }));
-
-        if (isPradesh) {setLocations(res.data);}
     }
 
 
@@ -171,7 +170,7 @@ export default function CreateEvent() {
     const getOptions = (type) => {
         let data = []
         if (type) {
-            const transformedType = type.replace(/\s+/g, '_').toLowerCase();
+            const transformedType = convertSnackCase(type)
             data = state[StateKeys[transformedType]]
         }
         return data
@@ -186,14 +185,7 @@ export default function CreateEvent() {
 
     const handleFieldChange = (fieldType,index) => (event, value) => {
         if (fieldType) {
-            let transformedType = convertSnackCase(fieldType);
-            if (fieldType !== 'lok_sabha' && fieldType  !== 'vidha_sabha') {
-              transformedType = chopLastLatter(StateKeys[transformedType]);
-            }
-            setState((prevState) => ({
-                ...prevState,
-                [`${transformedType}Id`]: value.id
-            }));
+          setFieldvalue(fieldType,value.id)
             if (fieldTypes.length > index+1) {
                 callApis(fieldTypes[index+1],value.id)
             }
@@ -204,10 +196,20 @@ export default function CreateEvent() {
         }
     }
 
+    const setFieldvalue = (fieldType, value) => {
+        let transformedType = convertSnackCase(fieldType);
+        if (fieldType !== 'lok_sabha' && fieldType  !== 'vidha_sabha') {
+            transformedType = chopLastLatter(StateKeys[transformedType]);
+        }
+        setState((prevState) => ({
+            ...prevState,
+            [`${transformedType}Id`]: value
+        }));
+    }
+
 
     useEffect(() => {
         if (state['CountryStateId']) {
-            debugger
             formFieldValue.state = state['CountryStateId']
         }
 
@@ -235,7 +237,7 @@ export default function CreateEvent() {
     }
 
     const handleImagesChange = (event) => {
-        convertUrl(event.target.files[0])
+        handleFileInputChange(event.target.files[0])
 
         event.target.value = null;
     }
@@ -258,6 +260,34 @@ export default function CreateEvent() {
             console.error('Error uploading file:', error);
         }
     }
+
+    function handleFileInputChange(file) {
+        let fileName = file.name
+        const fileExtension = fileName.split('.').pop();
+        if (!file) return;
+        setLoader(true)
+        const storageRef = ref(storage, FIREBASE_SUB_DIRECTORY+uuidv4()+`${Math.floor(10000 + Math.random() * 90000)}.${fileExtension}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        uploadTask.on("state_changed",
+            (snapshot) => {},
+            (error) => {
+                setLoader(false);
+                // disablePhotosInput(false, questionid, sectionid)
+                alert(error);
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    if (downloadURL) {
+                       setImage(downloadURL)
+                        alert(downloadURL)
+                    }
+                });
+            }
+        );
+
+    }
+
+
     const removeImage = () =>  {
         setImage('https://cdn1.iconfinder.com/data/icons/hawcons/32/698394-icon-130-cloud-upload-512.png')
     }
@@ -279,12 +309,13 @@ console.log(formFieldValue)
                         <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
                             <div className="d-flex justify-content-between">
                                 <DateTimePicker
-                                    label="Start date & Time *"
+                                    required={true}
+                                    label="Start date & Time"
                                     className="w-49"
                                     onChange={(event) => setFormField(event, 'start_datetime')}
                                 />
                                 <DateTimePicker
-                                    label="End date & Time *"
+                                    label="End date & Time"
                                     className="w-49"
                                     onChange={(event) => setFormField(event, 'end_datetime')}
                                 />
