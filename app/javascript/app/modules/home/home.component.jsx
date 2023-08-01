@@ -65,10 +65,10 @@ const HomeComponent = () => {
         );
     }
 
-    const setDate = (event) => {
-        filtersFieldValue.date = event.$d
-        console.log(filtersFieldValue.date)
-    }
+    // const setDate = (event) => {
+    //     filtersFieldValue.date = event.$d
+    //     console.log(filtersFieldValue.date)
+    // }
 
     const getOptions = (filter) => {
         let data = []
@@ -124,19 +124,25 @@ const HomeComponent = () => {
         }));
 
     }
+    const setDate = (date) => {
+        setFiltersFieldValue({ ...filtersFieldValue, date });
+    };
 
     const clearFiltersValue = () => {
         for (let i = 0; i < filterList.length; i++) {
             const filter = filterList[i]
             setFieldvalue(filter,'')
         }
-        const extraFilter = 'date'
-        setFiltersFieldValue((prevState) => ({
-            ...prevState,
-            [extraFilter]: ''
-        }));
-        console.log(filtersFieldValue)
+        setFiltersFieldValue({
+            date : null,
+            level_id: '',
+            state_id: '',
+            event_status_id: ''
+        })
+        // setDate(null);
     }
+
+
 
     const events = [1,2,3,4,5,6,7,8,9,0]
     return (
@@ -161,14 +167,16 @@ const HomeComponent = () => {
                     <div>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer components={['DatePicker']}>
-                                <DatePicker label="Date"
-                                            onChange={setDate}
-                                            value={filtersFieldValue.date ? dayjs(filtersFieldValue.date) : null}
-                                            slotProps={{
-                                                textField: {
-                                                    readOnly: true,
-                                                },
-                                            }}/>
+                                <DatePicker
+                                    label="Date"
+                                    onChange={setDate}
+                                    value={filtersFieldValue.date ? dayjs(filtersFieldValue.date) : null}
+                                    slotProps={{
+                                        textField: {
+                                            readOnly: true,
+                                        },
+                                    }}
+                                />
                             </DemoContainer>
                         </LocalizationProvider>
                     </div>
