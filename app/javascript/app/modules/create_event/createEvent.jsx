@@ -43,6 +43,7 @@ export default function CreateEvent() {
         BoothId: '',
     });
 
+
     const defaultImageUrl = 'https://firebasestorage.googleapis.com/v0/b/bjp-saral.appspot.com/o/9saalbemisaal_stage2b659a1c-849f-4276-be40-5bc60f5de98592615.png?alt=media&token=285898f6-5a72-4fe2-9bae-883b6b92aa4d'
     let isPradesh = useRef(false);
     const [image, setImage] = useState(defaultImageUrl)
@@ -338,11 +339,20 @@ export default function CreateEvent() {
                                     required={true}
                                     label="Start date & Time *"
                                     className="w-49"
-                                    onChange={(event) => setFormField(event, 'start_datetime')}
+                                    onChange={(event) => {
+                                        setFormField(event, 'start_datetime')
+                                        if (formFieldValue.end_datetime) {
+                                            if (dayjs(event.$d) > dayjs(formFieldValue.end_datetime)) {
+                                                setFormField(event, 'end_datetime')
+                                            }
+                                        }
+                                    }
+                                }
                                 />
                                 <DateTimePicker
                                     label="End date & Time"
                                     className="w-49"
+                                    value={formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
                                     disabled={disbledEndDate}
                                     minDateTime={startDate}
                                     onChange={(event) => {

@@ -4,5 +4,181 @@
   font-weight: bold;
 }
 body {
-  background-color: #f0f0f0;
+  background-color: rgba(0, 0, 0, 0.03);
+  //color: rgba(0, 0, 0, 0.15);
 }
+
+.home-main-container {
+  padding: 0 8rem 0 8rem;
+  margin-top: 8rem;
+}
+
+.home-search-div {
+  display: flex;
+  align-items: flex-end;
+  gap: 3rem;
+
+}
+
+.event-header {
+  width: 10%;
+}
+
+.sub-heading {
+  font-family: Mulish;
+  color: #868686;
+}
+
+
+.search-input {
+  width: 70%;
+  height: 3.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  padding-left: 3.5rem;
+}
+
+.search-input::placeholder {
+  color: rgba(40, 38, 34, 0.3);
+}
+
+
+.dynamic-form-submit-button{
+  display: flex !important;
+  width: 15%;
+  border-radius: 30px !important;
+  text-transform: capitalize !important;
+  justify-content: center !important;
+  background: #FF9559 !important;
+  font-weight: 600;
+  color: #FFFFFF;
+  border: none;
+  padding: 20px;
+}
+
+.filters-container-main {
+  background: #FFFFFF;
+  margin-top: 2rem;
+  border-radius: 1rem;
+  padding-bottom: 2rem;
+}
+
+.filters-container {
+  display: flex;
+  gap: 7rem;
+  padding: 4rem;
+  align-items: flex-end;
+}
+
+.dynamic-filters {
+  width: 20rem;
+}
+
+.filters-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 3rem;
+  margin-right: 10%;
+}
+
+.clear-btn {
+  width: 7rem;
+  background: #F3F3F3;
+}
+
+.apply-btn {
+  width: 7rem;
+  background: #4861AA;
+}
+
+.events-container {
+  height: 50vh;
+  overflow: scroll;
+}
+
+.event-list {
+  height: 7.5rem;
+  width: 100%;
+  background: #FFFFFF;
+  margin-top: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid lightgrey;
+  padding: 1rem;
+  display: flex;
+}
+
+.events-container::-webkit-scrollbar {
+  display: none;
+}
+
+.event-status {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.event-status-heading {
+  display: block;
+  text-align: center;
+  border-radius: 1rem;
+}
+
+.status-active {
+  background: #CAF5D6;
+  color: #1D6B32;
+  width: 6rem;
+}
+
+.status-expired {
+  background: #FFC3C3;
+  color:#A82A2A;
+  width: 7rem;
+}
+
+.status-upcoming {
+  background: #DBE4FF;
+  color: #294188;
+  width: 7rem;
+}
+
+
+
+.event-photo {
+  width: 6rem;
+}
+
+.event-header-name {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.event-sub-header {
+  margin-top: -0.5rem;
+  display: block;
+  font-size: 1rem;
+  color: rgba(73, 69, 79, 0.6);
+}
+
+.hr {
+  width: 1rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.2);
+  height: 4rem;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.event-list-fir {
+  display: flex;
+  width: 40%;
+ }
+
+.event-list-sec {
+  display: flex;
+  justify-content: flex-end;
+  width: 60%;
+}
+
+.event-list-item {
+  width: 25%;
+}
+
