@@ -7,7 +7,7 @@ import {
     FormLabel,
     InputLabel, MenuItem, Modal,
     Radio,
-    RadioGroup, Select,
+    RadioGroup,
     TextField, Typography
 } from "@mui/material";
 import dayjs, {Dayjs} from 'dayjs';
@@ -20,6 +20,9 @@ import {storage} from "../firebaseConfig";
 import { v4 as uuidv4 } from 'uuid';
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import {toast} from 'react-toastify';
+import Select from 'react-select'
+import makeAnimated from "react-select/animated";
+
 
 export default function CreateEvent() {
     const [dataLevels, setDataLevels] = useState([]);
@@ -50,7 +53,7 @@ export default function CreateEvent() {
     const [fieldTypes, setFieldTypes] = useState([])
     const [loader, setLoader] = useState()
     const [startDate, setStartDate] = useState()
-
+    const animatedComponents = makeAnimated();
     const order = {
         CountryState: ["State"],
         StateZone : ["State", "Vibhag"],
@@ -91,7 +94,7 @@ export default function CreateEvent() {
         level_id: '',
         state_id: '',
         location_type: '',
-        location_id: '',
+        location_id: [],
         event_type: '',
         image_url: ''
     });
@@ -199,8 +202,12 @@ export default function CreateEvent() {
                 callApis(fieldTypes[index+1],value.id)
             }
 
-            if (fieldTypes.length === parseInt(index+1)) {
-                formFieldValue.location_id = value.id
+            if (value.action === 'select-option' && fieldTypes.length === parseInt(index+1)) {
+               const new_option_id = value.option.id
+                formFieldValue.location_id = [...formFieldValue.location_id, new_option_id];
+            }
+            if (value.action === 'clear') {
+                formFieldValue.location_id = []
             }
         }
     }
@@ -288,7 +295,6 @@ export default function CreateEvent() {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                     if (downloadURL) {
                        setImage(downloadURL)
-                        console.log(downloadURL)
                         formFieldValue.image_url = downloadURL
                     }
                 });
@@ -390,16 +396,31 @@ export default function CreateEvent() {
                     </div>
                     {fieldTypes && fieldTypes.map((field, index) => (
                     <>
-                        <div className="mt-2">
-                            <Autocomplete
-                                className="w-100"
-                                value={getOptions(field).find(value => value.id === parseInt(fieldValue(field))) || null}
-                                options={getOptions(field)}
-                                getOptionLabel={(option) => option.name || ""}
-                                getOptionValue={(option) => option.id || ""}
-                                onChange={handleFieldChange(field,index)}
-                                renderInput={(params) => <TextField {...params} label={`Select ${field}`}/>}
-                            />
+                            <div className="mt-2" key={index}>
+                                {fieldTypes.length === index + 1 ?
+                                    <Select
+                                            key={index}
+                                            components={animatedComponents}
+                                            className="w-100"
+                                            options={getOptions(field)}
+                                            getOptionLabel={(option) => option.name || ""}
+                                            getOptionValue={(option) => option.id || ""}
+                                            onChange={handleFieldChange(field, index)}
+                                            // renderInput={(params) => <TextField {...params} label={`Select ${field}`}/>}
+                                            isMulti={true}
+                                    />
+                                    :
+                                    <Autocomplete
+                                        className="w-100"
+                                        key={index}
+                                        value={getOptions(field).find(value => value.id === parseInt(fieldValue(field))) || null}
+                                        options={getOptions(field)}
+                                        getOptionLabel={(option) => option.name || ""}
+                                        getOptionValue={(option) => option.id || ""}
+                                        onChange={handleFieldChange(field, index)}
+                                        renderInput={(params) => <TextField {...params} label={`Select ${field}`}/>}
+                                    />
+                                }
                         </div>
                     </>
                     ))}
