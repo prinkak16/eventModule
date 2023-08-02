@@ -1,0 +1,69 @@
+.font-weight-300{
+  font-weight: 300;
+}
+.event-create-form-bg{
+  margin: 2rem 0 0 0;
+  background-color: #fff;
+  padding: 2rem;
+}
+.w-49{
+  width: 49.5%;
+}
+.file-input {
+  position: absolute;
+  margin-top: -6.5rem;
+  width: 6.5rem;
+  height: 8rem;
+  display: inline-block;
+  padding: 120px 0 0 0;
+  overflow: hidden;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background: url(https://cdn1.iconfinder.com/data/icons/hawcons/32/698394-icon-130-cloud-upload-512.png) center center no-repeat #fff;
+  border-radius: 20px;
+  background-size: 45px 46px;
+  border-style: dotted;
+  border-color: #e1e1e1;
+  opacity: 0;
+
+}
+.ml-10{
+  margin-left: 9px;
+}
+
+
+.image-container {
+  width: 6.5rem;
+  border: 1.5px dashed;
+  height: 7.3rem;
+}
+
+.close-icon-img {
+  width: 1.5rem;
+  position: absolute;
+  margin-left: 4.5rem;
+  margin-top: 0.5rem;
+  z-index: 1000;
+}
+
+.preview-image {
+  height: 3.2rem;
+  width: 3.5rem;
+  padding: 0.1rem;
+  margin: 1.5rem;
+}
+
+.next-btn {
+  width: 4rem;
+  border-radius: 2rem;
+}
+
+.submit-btn {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  font-size: 1.5rem;
+}

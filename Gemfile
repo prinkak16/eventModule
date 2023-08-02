@@ -15,6 +15,9 @@ gem "pg", "~> 1.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
 
+# Dont env to fetch variables from environment
+gem 'dotenv'
+
 # Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
 gem "jsbundling-rails"
 
@@ -77,5 +80,5 @@ end
 gem 'saral-locatable', git: "https://github.com/jarvisconsulting/saral-locatable.git", branch: 'new_f_r7_branch'
 gem 'sso_client', git: 'https://github.com/jarvisconsulting/sso_client.git', branch: "master-add-views-vt"
 gem 'listen'
-gem 'sidekiq'
+gem 'sidekiq', '~> 6.5', '>= 6.5.8'
 gem 'sidekiq-cron'
