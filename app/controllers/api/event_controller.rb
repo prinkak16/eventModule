@@ -113,8 +113,7 @@ class Api::EventController < Api::ApplicationController
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     query_conditions[:state_id] = params[:state_id] if params[:state_id].present?
     query_conditions[:status_aasm_state] = params[:event_status] if params[:event_status].present?
-    events = Event.joins(:event_location, :data_level).where(query_conditions).select(:id, :name, :start_date, :end_date,:image_url,'events.status_aasm_state as status', 'data_levels.name as level','event_locations.location_type as event_location_type')
-
+    events = Event.where(query_conditions)
     render json: {success: true, data: events, message: "Events List"}, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400

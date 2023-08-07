@@ -320,12 +320,12 @@ const HomeComponent = () => {
                                         {toProperCase(event.name)}
                                     </h2>
                                     <span className="event-sub-header">
-                                     Level : {event.level}
+                                     Level :
                                 </span>
                                 </div>
                                 <div className="event-status">
-                                <span className={`event-status-heading status-${event.status}`}>
-                                     {toProperCase(event.status)}
+                                <span className={`event-status-heading status-${event.status_aasm_state}`}>
+                                     {toProperCase(event.status_aasm_state)}
                                 </span>
                                 </div>
                                 <div>
