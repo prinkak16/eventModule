@@ -82,10 +82,15 @@ class Api::EventController < Api::ApplicationController
     event.image_url = params[:image_url]
     event.event_type= params[:event_type]
     event.state_id = Saral::Locatable::State.where(id: params[:state_id]).first
-    event.start_date = DateTime.parse(params[:start_date])
-    event.end_date = DateTime.parse(params[:end_date])
+    if params[:start_date].present?
+      event.start_date = DateTime.iso8601(params[:start_date])
+    end
+
+    if params[:end_date].present?
+      event.end_date = DateTime.iso8601(params[:end_date])
+    end
     event.save
-    data_level_class = DataLevel.where(id:params[:level_id]).first.level_class
+    data_level_class = DataLevel.where(id:params[:level_id]).first
     if data_level_class == 'CountryState'
       data_level_class = 'State'
     end
@@ -108,18 +113,10 @@ class Api::EventController < Api::ApplicationController
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     query_conditions[:state_id] = params[:state_id] if params[:state_id].present?
     query_conditions[:status_aasm_state] = params[:event_status] if params[:event_status].present?
-    # event location is not giving date as required in UI
-    events = Event.joins(:event_location, :data_level).where(query_conditions).select('events.id as id', 'events.name as name', 'events.start_date start_date', 'events.end_date as end_date',:image_url,'events.status_aasm_state as status', 'data_levels.name as level','event_locations.location_type as event_location_type')
+    events = Event.joins(:event_location, :data_level).where(query_conditions)
     render json: {success: true, data: events, message: "Events List"}, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
     puts(params)
-  end
-
-
-  def parse_date(date_string)
-    DateTime.parse(date_string)
-  rescue ArgumentError
-    Date.current
   end
 end
