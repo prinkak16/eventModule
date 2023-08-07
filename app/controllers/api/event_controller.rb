@@ -81,19 +81,22 @@ class Api::EventController < Api::ApplicationController
     event.data_level_id = params[:level_id]
     event.image_url = params[:image_url]
     event.event_type= params[:event_type]
-    event.start_date = params[:start_date]
-    event.end_date = params[:end_date]
+    event.state_id = Saral::Locatable::State.where(id: params[:state_id]).first
+    event.start_date = DateTime.parse(params[:start_date])
+    event.end_date = DateTime.parse(params[:end_date])
     event.save
     data_level_class = DataLevel.where(id:params[:level_id]).first.level_class
+    if data_level_class == 'CountryState'
+      data_level_class = 'State'
+    end
     locations = Saral::Locatable.const_get(data_level_class).where(id: params[:location_ids])
-
     locations.each do |loc|
       event_location = EventLocation.new
       event_location.location = loc
       event_location.event = event
       event_location.save
     end
-    render json: {success: true, message: "Event Created"}, status: 200
+    render json: {success: true, message: "Event Created", event: event}, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
     puts(params)
@@ -105,10 +108,18 @@ class Api::EventController < Api::ApplicationController
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     query_conditions[:state_id] = params[:state_id] if params[:state_id].present?
     query_conditions[:status_aasm_state] = params[:event_status] if params[:event_status].present?
-    events = Event.where(query_conditions).order(created_at: :asc)
+    # event location is not giving date as required in UI
+    events = Event.joins(:event_location, :data_level).where(query_conditions).select('events.id as id', 'events.name as name', 'events.start_date start_date', 'events.end_date as end_date',:image_url,'events.status_aasm_state as status', 'data_levels.name as level','event_locations.location_type as event_location_type')
     render json: {success: true, data: events, message: "Events List"}, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
     puts(params)
+  end
+
+
+  def parse_date(date_string)
+    DateTime.parse(date_string)
+  rescue ArgumentError
+    Date.current
   end
 end

@@ -11,9 +11,13 @@ import {useNavigate} from "react-router";
 import dayjs from "dayjs";
 
 const HomeComponent = () => {
+    const defaultImageUrl = 'https://firebasestorage.googleapis.com/v0/b/bjp-saral.appspot.com/o/9saalbemisaal_stage2b659a1c-849f-4276-be40-5bc60f5de98592615.png?alt=media&token=285898f6-5a72-4fe2-9bae-883b6b92aa4d'
     const navigate = useNavigate()
     const [eventsList, setEventsList] = useState([])
     const [allEventList, setAllEventList] = useState([])
+    const [isHovered, setIsHovered] = useState(false);
+    const [hoveredEventId, setHoveredEventId] = useState()
+    const [LeftMargin, setLeftMargin] = useState(0);
     const demoData = [
         {
             id: 1,
@@ -125,10 +129,9 @@ const HomeComponent = () => {
             if (filter === 'State') {
                 apiPath = `states`
             }
-            if (filter === 'Event Status') {
-                apiPath = `events_status`
+            if (filter !== 'Event Status') {
+                getApisValue(filter,apiPath)
             }
-            getApisValue(filter,apiPath)
         }
     }
 
@@ -217,6 +220,28 @@ const HomeComponent = () => {
       getEventsList()
   }
 
+    function toProperCase(inputString) {
+        return inputString.toLowerCase().replace(/(?:^|\s)\S/g, (char) => char.toUpperCase());
+    }
+
+    const handleMouseEnter = (id)  => {
+        setHoveredEventId(id)
+        setIsHovered(true);
+        for (let i = 0; i < 21; i++) {
+            setTimeout(() => {
+                if (LeftMargin < 20) {
+                    setLeftMargin(LeftMargin + i);
+                }
+            }, i < 5 ? 1 : 50);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        setHoveredEventId('')
+        setIsHovered(false);
+        setLeftMargin(0)
+    };
+
     return (
         <div className="home-main-container">
             <div className="home-search-div">
@@ -279,24 +304,28 @@ const HomeComponent = () => {
             </div>
 
             <div className="events-container">
-                {eventsList && eventsList.map((event) => (
-                    <>
-                        <div className="event-list">
-                            <div className="event-list-fir">
+                {eventsList.length > 0 ? <>
+                { eventsList.map((event) => (
+                    <div key={`${event.id}${event.name}`}>
+                        <div className="event-list"
+                             onMouseEnter={() => handleMouseEnter(event.id)}
+                             onMouseLeave={() => handleMouseLeave()}>
+
+                            <div className="event-list-fir"  style={{marginLeft: isHovered && event.id === hoveredEventId? `-${LeftMargin}rem` : ''}}>
                                 <div>
                                     <img className="event-photo" src={event.image_url}/>
                                 </div>
                                 <div className="event-header-name">
                                     <h2>
-                                        {event.name}
+                                        {toProperCase(event.name)}
                                     </h2>
                                     <span className="event-sub-header">
                                      Level : {event.level}
                                 </span>
                                 </div>
                                 <div className="event-status">
-                                <span className={`event-status-heading status-${event.status_aasm_state}`}>
-                                     {event.status_aasm_state}
+                                <span className={`event-status-heading status-${event.status}`}>
+                                     {toProperCase(event.status)}
                                 </span>
                                 </div>
                                 <div>
@@ -342,13 +371,36 @@ const HomeComponent = () => {
                                 </span>
                                 </div>
                             </div>
-                        </div>
-                        {/*<div>*/}
-                        {/*    SDFGfvdf*/}
-                        {/*</div>*/}
-                    </>
-                    ))}
 
+                            <div className="edit-bar" style={{display : isHovered && event.id === hoveredEventId ?  '' : 'none'}} >
+                                <div className="edit-bar-sub-div">
+                                    <img className="edit-bar-imgage" src={defaultImageUrl} />
+                                    <span className="font1-2rem">
+                                        Edit
+                                    </span>
+                                </div>
+                                <div className="edit-bar-sub-div">
+                                    <img className="edit-bar-imgage" src={defaultImageUrl} />
+                                    <span className="font1-2rem">
+                                          Archive
+                                    </span>
+                                </div>
+                                <div className="edit-bar-sub-div">
+                                    <img className="edit-bar-imgage" src={defaultImageUrl} />
+                                    <span className="font1-2rem">
+                                          View
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ))}
+                </>
+                    :
+                    <div className="no-event-data">
+                        No Data Found
+                    </div>
+                }
             </div>
 
         </div>

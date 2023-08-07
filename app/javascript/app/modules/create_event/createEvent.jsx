@@ -22,9 +22,11 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import {toast} from 'react-toastify';
 import Select from 'react-select'
 import makeAnimated from "react-select/animated";
+import {useNavigate} from "react-router";
 
 
 export default function CreateEvent() {
+    const navigate = useNavigate()
     const [dataLevels, setDataLevels] = useState([]);
     const [disbledEndDate, setDisbledEndDate] = useState(true)
     const [state, setState] = useState({
@@ -168,7 +170,7 @@ export default function CreateEvent() {
         }));
     }
 
-    async function CreateEvents () {
+    async function CreateEvents() {
         let levels = await fetch(`api/event/create`, {
             method: 'POST',
             headers: {
@@ -179,7 +181,9 @@ export default function CreateEvent() {
             body: JSON.stringify(formFieldValue)
         });
         const res = await levels.json();
-      console.log(res);
+        if (res.success) {
+            // navigateToHome()
+        }
     }
 
 
@@ -341,8 +345,15 @@ export default function CreateEvent() {
                 return
             }
         }
-
         CreateEvents()
+    }
+
+    const  navigateToHome = () => {
+        navigate(
+            {
+                pathname: '/',
+            },
+        );
     }
 
     return (
