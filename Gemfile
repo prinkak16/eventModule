@@ -82,3 +82,5 @@ gem 'sso_client', git: 'https://github.com/jarvisconsulting/sso_client.git', bra
 gem 'listen'
 gem 'sidekiq', '~> 6.5', '>= 6.5.8'
 gem 'sidekiq-cron'
+gem 'aasm'
+gem 'pry'

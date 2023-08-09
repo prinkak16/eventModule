@@ -11,26 +11,35 @@ import {useNavigate} from "react-router";
 import dayjs from "dayjs";
 
 const HomeComponent = () => {
-    const eventPhoto = 'https://firebasestorage.googleapis.com/v0/b/bjp-saral.appspot.com/o/9saalbemisaal_stage0b1d0d38-d051-4838-b6cd-1884f05f27c799512.png?alt=media&token=6dec5362-b272-44b2-b0ee-32e92686a2cd'
+    const defaultImageUrl = 'https://firebasestorage.googleapis.com/v0/b/bjp-saral.appspot.com/o/9saalbemisaal_stage2b659a1c-849f-4276-be40-5bc60f5de98592615.png?alt=media&token=285898f6-5a72-4fe2-9bae-883b6b92aa4d'
     const navigate = useNavigate()
+    const [eventsList, setEventsList] = useState([])
+    const [allEventList, setAllEventList] = useState([])
+    const [isHovered, setIsHovered] = useState(false);
+    const [hoveredEventId, setHoveredEventId] = useState()
+    const [LeftMargin, setLeftMargin] = useState(0);
     const demoData = [
         {
             id: 1,
-            name: "okay"
+            name: 'upcoming'
         },
         {
             id: 2,
-            name: "not okay"
+            name: "active"
+        },
+        {
+            id: 3,
+            name: "expired"
         }
     ]
     const filterList = ["Level","State","Event Status"]
     const [filtersFieldData, setFiltersFieldData] = useState({
         levels: [],
         states: [],
-        event_status: [],
+        event_status: demoData,
     });
     const [filtersFieldValue, setFiltersFieldValue] = useState({
-        date : null,
+        date : '',
         level_id: '',
         state_id: '',
         event_status_id: '',
@@ -53,7 +62,6 @@ const HomeComponent = () => {
             ...prevState,
             [key]: res.data
         }));
-
     }
 
 
@@ -64,11 +72,6 @@ const HomeComponent = () => {
             },
         );
     }
-
-    // const setDate = (event) => {
-    //     filtersFieldValue.date = event.$d
-    //     console.log(filtersFieldValue.date)
-    // }
 
     const getOptions = (filter) => {
         let data = []
@@ -90,9 +93,30 @@ const HomeComponent = () => {
         }
     }
 
+    const filterData = (searchTerm) => {
+        let text = searchTerm.target.value
+        if (!text) {
+            setEventsList(allEventList);
+        }
+
+        if (text) {
+            const searchTermLower = text.toLowerCase();
+            const events = eventsList.filter(
+                (item) =>
+                    item.name.toLowerCase().includes(searchTermLower)
+            );
+            setEventsList(events)
+        }
+
+    };
+
     const handleFilterChange = (filterType,index) => (event, value) => {
         if (filterType) {
-            setFieldvalue(filterType,value.id)
+            let valueId = value.id
+            if (filterType === 'Event Status'){
+                valueId = value.name
+            }
+            setFieldvalue(filterType,valueId)
         }
     }
     const callApis = (fetchType,value) => {
@@ -105,10 +129,9 @@ const HomeComponent = () => {
             if (filter === 'State') {
                 apiPath = `states`
             }
-            if (filter === 'Event Status') {
-                apiPath = `events_status`
+            if (filter !== 'Event Status') {
+                getApisValue(filter,apiPath)
             }
-            getApisValue(filter,apiPath)
         }
     }
 
@@ -134,17 +157,91 @@ const HomeComponent = () => {
             setFieldvalue(filter,'')
         }
         setFiltersFieldValue({
-            date : null,
+            date : '',
             level_id: '',
             state_id: '',
             event_status_id: ''
         })
-        // setDate(null);
     }
 
 
+    const data = [{
+        name:"Mann Ki Baat",
+        level:"state",
+        states:[{id:1,name:"up"},
+            {id:2,name:"assam"},
+            {id:3,name:"delhi"}],
+        status:"Active",
+        startDate:'Thu Aug 03 2023 15:12:30 GMT+0530 (India Standard Time)',
+        endDate:'Fri Aug 04 2023 15:12:30 GMT+0530 (India Standard Time)'}]
 
-    const events = [1,2,3,4,5,6,7,8,9,0]
+
+    function convertToDate(dateString) {
+        // Create a new Date object using the provided date string
+        const date = new Date(dateString);
+
+        // Get the date components (year, month, day) and create a new Date object with only the date part
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1; // Months are 0-indexed, so add 1 to get the correct month number
+        const day = date.getDate();
+        const newDate = new Date(`${year}-${month}-${day}`);
+        return newDate;
+    }
+
+    async function getEventsList () {
+        const params = `start_date=${filtersFieldValue.date}&level_id=${filtersFieldValue.level_id}&state_id=${filtersFieldValue.state_id}&event_status=${filtersFieldValue.event_status_id}`
+        let levels = await fetch(`api/event/event_list?` + params, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": 'application/json',
+                "Authorization": ''
+            }
+        });
+        const res = await levels.json();
+      if (res.success) {
+          setEventsList(res.data)
+          setAllEventList(res.data)
+      }
+      else {
+          toast.error(`Please enter ${res.message}`, {
+              position: "top-center",
+              autoClose: false,
+              theme: "colored",
+          })
+      }
+    }
+
+    useEffect(() => {
+        getEventsList()
+    }, []);
+
+  const getFilterEvents = () => {
+      getEventsList()
+  }
+
+    function toProperCase(inputString) {
+        return inputString.toLowerCase().replace(/(?:^|\s)\S/g, (char) => char.toUpperCase());
+    }
+
+    const handleMouseEnter = (id)  => {
+        setHoveredEventId(id)
+        setIsHovered(true);
+        for (let i = 0; i < 21; i++) {
+            setTimeout(() => {
+                if (LeftMargin < 20) {
+                    setLeftMargin(LeftMargin + i);
+                }
+            }, i < 5 ? 1 : 50);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        setHoveredEventId('')
+        setIsHovered(false);
+        setLeftMargin(0)
+    };
+
     return (
         <div className="home-main-container">
             <div className="home-search-div">
@@ -154,7 +251,7 @@ const HomeComponent = () => {
                     </h1>
                     <span className="sub-heading">List view of all the Events</span>
                 </div>
-                <input className="search-input" placeholder="Search by Event Name"/>
+                <input onChange={filterData} className="search-input" placeholder="Search by Event Name"/>
                 <button
                     className='dynamic-form-submit-button'
                     onClick={addEvent}>
@@ -187,7 +284,9 @@ const HomeComponent = () => {
                                           value={getOptions(filter).find(value => value.id === parseInt(fieldValue(filter))) || null}
                                           options={getOptions(filter)}
                                           getOptionLabel={(option) => option.name || ""}
-                                          getOptionValue={(option) => option.id || ""}
+                                          getOptionValue={(option) => {
+                                             filter === 'Event Status' ? option.name : option.id
+                                          }}
                                           onChange={handleFilterChange(filter, index)}
                                           renderInput={(params) => <TextField {...params} label={`Select ${filter}`}/>}
                             />
@@ -198,78 +297,110 @@ const HomeComponent = () => {
                     <button onClick={clearFiltersValue} className="btn btn-light clear-btn">
                         clear
                     </button>
-                    <button className="btn btn-primary apply-btn">
+                    <button onClick={getFilterEvents} className="btn btn-primary apply-btn">
                         Apply
                     </button>
                 </div>
             </div>
 
             <div className="events-container">
-                {events && events.map((event) => (
-                    <div className="event-list">
-                        <div className="event-list-fir">
-                            <div>
-                                <img className="event-photo" src={eventPhoto}/>
-                            </div>
-                            <div className="event-header-name">
+                {eventsList.length > 0 ? <>
+                { eventsList.map((event) => (
+                    <div key={`${event.id}${event.name}`}>
+                        <div className="event-list"
+                             onMouseEnter={() => handleMouseEnter(event.id)}
+                             onMouseLeave={() => handleMouseLeave()}>
+
+                            <div className="event-list-fir"  style={{marginLeft: isHovered && event.id === hoveredEventId? `-${LeftMargin}rem` : ''}}>
+                                <div>
+                                    <img className="event-photo" src={event.image_url}/>
+                                </div>
+                                <div className="event-header-name">
                                     <h2>
-                                        Mann ki Baat
+                                        {toProperCase(event.name)}
                                     </h2>
                                     <span className="event-sub-header">
-                                     Level : State
+                                     Level :
                                 </span>
-                            </div>
-                            <div className="event-status">
-                                <span className={`event-status-heading ${event === 2 || event === 4 ? 'status-expired' : 'status-active'} ${event === 3 || event === 5 ? 'status-upcoming' : 'status-active'}`}>
-                                     {event === 2 || event === 4 ? 'Expired' : event === 3 || event === 5 ? 'Upcoming' : 'Active'}
+                                </div>
+                                <div className="event-status">
+                                <span className={`event-status-heading status-${event.status_aasm_state}`}>
+                                     {toProperCase(event.status_aasm_state)}
                                 </span>
-                            </div>
-                            <div>
+                                </div>
+                                <div>
 
+                                </div>
                             </div>
-                        </div>
-                        <div className="event-list-sec">
-                            <div className="hr"></div>
-                            <div className="event-list-item">
-                                <h5>
-                                    States
-                                </h5>
-                                <span className="event-sub-header">
-                                     Uttar Pradesh,
+                            <div className="event-list-sec">
+                                <div className="hr"></div>
+                                <div className="event-list-item">
+                                    <h5>
+                                        States
+                                    </h5>
+
+                                    <span className="event-sub-header">
+                                     {data[0].states[0].name},
                                 </span>
-                                <span className="event-sub-header">
-                                     Assam +5
+                                    <span className="event-sub-header">
+                                     {data[0].states[1].name} +{data[0].states.length - 2}
                                 </span>
-                            </div>
-                            <div className="hr"></div>
-                            <div className="event-list-item">
-                                <h5>
-                                    Start
-                                </h5>
-                                <span className="event-sub-header">
-                                  23-01-2022
+                                </div>
+                                <div className="hr"></div>
+                                <div className="event-list-item">
+                                    <h5>
+                                        Start
+                                    </h5>
+                                    <span className="event-sub-header">
+                               {event.start_date}
                                 </span>
-                                <span className="event-sub-header">
+                                    <span className="event-sub-header">
                                      06:30 PM
                                 </span>
-                            </div>
-                            <div className="hr"></div>
-                            <div className="event-list-item">
-                                <h5>
-                                    End
-                                </h5>
-                                <span className="event-sub-header">
-                               29-01-2022
+                                </div>
+                                <div className="hr"></div>
+                                <div className="event-list-item">
+                                    <h5>
+                                        End
+                                    </h5>
+                                    <span className="event-sub-header">
+                               {event.end_date}
                                 </span>
-                                <span className="event-sub-header">
+                                    <span className="event-sub-header">
                                      08:00 PM
                                 </span>
+                                </div>
+                            </div>
+
+                            <div className="edit-bar" style={{display : isHovered && event.id === hoveredEventId ?  '' : 'none'}} >
+                                <div className="edit-bar-sub-div">
+                                    <img className="edit-bar-imgage" src={defaultImageUrl} />
+                                    <span className="font1-2rem">
+                                        Edit
+                                    </span>
+                                </div>
+                                <div className="edit-bar-sub-div">
+                                    <img className="edit-bar-imgage" src={defaultImageUrl} />
+                                    <span className="font1-2rem">
+                                          Archive
+                                    </span>
+                                </div>
+                                <div className="edit-bar-sub-div">
+                                    <img className="edit-bar-imgage" src={defaultImageUrl} />
+                                    <span className="font1-2rem">
+                                          View
+                                    </span>
+                                </div>
                             </div>
                         </div>
-
                     </div>
-
                     ))}
+                </>
+                    :
+                    <div className="no-event-data">
+                        No Data Found
+                    </div>
+                }
             </div>
 
         </div>

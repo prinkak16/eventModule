@@ -22,9 +22,11 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import {toast} from 'react-toastify';
 import Select from 'react-select'
 import makeAnimated from "react-select/animated";
+import {useNavigate} from "react-router";
 
 
 export default function CreateEvent() {
+    const navigate = useNavigate()
     const [dataLevels, setDataLevels] = useState([]);
     const [disbledEndDate, setDisbledEndDate] = useState(true)
     const [state, setState] = useState({
@@ -94,7 +96,7 @@ export default function CreateEvent() {
         level_id: '',
         state_id: '',
         location_type: '',
-        location_id: [],
+        location_ids: [],
         event_type: '',
         image_url: ''
     });
@@ -168,6 +170,22 @@ export default function CreateEvent() {
         }));
     }
 
+    async function CreateEvents() {
+        let levels = await fetch(`api/event/create`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": 'application/json',
+                "Authorization": ''
+            },
+            body: JSON.stringify(formFieldValue)
+        });
+        const res = await levels.json();
+        if (res.success) {
+            // navigateToHome()
+        }
+    }
+
 
 
     function setFormField(event, field){
@@ -204,10 +222,10 @@ export default function CreateEvent() {
 
             if (value.action === 'select-option' && fieldTypes.length === parseInt(index+1)) {
                const new_option_id = value.option.id
-                formFieldValue.location_id = [...formFieldValue.location_id, new_option_id];
+                formFieldValue.location_ids = [...formFieldValue.location_ids, new_option_id];
             }
             if (value.action === 'clear') {
-                formFieldValue.location_id = []
+                formFieldValue.location_ids = []
             }
         }
     }
@@ -327,7 +345,15 @@ export default function CreateEvent() {
                 return
             }
         }
-        console.log(formFieldValue)
+        CreateEvents()
+    }
+
+    const  navigateToHome = () => {
+        navigate(
+            {
+                pathname: '/',
+            },
+        );
     }
 
     return (

@@ -1,4 +1,5 @@
 class Api::EventController < Api::ApplicationController
+  skip_before_action :verify_authenticity_token, only: :create_event
 
   def data_levels
     levels = DataLevel.select(:id, :name, :level_class)
@@ -72,5 +73,50 @@ class Api::EventController < Api::ApplicationController
     render json: {success: true, data: state_zones || [], message: "State Zones list"}, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
+  end
+
+  def create_event
+    event = Event.new
+    event.name = params[:event_title]
+    event.data_level_id = params[:level_id]
+    event.image_url = params[:image_url]
+    event.event_type= params[:event_type]
+    event.state_id = Saral::Locatable::State.where(id: params[:state_id]).first
+    if params[:start_date].present?
+      event.start_date = DateTime.iso8601(params[:start_date])
+    end
+
+    if params[:end_date].present?
+      event.end_date = DateTime.iso8601(params[:end_date])
+    end
+    event.save
+    data_level_class = DataLevel.where(id:params[:level_id]).first
+    if data_level_class == 'CountryState'
+      data_level_class = 'State'
+    end
+    locations = Saral::Locatable.const_get(data_level_class).where(id: params[:location_ids])
+    locations.each do |loc|
+      event_location = EventLocation.new
+      event_location.location = loc
+      event_location.event = event
+      event_location.save
+    end
+    render json: {success: true, message: "Event Created", event: event}, status: 200
+  rescue StandardError => e
+    render json: { success: false, message: e.message }, status: 400
+    puts(params)
+  end
+
+  def event_list
+    query_conditions = {}
+    query_conditions[:start_date] = params[:start_date] if params[:start_date].present?
+    query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
+    query_conditions[:state_id] = params[:state_id] if params[:state_id].present?
+    query_conditions[:status_aasm_state] = params[:event_status] if params[:event_status].present?
+    events = Event.where(query_conditions)
+    render json: {success: true, data: events, message: "Events List"}, status: 200
+  rescue StandardError => e
+    render json: { success: false, message: e.message }, status: 400
+    puts(params)
   end
 end
