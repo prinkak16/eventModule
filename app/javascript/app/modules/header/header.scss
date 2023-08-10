@@ -1,0 +1,251 @@
+/* Header Container Start 🔥 */
+.app-custom-header {
+  background: #FFFFFF !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+}
+.header-bg {
+  box-shadow: 0 2px 20px rgb(0 0 0 / 15%);
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  height: 80px;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+.header-img{
+  height: 75px;
+  width: 75px;
+  padding: 6px;
+}
+.user-header-image{
+  height: 30px;
+  width: 30px;
+  margin-left: 5px;
+}
+/*.mat-elevation-z4 {*/
+/*  position: relative;*/
+/*  z-index: 2;*/
+/*  box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.15);*/
+/*}*/
+
+/* Header Container End 🔥*/
+
+
+/* Left Content of Navbar Start 👉 */
+.left-header-container {
+  margin-left: 15px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sidenav-icon {
+  width: 45px;
+  height: 45px;
+  margin-left: 20px;
+  cursor: pointer;
+}
+
+.navbar-header-icon {
+  width: 110px;
+  height: 90px;
+  margin-left: 40px;
+  cursor: pointer;
+}
+
+.navbar-header-title {
+  font-family: poppins;
+  font-size: 25px;
+  margin-left: 21px;
+  margin-top: -6px;
+  cursor: pointer;
+}
+
+/* Left Content of Navbar End 👉 */
+
+
+/* Center Content of Navbar Start 👉 */
+
+.center-header-container {
+  margin-top: 11px;
+}
+
+.select-language ::ng-deep .mat-form-field-outline {
+  position: absolute;
+  top: 23px;
+  bottom: 10px;
+}
+
+.select-language ::ng-deep .mat-form-field-infix {
+  padding: 1.2em 0 1.1em 0;
+}
+
+.select-language ::ng-deep .mat-form-field-outline-start {
+  border-radius: 15px 0 0 15px !important;
+  min-width: 28px !important;
+  /*background: rgba(255, 255, 255, 0.3);*/
+}
+
+.select-language ::ng-deep .mat-form-field-outline-end {
+  border-radius: 0 15px 15px 0 !important;
+  /*background: rgba(255, 255, 255, 0.3);*/
+}
+
+.select-language-title {
+  font-family: 'Quicksand', sans-serif;
+  color: #828282;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+
+::ng-deep .mat-select-panel {
+  margin-top: 40px;
+}
+
+/* Center Content of Navbar End 👉 */
+
+
+/* Right Content of Navbar Start 👉 */
+
+.right-header-content {
+  display: grid;
+  place-items: center;
+}
+
+.submenu-language {
+  display: none;
+}
+
+.calling-container {
+  width: 93px;
+  height: 50px;
+  border: 1px solid #ECECEC;
+  box-sizing: border-box;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.calling-icon {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.user-profile-container {
+  width: 255px;
+  height: 50px;
+  border: 1px solid #ECECEC;
+  box-sizing: border-box;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.user-profile-container-mobile {
+  display: none;
+}
+
+.user-profile-icon {
+  position: relative;
+  margin-top: -15px;
+  width: 62px;
+  height: 68px;
+}
+
+.user-profile-img {
+  cursor: pointer;
+  /*width: 52px;*/
+  /*height: 52px;*/
+  width: 48px;
+  height: 48px;
+}
+
+.user-profile-details {
+  /*margin-left: 30px;*/
+  color: #828282;
+}
+
+.user-name {
+  font-family: Montserrat;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 15px;
+  color: #828282;
+  /*margin-top: -13px;*/
+  /*margin-left: -10px;*/
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+  /*align-self: auto;*/
+  margin-left: 18px;
+}
+
+.user-admin-id {
+  font-family: Montserrat;
+  font-size: 12px;
+  /*margin-top: 22px;*/
+  /*margin-left: -161px;*/
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* Right Content of Navbar End 👈 */
+
+
+/* Media Query Start */
+@media only screen and (min-width: 300px) and (max-width: 765px)
+and (-webkit-min-device-pixel-ratio: 1.5) {
+  /*.navbar-header-icon {*/
+  /*  display: none;*/
+  /*}*/
+  .navbar-header-title {
+    display: none;
+  }
+  .language-setting-container {
+    display: none;
+  }
+  .user-profile-container {
+    display: none;
+  }
+
+  .user-profile-container-mobile {
+    display: block;
+  }
+  .submenu-language {
+    display: block;
+  }
+}
+
+@media only screen and (min-width: 765px) and (max-width: 1042px)
+and (-webkit-min-device-pixel-ratio: 1.5) {
+  .language-setting-container {
+    display: none;
+  }
+  .calling-container {
+    display: none;
+  }
+
+  .submenu-language {
+    display: block;
+  }
+}
+
+/* Media Query End */
+
+
+.disabledButton {
+  pointer-events: none;
+  opacity: 0.4;
+}

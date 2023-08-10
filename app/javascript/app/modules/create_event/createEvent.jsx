@@ -23,6 +23,7 @@ import {toast} from 'react-toastify';
 import Select from 'react-select'
 import makeAnimated from "react-select/animated";
 import {useNavigate} from "react-router";
+import {useLocation} from 'react-router-dom';
 
 
 export default function CreateEvent() {
@@ -49,13 +50,15 @@ export default function CreateEvent() {
     });
 
 
-    const defaultImageUrl = 'https://firebasestorage.googleapis.com/v0/b/bjp-saral.appspot.com/o/9saalbemisaal_stage2b659a1c-849f-4276-be40-5bc60f5de98592615.png?alt=media&token=285898f6-5a72-4fe2-9bae-883b6b92aa4d'
+    const defaultImageUrl = "/assets/images/Group%2038041.png"
     let isPradesh = useRef(false);
     const [image, setImage] = useState(defaultImageUrl)
     const [fieldTypes, setFieldTypes] = useState([])
     const [loader, setLoader] = useState()
     const [startDate, setStartDate] = useState()
     const animatedComponents = makeAnimated();
+    const location = useLocation()
+    console.log(location.state)
     const order = {
         CountryState: ["State"],
         StateZone : ["State", "Vibhag"],
@@ -66,6 +69,8 @@ export default function CreateEvent() {
         ShaktiKendra : ['State', "Vidha Sabha", "Shakti Kendra"],
         Booth :["State","Vidha Sabha","Booth"]
     };
+
+
 
     const StateKeys = {
         state: "CountryStates",
@@ -358,7 +363,11 @@ export default function CreateEvent() {
 
     return (
         <div>
-            <div className="container">
+            <div className="container mt-5">
+                <div className="event-path">
+                    <h6>Events  /</h6>
+                    <h6> Create an Event</h6>
+                </div>
                 <h3 className="font-weight-300">Create an Event</h3>
                 <div className="event-create-form-bg">
                     <TextField id="outlined-basic"
@@ -404,7 +413,7 @@ export default function CreateEvent() {
                             <img
                                 onClick={removeImage}
                                 className="close-icon-img"
-                                src={'https://firebasestorage.googleapis.com/v0/b/bjp-saral.appspot.com/o/9saalbemisaal_stagea56e5caf-a095-4905-be45-6057e556d45824903.png?alt=media&token=5fe37d9c-f8a9-4f52-8d5d-383848c84dba'}
+                                src="/assets/images/icon%20(1).png"
                                 alt="cross-icon"/>
                             <img src={image} alt="upload image" className="preview-image"/>
                             <input type="file" className="file-input"  onChange={handleImagesChange}/>
@@ -472,7 +481,7 @@ export default function CreateEvent() {
                 <span>
                 Next
                 </span>
-                <img className="next-btn" src={'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAZlBMVEUAAAD////Dw8PFxcXAwMAjIyP09PT39/cbGxu+vr7y8vITExM3NzcgICB7e3u6urqCgoI/Pz/p6emLi4twcHCWlpZERESnp6ff399mZmZeXl6enp4oKCgJCQl9fX1LS0tVVVVtbW2PadDZAAADbUlEQVR4nO2d23KqQBBFZyQKB5Eg4iV6TMz//2QAtYKAl6rQ1XT3Xm9526v2XEAnjvMd8vfVd3J0wjjOk2IdxF0d1/o7PiTcWf/EZhs+NNx9cCccgDS/axim3OEG4jPsN3zjDjYgQZ+hlgLPZF3DL+5MA3NqG8peQftY3hqeuPMQsG8a6pqDV7Jfw3fuLEQEV8OYOwkZ4cVQw4NMP+nZcMedg5C8NtxzxyCkqAxz7hSkzErDFXcIUg6l4ZQ7BCmJd7oHqXOx07rbXwlcxh2BmLU7cUcgpnARdwRitL33dtG9VVSI++AXAAAAAAAAAIBMEu2f5U1DH3BnIOV/9QWeZsXprP6eecKdg4zp9WiS1hYvDeptcdE8XKaxxUaDOltc3ArqU5y2BbUN1KgrqKvFzhDV1uK85zx5jZYzur1DVFOL0b0GtbQ4v9+gjuXmYYMaWly0/59Dn2Lw1FD8QH1B0UCL0jcNtGhkLv7jzvhHMFChKAIoVhhYbrBpjJ6J/hZfUJS+3EDRiKKBuWhAUfpAxVu/hhZfGKjSW8RyY6RFKI4eKGpQxNZfgU1j9EARiiKAohFF6ZsGtv4KvPWPHgNzES0amYsGFA3MRektYuvX0CI2jQoDJzYMDFTpivlzRdm/sqq+QwgaEJS9H6p/plH/XIo5KP39EA0aEFS/yKifg7IbxEYvvUHMQQMNQnDUQBCCI0f92URs9BAcORCUvshAUPr7oPoG1f/0gPonGfVHEbDISBfEx4YGBGUvMuq3CQxR6a9LaBBzcORAEEN05GCbQIMjBw1KX0Vf+F192YIv3I0gXfDp/RayF5kzD1uU32CF+ntmDNwVZOC+JwN3dhm4d83A3XkG7j80cIelgXtIDdwla+A+YAN3Ohu4l9vA3eoAAAAAAAAAAKRw5A5AzNFF3BGIidySOwIxS1dwRyCmcGvuCMSsnZ7vZfuZuJg7AjGx8wl3BlKW3vkDdwhStqWh7mE6Kw39B3cKQgpfGe64YxCS14Y+5c5Bxqc/G4bcQcgIL4Zqv6Stj/PWhkrHaeZ/Df2JOw0Be9809BvuPIOz8beG/os70cDsfdtQ2VzMfNdQ1aGJxj9FNAx9qOV9P22eGmwalg9wGp5R09urFm4NvY8Pst8XN9v2/7S0DUvyt9X3MpL2OepxnhTroOcM/Q+QmSCzD4veRQAAAABJRU5ErkJggg=='}/>
+                <img className="next-btn" src="/assets/images/next%20button.png"/>
             </div>
         </div>
     )

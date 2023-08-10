@@ -9,6 +9,11 @@ import {Autocomplete, TextField} from "@mui/material";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router";
 import dayjs from "dayjs";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen,faArchive, faEye } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+
+
 
 const HomeComponent = () => {
     const defaultImageUrl = 'https://firebasestorage.googleapis.com/v0/b/bjp-saral.appspot.com/o/9saalbemisaal_stage2b659a1c-849f-4276-be40-5bc60f5de98592615.png?alt=media&token=285898f6-5a72-4fe2-9bae-883b6b92aa4d'
@@ -242,6 +247,19 @@ const HomeComponent = () => {
         setLeftMargin(0)
     };
 
+    function EditEvent(event)  {
+        navigate(
+            {
+                pathname: '/create_event',
+            },
+            {
+                state: {
+                    event: event
+                }
+            }
+        );
+    }
+
     return (
         <div className="home-main-container">
             <div className="home-search-div">
@@ -373,20 +391,31 @@ const HomeComponent = () => {
                             </div>
 
                             <div className="edit-bar" style={{display : isHovered && event.id === hoveredEventId ?  '' : 'none'}} >
-                                <div className="edit-bar-sub-div">
-                                    <img className="edit-bar-imgage" src={defaultImageUrl} />
+                                <div className="edit-bar-sub-div" onClick={() => EditEvent(event)}>
+                                    <FontAwesomeIcon className="edit-bar-imgage"
+                                                     size="2x"
+                                                     style={{ color: 'blue' }}
+                                                     icon={faPen} />
                                     <span className="font1-2rem">
                                         Edit
                                     </span>
                                 </div>
+
                                 <div className="edit-bar-sub-div">
-                                    <img className="edit-bar-imgage" src={defaultImageUrl} />
+                                    <FontAwesomeIcon className="edit-bar-imgage"
+                                                     size="2x"
+                                                     style={{ color: 'orange' }}
+                                                     icon={faArchive} />
                                     <span className="font1-2rem">
                                           Archive
                                     </span>
                                 </div>
+
                                 <div className="edit-bar-sub-div">
-                                    <img className="edit-bar-imgage" src={defaultImageUrl} />
+                                    <FontAwesomeIcon className="edit-bar-imgage"
+                                                     size="2x"
+                                                     style={{ color: 'lightgreen' }}
+                                                     icon={faEye} />
                                     <span className="font1-2rem">
                                           View
                                     </span>
