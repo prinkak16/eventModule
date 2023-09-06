@@ -10,12 +10,14 @@ import HomeComponent from "./modules/home/home.component";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CreateEvent from "./modules/create_event/createEvent";
+import HeaderBar from "./modules/header/header";
 
 function App() {
 
     return (
         <>
             <ToastContainer />
+            <HeaderBar />
             <Routes>
                 <Route path='/*' element={<Navigate to="/"/>}/>
                 <Route path='/' element={<HomeComponent/>}/>
