@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "bjp-saral",
+  "private_key_id": "cf895d3e5b54cca94c402a8464b2fccebc3cd1da",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCsdW5zcdN/3fSG\nKD1ycfbHMo+8LLBy+woWo7FGseFKjoqiUbv1EnEIif2subaxxsmcCnLMOG2rP8++\nFWTGOrURPvN5sXRdWU1DNfNxanxveEnQY3ZOw5Qxm5EtFKwOZdnkNj/OwQcz/EcU\nKmRh5EnxfzUWeHN0rrIhjf49vM+9uUQWpIpVT6VIs0AJxRye/ME1DYxABrznJDht\nl6UmQlBnAKmtn3FmOzpnhlw9BD1jUNYKWbUpoEpFYwooA8CbFrdUSzjDrPOh5CGr\nJCbpKOHoQJzfvFtmpfQuEQ1xVBqCQmWDMh23CdVrmdvAp4EmoeGhT8DWCWX3BpJz\njLooQLjDAgMBAAECgf8SMFB13Itx8PbZL2VLrLlaSPrf3da+SbvGp30K97fLJT15\n4STxtAA35lXa4btjBJQ+4Ns6rrjiVtiSM69tOMPgDcOgEhczwTdk30vNqm11VDp0\nwAi6ReZbVQz6tDNxUUypxQ71v2YDFZhpiA8ORAWIcuImfI2wwLwIzfECkedXGwa5\nDibsaJv0hEuSSTKzan+SKeQufccka+HucYAAqBteSKZFYA2HenHac8eZhC6OwVe+\nqrPhlD5lfVVK5ZD/J4Auh6XKJPr1m7sLvmEFMfMg3lzPA3kTTP6MLtIxedNvg10D\n02udUCeyes66ioXBkndSkinCT/sNEHgFVQ/SsVkCgYEA2iIjY9ZYhgXFdZ5HK8YG\niN288vg7U6cDoSFppRLGRFaFEodpPeqiAdG8UZE2VmcroapVymdfWysdbUG0QzSB\ni/xcfPYxbfJ8cCPbfB2SNIg9sjOvxmbq5oTcWKMqShKwHh74gLpsTK0d8Do12Vxx\nAyWdDCcZ5ac8ZVQHUws9U/8CgYEAymWCVhrVoI2WFW92pR790CsczuVaBG2lGLFi\nzHDQV632rlViibjuzST87bv15kiX7UN67wtvKDk+se2crdGG+L/wWfVhQlR9mFzc\nV7Muqk7FX4KOpx5SGJSQBpJ1e/EY7Q0ZCpbYm5wFW1O7IDsSUUJ1NkucosqfUj3Z\n89z4Sz0CgYEArYGUBti7Jze1/b19PPtRvVIq9lSu0/Y389Xg83XAkSEEzl05QA++\n95V9pp/LyeRcl0Ym4U1iUuEzkfE+UmqUVOXSJ2+ol5zWkFhlQA9BeVmZQYLNYRIB\n7IRnxHVcsPi2b+8QmUwv0rms46VZqeBW4Drt9XmwprRkXPD+tnZtPL8CgYBYeRcI\nXKKVlE7O//J1K573qGDncApxdRx+NsxhYc8xBLKYcmqomVaKBmkp4sgS6hi/dof+\nhpkIlD17ucqLkNPXWM/QAxuIyzY7rBwFmiYD/Hr6zS9ejjqE1CxBMzR4AWRL+zW/\nE0GMhB8zVN6vsCLJsqtaGKNX5grPAIqNt0IyYQKBgQCWK7Mmea7x5pdvHyv1OOeO\noznoB4YuH602PowFEuLVhx9bTECFIOpAcaUjSjneAH+AYugmsQZHPa11usVvu21P\nuUR/PpqNt/dyKnhiLuPvS2i5lj6LR4qaH8Dx9OAC5jKk0UsrM7m/N7PaAMOgQfBx\n+/X5/ulO1HALAsGF18BHQQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "949025725562-compute@developer.gserviceaccount.com",
+  "client_id": "116960229824474806162",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/949025725562-compute%40developer.gserviceaccount.com"
+}

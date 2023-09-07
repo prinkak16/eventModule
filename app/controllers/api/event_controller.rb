@@ -75,45 +75,54 @@ class Api::EventController < Api::ApplicationController
     render json: { success: false, message: e.message }, status: 400
   end
 
+  # Create or update event and their event locations
   def create_event
-    data_level = DataLevel.find_by(id: params[:level_id])
-    locations = data_level&.level_class&.constantize&.where(id: params[:location_ids])
-    state_id = locations&.first&.get_states&.id
+    ActiveRecord::Base.transaction do
+      begin
+        locations = Saral::Locatable::State.where(id: params[:location_ids])
 
-    event = Event.new
-    event.name = params[:event_title]
-    event.data_level_id = params[:level_id]
-    event.image_url = params[:image_url]
-    event.event_type= params[:event_type]
-    event.state_id = state_id
-    event.start_date = DateTime.iso8601(params[:start_date]) if params[:start_date].present?
-    event.end_date = DateTime.iso8601(params[:end_date])if params[:end_date].present?
-    event.save!
+        if params[:event_id].present?
+          event = Event.find_by(id: params[:event_id])
+        else
+          event = Event.new
+        end
+        event.name = params[:event_title]
+        event.data_level_id = params[:level_id]
+        event.image = params[:event_image]
+        event.event_type = params[:event_type]
+        event.start_date = DateTime.iso8601(params[:start_datetime]) if params[:start_datetime].present?
+        event.end_date = DateTime.iso8601(params[:end_datetime]) if params[:end_datetime].present?
+        event.save!
 
-    locations.each do |loc|
-      event_location = EventLocation.new
-      event_location.location = loc
-      event_location.event = event
-      event_location.save!
+        event.event_locations.destroy_all if event.event_locations.exists?
+
+        locations.each do |location|
+          EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
+        end
+
+        render json: { success: true, message: "Eventq Submitted Successfully", event: event }, status: 200
+      rescue Exception => e
+        render json: { success: false, message: e.message }, status: 400
+        raise ActiveRecord::Rollback
+      end
     end
 
-    render json: {success: true, message: "Event Created Successfully", event: event}, status: 200
-
-  rescue StandardError => e
-    render json: { success: false, message: e.message }, status: 400
-    puts(params)
   end
 
   def event_list
     query_conditions = {}
     query_conditions[:start_date] = params[:start_date] if params[:start_date].present?
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
-    query_conditions[:state_id] = params[:state_id] if params[:state_id].present?
     query_conditions[:status_aasm_state] = params[:event_status] if params[:event_status].present?
     events = Event.where(query_conditions)
-    render json: {success: true, data: events, message: "Events List"}, status: 200
+    events = events.joins(:event_locations).where(event_locations: {state_id: params[:state_id]}) if params[:state_id].present?
+    render json: {
+      data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id]),
+      message: ['Event list'],
+      status: 200,
+      type: 'Success'
+    }
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
-    puts(params)
   end
 end
