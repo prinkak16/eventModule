@@ -76,32 +76,29 @@ class Api::EventController < Api::ApplicationController
   end
 
   def create_event
+    data_level = DataLevel.find_by(id: params[:level_id])
+    locations = data_level&.level_class&.constantize&.where(id: params[:location_ids])
+    state_id = locations&.first&.get_states&.id
+
     event = Event.new
     event.name = params[:event_title]
     event.data_level_id = params[:level_id]
     event.image_url = params[:image_url]
     event.event_type= params[:event_type]
-    event.state_id = Saral::Locatable::State.where(id: params[:state_id]).first
-    if params[:start_date].present?
-      event.start_date = DateTime.iso8601(params[:start_date])
-    end
+    event.state_id = state_id
+    event.start_date = DateTime.iso8601(params[:start_date]) if params[:start_date].present?
+    event.end_date = DateTime.iso8601(params[:end_date])if params[:end_date].present?
+    event.save!
 
-    if params[:end_date].present?
-      event.end_date = DateTime.iso8601(params[:end_date])
-    end
-    event.save
-    data_level_class = DataLevel.where(id:params[:level_id]).first
-    if data_level_class == 'CountryState'
-      data_level_class = 'State'
-    end
-    locations = Saral::Locatable.const_get(data_level_class).where(id: params[:location_ids])
     locations.each do |loc|
       event_location = EventLocation.new
       event_location.location = loc
       event_location.event = event
-      event_location.save
+      event_location.save!
     end
-    render json: {success: true, message: "Event Created", event: event}, status: 200
+
+    render json: {success: true, message: "Event Created Successfully", event: event}, status: 200
+
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
     puts(params)
