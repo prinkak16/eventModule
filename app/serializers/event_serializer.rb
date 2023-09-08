@@ -23,10 +23,16 @@ class EventSerializer < ActiveModel::Serializer
   end
 
   def image_url
-    object&.image&.url || ''
+    object&.get_image_url || ''
   end
 
   def status
-    object&.status_aasm_state
+    if DateTime.now.in_time_zone(ENV['TIME_ZONE']).between?(object&.start_date&.in_time_zone(ENV['TIME_ZONE']), object&.end_date&.in_time_zone(ENV['TIME_ZONE']))
+      {status: 'Active', bg_color: '#CAF5D6', text_color: '#1D6B32'}
+    elsif object&.start_date&.in_time_zone(ENV['TIME_ZONE']) >  DateTime.now.in_time_zone(ENV['TIME_ZONE'])
+      {status: 'Upcoming', bg_color: '#DBE4FF', text_color: '#294188'}
+    elsif object&.start_date&.in_time_zone(ENV['TIME_ZONE']) <  DateTime.now.in_time_zone(ENV['TIME_ZONE'])
+      {status: 'Expired', bg_color: '#FFC3C3', text_color: '#A82A2A'}
+    end
   end
 end
