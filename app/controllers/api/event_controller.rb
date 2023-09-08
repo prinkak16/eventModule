@@ -107,7 +107,7 @@ class Api::EventController < Api::ApplicationController
           EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
         end
 
-        render json: { success: true, message: "Eventq Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil) }, status: 200
+        render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
         raise ActiveRecord::Rollback
