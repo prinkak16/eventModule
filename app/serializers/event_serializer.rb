@@ -1,5 +1,5 @@
 class EventSerializer < ActiveModel::Serializer
-  attributes :id, :name, :data_level, :start_datetime, :end_datetime, :status, :states, :image_url
+  attributes :id, :name, :start_date, :end_date, :data_level_id, :event_type, :data_level, :start_datetime, :end_datetime, :status, :states, :image_url, :state_ids
 
   def data_level
     object&.data_level&.name
@@ -28,11 +28,14 @@ class EventSerializer < ActiveModel::Serializer
 
   def status
     if DateTime.now.in_time_zone(ENV['TIME_ZONE']).between?(object&.start_date&.in_time_zone(ENV['TIME_ZONE']), object&.end_date&.in_time_zone(ENV['TIME_ZONE']))
-      {status: 'Active', bg_color: '#CAF5D6', text_color: '#1D6B32'}
+      {name: 'Active', class_name: 'event-status active-bg active-text'}
     elsif object&.start_date&.in_time_zone(ENV['TIME_ZONE']) >  DateTime.now.in_time_zone(ENV['TIME_ZONE'])
-      {status: 'Upcoming', bg_color: '#DBE4FF', text_color: '#294188'}
+      {name: 'Upcoming', class_name: 'event-status upcoming-bg upcoming-text'}
     elsif object&.start_date&.in_time_zone(ENV['TIME_ZONE']) <  DateTime.now.in_time_zone(ENV['TIME_ZONE'])
-      {status: 'Expired', bg_color: '#FFC3C3', text_color: '#A82A2A'}
+      {name: 'Expired', class_name: 'event-status expired-bg expired-text'}
     end
+  end
+  def state_ids
+    object&.event_locations&.pluck(:state_id)
   end
 end

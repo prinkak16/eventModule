@@ -16,7 +16,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 
 
 const HomeComponent = () => {
-    const defaultImageUrl = 'https://firebasestorage.googleapis.com/v0/b/bjp-saral.appspot.com/o/9saalbemisaal_stage2b659a1c-849f-4276-be40-5bc60f5de98592615.png?alt=media&token=285898f6-5a72-4fe2-9bae-883b6b92aa4d'
+    const imgDefault = 'https://storage.googleapis.com/public-saral/public_document/upload-img.jpg';
     const navigate = useNavigate()
     const [eventsList, setEventsList] = useState([])
     const [allEventList, setAllEventList] = useState([])
@@ -37,7 +37,7 @@ const HomeComponent = () => {
             name: "expired"
         }
     ]
-    const filterList = ["Level","State","Event Status"]
+    const filterList = ["Level","State"]
     const [filtersFieldData, setFiltersFieldData] = useState({
         levels: [],
         states: [],
@@ -283,7 +283,7 @@ const HomeComponent = () => {
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer components={['DatePicker']}>
                                 <DatePicker
-                                    label="Date"
+                                    label="Start Date"
                                     onChange={setDate}
                                     value={filtersFieldValue.date ? dayjs(filtersFieldValue.date) : null}
                                     slotProps={{
@@ -313,7 +313,7 @@ const HomeComponent = () => {
                 </div>
                 <div className="filters-buttons">
                     <button onClick={clearFiltersValue} className="btn btn-light clear-btn">
-                        clear
+                        Clear
                     </button>
                     <button onClick={getFilterEvents} className="btn btn-primary apply-btn">
                         Apply
@@ -331,19 +331,19 @@ const HomeComponent = () => {
 
                             <div className="event-list-fir"  style={{marginLeft: isHovered && event.id === hoveredEventId? `-${LeftMargin}rem` : ''}}>
                                 <div>
-                                    <img className="event-photo" src={event.image_url}/>
+                                    <img className="event-photo" src={event.image_url ? event.image_url : imgDefault} />
                                 </div>
                                 <div className="event-header-name">
                                     <h2>
-                                        {toProperCase(event.name)}
+                                        {event.name}
                                     </h2>
                                     <span className="event-sub-header">
-                                     Level :
+                                     Level : {event.data_level}
                                 </span>
                                 </div>
-                                <div className="event-status">
-                                <span className={`event-status-heading status-${event.status_aasm_state}`}>
-                                     {toProperCase(event.status_aasm_state)}
+                                <div className={event.status.class_name}>
+                                <span>
+                                     {event.status.name}
                                 </span>
                                 </div>
                                 <div>
@@ -358,10 +358,7 @@ const HomeComponent = () => {
                                     </h5>
 
                                     <span className="event-sub-header">
-                                     {data[0].states[0].name},
-                                </span>
-                                    <span className="event-sub-header">
-                                     {data[0].states[1].name} +{data[0].states.length - 2}
+                                     {event.states}
                                 </span>
                                 </div>
                                 <div className="hr"></div>
@@ -370,10 +367,7 @@ const HomeComponent = () => {
                                         Start
                                     </h5>
                                     <span className="event-sub-header">
-                               {event.start_date}
-                                </span>
-                                    <span className="event-sub-header">
-                                     06:30 PM
+                               {event.start_datetime}
                                 </span>
                                 </div>
                                 <div className="hr"></div>
@@ -382,16 +376,13 @@ const HomeComponent = () => {
                                         End
                                     </h5>
                                     <span className="event-sub-header">
-                               {event.end_date}
-                                </span>
-                                    <span className="event-sub-header">
-                                     08:00 PM
+                               {event.end_datetime}
                                 </span>
                                 </div>
                             </div>
 
                             <div className="edit-bar" style={{display : isHovered && event.id === hoveredEventId ?  '' : 'none'}} >
-                                <div className="edit-bar-sub-div" onClick={() => EditEvent(event)}>
+                                <div className="edit-bar-sub-div cursor-pointer" onClick={() => EditEvent(event)}>
                                     <FontAwesomeIcon className="edit-bar-imgage"
                                                      size="2x"
                                                      style={{ color: 'blue' }}
@@ -401,7 +392,7 @@ const HomeComponent = () => {
                                     </span>
                                 </div>
 
-                                <div className="edit-bar-sub-div">
+                                <div className="edit-bar-sub-div cursor-pointer">
                                     <FontAwesomeIcon className="edit-bar-imgage"
                                                      size="2x"
                                                      style={{ color: 'orange' }}
@@ -411,7 +402,7 @@ const HomeComponent = () => {
                                     </span>
                                 </div>
 
-                                <div className="edit-bar-sub-div">
+                                <div className="edit-bar-sub-div cursor-pointer">
                                     <FontAwesomeIcon className="edit-bar-imgage"
                                                      size="2x"
                                                      style={{ color: 'lightgreen' }}

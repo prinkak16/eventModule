@@ -89,18 +89,16 @@ class Api::EventController < Api::ApplicationController
           event = Event.new
         end
 
-        if params[:img].present? && params[:img].include?('https://firebasestorage.googleapis.com')
+        if params[:img].present?
           event.image_url = nil
-          url = URI.parse(params[:img]).open
-          event.image.attach(io: url, filename: "event#{params[:event_title]}.jpg")
+          event.image = params[:img]
         end
         event.name = params[:event_title]
         event.data_level_id = params[:level_id]
         event.event_type = params[:event_type]
-        event.start_date = DateTime.iso8601(params[:start_datetime]) if params[:start_datetime].present?
-        event.end_date = DateTime.iso8601(params[:end_datetime]) if params[:end_datetime].present?
+        event.start_date = params[:start_datetime].to_datetime
+        event.end_date = params[:end_datetime].to_datetime
         event.save!
-
         event.event_locations.destroy_all if event.event_locations.exists?
 
         locations.each do |location|
@@ -118,7 +116,7 @@ class Api::EventController < Api::ApplicationController
 
   def event_list
     query_conditions = {}
-    query_conditions[:start_date] = params[:start_date] if params[:start_date].present?
+    query_conditions[:start_date] = get_date_diff(params[:start_date].to_datetime) if params[:start_date].present?
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     query_conditions[:status_aasm_state] = params[:event_status] if params[:event_status].present?
     events = Event.where(query_conditions)
@@ -126,10 +124,13 @@ class Api::EventController < Api::ApplicationController
     render json: {
       data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id]),
       message: ['Event list'],
-      status: 200,
-      type: 'Success'
-    }
+      success: true
+    }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
+  end
+  def get_date_diff(date)
+    date = date + 5.50.hours
+    (date.beginning_of_day..date.end_of_day)
   end
 end

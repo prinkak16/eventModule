@@ -21,7 +21,7 @@ body {
 }
 
 .event-header {
-  width: 10%;
+  width: 100%;
 }
 
 .sub-heading {
@@ -32,10 +32,9 @@ body {
 
 .search-input {
   width: 70%;
-  height: 3.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.5);
+  border: 0.5px solid #d3cbcb;
   border-radius: 8px;
-  padding-left: 3.5rem;
+  padding-left: 0.5rem
 }
 
 .search-input::placeholder {
@@ -45,7 +44,7 @@ body {
 
 .dynamic-form-submit-button{
   display: flex !important;
-  width: 15%;
+  width: 20%;
   border-radius: 30px !important;
   text-transform: capitalize !important;
   justify-content: center !important;
@@ -53,7 +52,6 @@ body {
   font-weight: 600;
   color: #FFFFFF;
   border: none;
-  padding: 20px;
 }
 
 .filters-container-main {
@@ -114,7 +112,12 @@ body {
 .event-status {
   margin-left: 1.5rem;
   margin-top: 0.5rem;
-  font-size: 1.2rem;
+  width: 74px;
+  padding: 2px;
+  height: 24px;
+  border-radius: 50px;
+  text-align: center;
+  font-size: 12px;
 }
 
 .event-status-heading {
@@ -214,4 +217,23 @@ body {
   display: flex;
   font-size: 2rem;
   font-family: revert;
+}
+.active-bg{
+  background-color: #CAF5D6;
+}
+.upcoming-bg{
+  background-color: #DBE4FF;
+}
+.expired-bg{
+  background-color: #FFC3C3;
+}
+
+.active-text{
+  color: #1D6B32;
+}
+.upcoming-text{
+  color: #294188;
+}
+.expired-text{
+  color: #A82A2A;
 }
