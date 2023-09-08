@@ -29,69 +29,13 @@ import {useLocation} from 'react-router-dom';
 export default function CreateEvent() {
     const navigate = useNavigate()
     const [dataLevels, setDataLevels] = useState([]);
+    const [countryStates, setCountryStates] = useState([]);
     const [disbledEndDate, setDisbledEndDate] = useState(true)
-    const [state, setState] = useState({
-        CountryStates:[],
-        StateZones:[],
-        ParliamentaryConstituency:[],
-        Zilas:[],
-        AssemblyConstituency:[],
-        Mandals:[],
-        ShaktiKendras:[],
-        Booths:[],
-        CountryStateId: '',
-        StateZoneId: '',
-        ParliamentaryConstituencyId: '',
-        ZilaId: '',
-        AssemblyConstituencyId: '',
-        MandalId: '',
-        ShaktiKendraId: '',
-        BoothId: '',
-    });
-
 
     const defaultImageUrl = "/assets/images/Group%2038041.png"
-    let isPradesh = useRef(false);
     const [image, setImage] = useState(defaultImageUrl)
     const [fieldTypes, setFieldTypes] = useState([])
-    const [loader, setLoader] = useState()
     const [startDate, setStartDate] = useState()
-    const animatedComponents = makeAnimated();
-    const location = useLocation()
-    console.log(location.state)
-    const order = {
-        CountryState: ["State"],
-        StateZone : ["State", "Vibhag"],
-        ParliamentaryConstituency: ["State", "Lok Sabha"],
-        Zila : ["State", "Zila"],
-        AssemblyConstituency: ['State', "Vidha Sabha"],
-        Mandal : ["State", "Zila", "Mandal"],
-        ShaktiKendra : ['State', "Vidha Sabha", "Shakti Kendra"],
-        Booth :["State","Vidha Sabha","Booth"]
-    };
-
-
-
-    const StateKeys = {
-        state: "CountryStates",
-        vibhag: "StateZones",
-        lok_sabha: "ParliamentaryConstituency",
-        zila: "Zilas",
-        vidha_sabha: "AssemblyConstituency",
-        mandal: "Mandals",
-        shakti_kendra: "ShaktiKendras",
-        booth: "Booths"
-    }
-
-    const apiOrder = {
-        vibhag: "state_zone",
-        lok_sabha: "pc",
-        zila: "Zila",
-        vidha_sabha: "ac",
-        mandal: "mandal",
-        shakti_kendra: "sk",
-        booth: "booth"
-    }
 
     // Form field values
 
@@ -99,11 +43,9 @@ export default function CreateEvent() {
         start_datetime: '',
         end_datetime: '',
         level_id: '',
-        state_id: '',
-        location_type: '',
         location_ids: [],
         event_type: '',
-        image_url: ''
+        img: ''
     });
 
     const requiredField = ['start_datetime']
@@ -112,6 +54,7 @@ export default function CreateEvent() {
 
     useEffect(() => {
         getDataLevels();
+        getStates();
     }, [])
 
     async function getDataLevels() {
@@ -128,21 +71,17 @@ export default function CreateEvent() {
     }
 
     const handleLevelChange = (event, value) => {
-        for (let i = 0; i < fieldTypes.length; i++) {
-            setFieldvalue(fieldTypes[i],'')
-        }
         formFieldValue.level_id = value.id
-        formFieldValue.location_type = value.name
-        setFieldTypes(order[value.level_class])
-        if (value.id) { getStates(); }
-        isPradesh = value.name === 'Pradesh'
+    }
 
+    const handleStateChange = (event, value) => {
+        formFieldValue.location_ids = value.id
     }
 
 
 
     async function getStates() {
-        let levels = await fetch("api/event/states", {
+        let states = await fetch("api/event/states", {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json",
@@ -150,30 +89,10 @@ export default function CreateEvent() {
                 "Authorization": ''
             }
         });
-        const res = await levels.json();
-        setState((prevState) => ({
-            ...prevState,
-            ['CountryStates']: res.data
-        }));
+        const res = await states.json();
+        setCountryStates(res.data);
     }
 
-
-
-    async function getApisValue(fetchType,valueType,value) {
-        let levels = await fetch(`api/event/${apiOrder[fetchType]}s?${valueType}_id=${value}`, {
-            method: 'GET',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": 'application/json',
-                "Authorization": ''
-            }
-        });
-        const res = await levels.json();
-        setState((prevState) => ({
-            ...prevState,
-            [`${StateKeys[fetchType]}`]: res.data
-        }));
-    }
 
     async function CreateEvents() {
         let levels = await fetch(`api/event/create`, {
@@ -187,13 +106,13 @@ export default function CreateEvent() {
         });
         const res = await levels.json();
         if (res.success) {
-            // navigateToHome()
+            navigateToHome()
         }
     }
 
 
 
-    function setFormField(event, field){
+    function setFormField(event, field) {
         if (field === 'start_datetime' || field === 'end_datetime') {
             formFieldValue[field] = event.$d
             setEndDateCal(event.$d)
@@ -202,102 +121,8 @@ export default function CreateEvent() {
         }
     }
 
-    const getOptions = (type) => {
-        let data = []
-        if (type) {
-            const transformedType = convertSnackCase(type)
-            data = state[StateKeys[transformedType]]
-        }
-        return data
-    }
-
-    const convertSnackCase = (value) => {
-        return value.replace(/\s+/g, '_').toLowerCase();
-    }
-    const chopLastLatter = (value) => {
-        return value.substring(0, value.length - 1);
-    }
-
-    const handleFieldChange = (fieldType,index) => (event, value) => {
-        if (fieldType) {
-          setFieldvalue(fieldType,value.id)
-            if (fieldTypes.length > index+1) {
-                callApis(fieldTypes[index+1],value.id)
-            }
-
-            if (value.action === 'select-option' && fieldTypes.length === parseInt(index+1)) {
-               const new_option_id = value.option.id
-                formFieldValue.location_ids = [...formFieldValue.location_ids, new_option_id];
-            }
-            if (value.action === 'clear') {
-                formFieldValue.location_ids = []
-            }
-        }
-    }
-
-    const setFieldvalue = (fieldType, value) => {
-        let transformedType = convertSnackCase(fieldType);
-        if (fieldType !== 'lok_sabha' && fieldType  !== 'vidha_sabha') {
-            transformedType = chopLastLatter(StateKeys[transformedType]);
-        }
-        setState((prevState) => ({
-            ...prevState,
-            [`${transformedType}Id`]: value
-        }));
-    }
-
-
-    useEffect(() => {
-        if (state['CountryStateId']) {
-            formFieldValue.state = state['CountryStateId']
-        }
-
-    }, [state['CountryStateId']]);
-
-    const fieldValue = (fieldType) => {
-        if (fieldType) {
-            const transformedType = convertSnackCase(fieldType);
-            const key = StateKeys[transformedType].substring(0, StateKeys[transformedType].length - 1);
-            return  state[`${key}Id`]
-        }
-    }
-
-    const callApis = (fetchType,value) => {
-        let transformedType = convertSnackCase(fetchType);
-        let valueType = 'state'
-        if (transformedType === 'mandal') {
-            valueType = apiOrder['zila']
-        }
-        if (transformedType === 'booth' || transformedType === 'shakti_kendra') {
-            valueType = apiOrder['vidha_sabha']
-        }
-
-        getApisValue(transformedType,valueType,value)
-    }
-
     const handleImagesChange = (event) => {
-        handleFileInputChange(event.target.files[0])
 
-        event.target.value = null;
-    }
-
-    async function convertUrl(file) {
-        try {
-            const form = new FormData();
-            form.append("file", file);
-
-            const response = await axios.post(
-                upload_url + '/api/v1/custom_member_forms/add_file', form,
-                {
-                    headers: {
-                        'content-type': 'multipart/form-data;'
-                    },
-                }
-            );
-            setImage(response.data.data.data)
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        }
     }
 
     function handleFileInputChange(file) {
@@ -311,7 +136,6 @@ export default function CreateEvent() {
             (snapshot) => {},
             (error) => {
                 setLoader(false);
-                // disablePhotosInput(false, questionid, sectionid)
                 alert(error);
             },
             () => {
@@ -429,36 +253,16 @@ export default function CreateEvent() {
                             renderInput={(params) => <TextField {...params} label="Select levels"/>}
                         />
                     </div>
-                    {fieldTypes && fieldTypes.map((field, index) => (
-                    <>
-                            <div className="mt-2" key={index}>
-                                {fieldTypes.length === index + 1 ?
-                                    <Select
-                                            key={index}
-                                            components={animatedComponents}
-                                            className="w-100"
-                                            options={getOptions(field)}
-                                            getOptionLabel={(option) => option.name || ""}
-                                            getOptionValue={(option) => option.id || ""}
-                                            onChange={handleFieldChange(field, index)}
-                                            // renderInput={(params) => <TextField {...params} label={`Select ${field}`}/>}
-                                            isMulti={true}
-                                    />
-                                    :
-                                    <Autocomplete
-                                        className="w-100"
-                                        key={index}
-                                        value={getOptions(field).find(value => value.id === parseInt(fieldValue(field))) || null}
-                                        options={getOptions(field)}
-                                        getOptionLabel={(option) => option.name || ""}
-                                        getOptionValue={(option) => option.id || ""}
-                                        onChange={handleFieldChange(field, index)}
-                                        renderInput={(params) => <TextField {...params} label={`Select ${field}`}/>}
-                                    />
-                                }
-                        </div>
-                    </>
-                    ))}
+                   <div className="mt-2">
+                       <Autocomplete
+                           className="w-100"
+                           options={countryStates}
+                           getOptionLabel={(option) => option.name || ""}
+                           getOptionValue={(option) => option.id || ""}
+                           onChange={handleStateChange}
+                           renderInput={(params) => <TextField {...params} label={`Select State`}/>}
+                       />
+                   </div>
                     <div className="mt-2">
                         <FormControl>
                             <FormLabel id="demo-row-radio-buttons-group-label">Reporting Target</FormLabel>
