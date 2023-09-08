@@ -1,5 +1,7 @@
 class Api::EventController < Api::ApplicationController
   skip_before_action :verify_authenticity_token, only: :create_event
+  require "net/https"
+  require 'uri'
 
   def data_levels
     levels = DataLevel.select(:id, :name, :level_class)
@@ -86,9 +88,14 @@ class Api::EventController < Api::ApplicationController
         else
           event = Event.new
         end
+
+        if params[:img].present? && params[:img].include?('https://firebasestorage.googleapis.com')
+          event.image_url = nil
+          url = URI.parse(params[:img]).open
+          event.image.attach(io: url, filename: "event#{params[:event_title]}.jpg")
+        end
         event.name = params[:event_title]
         event.data_level_id = params[:level_id]
-        event.image = params[:event_image]
         event.event_type = params[:event_type]
         event.start_date = DateTime.iso8601(params[:start_datetime]) if params[:start_datetime].present?
         event.end_date = DateTime.iso8601(params[:end_datetime]) if params[:end_datetime].present?
@@ -100,7 +107,7 @@ class Api::EventController < Api::ApplicationController
           EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
         end
 
-        render json: { success: true, message: "Eventq Submitted Successfully", event: event }, status: 200
+        render json: { success: true, message: "Eventq Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
         raise ActiveRecord::Rollback

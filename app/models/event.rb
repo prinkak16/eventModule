@@ -17,4 +17,10 @@ class Event < ApplicationRecord
       transitions from: [:active], to: :expired
     end
   end
+  def get_image_url
+    if self.image.attached? && self.image_url.blank?
+      update(image_url: image.url(expires_in: 1.year))
+    end
+    image_url
+  end
 end
