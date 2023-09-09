@@ -317,8 +317,19 @@ export default function CreateEvent() {
                     }
 
                     <div className="mt-2">
-                        <FormControl>
-                            <FormLabel id="demo-row-radio-buttons-group-label">Reporting Target</FormLabel>
+                        {location.state ?
+                            <RadioGroup
+                                row
+                                aria-labelledby="demo-row-radio-buttons-group-label"
+                                name="row-radio-buttons-group"
+                                value={formFieldValue.event_type}
+
+                            >
+                                <FormControlLabel value="open_event"
+                                                  onChange={(event) => setFormField(event, 'event_type')}
+                                                  control={<Radio />} label="Open event" />
+                            </RadioGroup>
+                            :
                             <RadioGroup
                                 row
                                 aria-labelledby="demo-row-radio-buttons-group-label"
@@ -328,7 +339,7 @@ export default function CreateEvent() {
                                                   onChange={(event) => setFormField(event, 'event_type')}
                                                   control={<Radio />} label="Open event" />
                             </RadioGroup>
-                        </FormControl>
+                        }
                     </div>
                     <div>
                     </div>
