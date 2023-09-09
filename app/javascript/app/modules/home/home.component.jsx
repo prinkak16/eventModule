@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import './home.styles.scss'
-import CreateEvent from '../create_event/createEvent'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -11,7 +10,7 @@ import {useNavigate} from "react-router";
 import dayjs from "dayjs";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen,faArchive, faEye } from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
+import Loader from "react-js-loader";
 
 
 
@@ -23,6 +22,7 @@ const HomeComponent = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [hoveredEventId, setHoveredEventId] = useState()
     const [LeftMargin, setLeftMargin] = useState(0);
+    const [loader, setLoader] = useState(false)
     const demoData = [
         {
             id: 1,
@@ -52,6 +52,7 @@ const HomeComponent = () => {
 
 
     async function getApisValue(filerType,apiPath) {
+        setLoader(true);
         let levels = await fetch(`api/event/${apiPath}`, {
             method: 'GET',
             headers: {
@@ -60,6 +61,7 @@ const HomeComponent = () => {
                 "Authorization": ''
             }
         });
+        setLoader(false)
         const res = await levels.json();
         const transformedFilter = convertSnackCase(filerType)
         const key = filerType === 'Event Status' ? transformedFilter :`${transformedFilter}s`
@@ -262,6 +264,12 @@ const HomeComponent = () => {
 
     return (
         <div className="home-main-container">
+            {loader ?
+                <Loader type="bubble-ping" bgColor={"#FFFFFF"} title="Loading.." color={'#FFFFFF'}
+                        size={100}/>
+                :
+                <></>
+            }
             <div className="home-search-div">
                 <div className="event-header">
                     <h1>

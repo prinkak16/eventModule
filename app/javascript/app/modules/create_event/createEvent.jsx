@@ -17,6 +17,7 @@ import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 import {toast} from 'react-toastify';
 import axios from "axios";
 import {useLocation, useNavigate} from "react-router-dom";
+import Loader from "react-js-loader";
 
 
 
@@ -32,6 +33,7 @@ export default function CreateEvent() {
     const [startDate, setStartDate] = useState()
     const location = useLocation();
     const [submittedData, setSubmittedData] = useState(location.state ? location.state.event : {})
+    const [loader, setLoader] = useState(false)
 
     // Form field values
     const [formFieldValue, setFormFieldValue] = useState({
@@ -104,6 +106,7 @@ export default function CreateEvent() {
     }
 
     async function CreateEvents() {
+        setLoader(true);
         try {
             const formData = new FormData();
             formData.append('start_datetime', formFieldValue.start_datetime);
@@ -123,10 +126,12 @@ export default function CreateEvent() {
                 }
             );
             if (response.data.success) {
+                setLoader(false)
                 toast.success(response.data.message);
                 navigateToHome()
             }
         } catch (error) {
+            setLoader(false)
             toast.error(error);
         }
     }
@@ -186,6 +191,12 @@ export default function CreateEvent() {
 
     return (
         <div>
+            {loader ?
+                <Loader type="bubble-ping" bgColor={"#FFFFFF"} title="Loading.." color={'#FFFFFF'}
+                        size={100}/>
+                :
+                <></>
+            }
             <div className="container mt-5">
                 <div className="event-path">
                     <h6>Events  /</h6>
@@ -193,10 +204,16 @@ export default function CreateEvent() {
                 </div>
                 <h3 className="font-weight-300">Create an Event</h3>
                 <div className="event-create-form-bg">
-                    <TextField id="outlined-basic"
-                               value={formFieldValue.event_title}
-                               onChange={(event) => setFormField(event, 'event_title')}
-                               label="Event title" variant="outlined" className="w-100"/>
+                    { location.state ?
+                        <TextField id="outlined-basic"
+                                   value={formFieldValue.event_title}
+                                   onChange={(event) => setFormField(event, 'event_title')}
+                                   label="Event title" variant="outlined" className="w-100"/>
+                        :
+                        <TextField id="outlined-basic"
+                                   onChange={(event) => setFormField(event, 'event_title')}
+                                   label="Event title" variant="outlined" className="w-100"/>
+                    }
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
                             <div className="d-flex justify-content-between">
@@ -306,7 +323,6 @@ export default function CreateEvent() {
                                 row
                                 aria-labelledby="demo-row-radio-buttons-group-label"
                                 name="row-radio-buttons-group"
-                                value={formFieldValue.event_type}
                             >
                                 <FormControlLabel value="open_event"
                                                   onChange={(event) => setFormField(event, 'event_type')}

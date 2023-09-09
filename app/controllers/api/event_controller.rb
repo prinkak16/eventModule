@@ -89,7 +89,7 @@ class Api::EventController < Api::ApplicationController
           event = Event.new
         end
 
-        if params[:img].present? && !valid_url?(params[:img])
+        if params[:img].present? && !valid_url(params[:img])
           event.image_url = nil
           event.image = params[:img]
         end
@@ -133,9 +133,10 @@ class Api::EventController < Api::ApplicationController
     (date.beginning_of_day..date.end_of_day)
   end
 
-  def valid_url?(url)
-  return false if url.include?("<script")
-  url_regexp = /\A(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?\z/ix
-  url =~ url_regexp ? true : false
+  def valid_url(url)
+    uri = URI.parse(url)
+    !uri.host.nil?
+  rescue URI::InvalidURIError
+    false
   end
 end
