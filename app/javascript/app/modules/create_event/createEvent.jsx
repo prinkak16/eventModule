@@ -14,9 +14,6 @@ import {DemoContainer} from '@mui/x-date-pickers/internals/demo';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
-import {storage} from "../firebaseConfig";
-import { v4 as uuidv4 } from 'uuid';
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import {toast} from 'react-toastify';
 import axios from "axios";
 import {useLocation, useNavigate} from "react-router-dom";
@@ -37,7 +34,6 @@ export default function CreateEvent() {
     const [submittedData, setSubmittedData] = useState(location.state ? location.state.event : {})
 
     // Form field values
-
     const [formFieldValue, setFormFieldValue] = useState({
         event_title: '',
         start_datetime: '',
@@ -46,7 +42,8 @@ export default function CreateEvent() {
         location_ids: [],
         event_type: '',
         img: '',
-        event_id: ''
+        event_id: '',
+        state_obj: []
     });
 
     const requiredField = ['start_datetime']
@@ -54,7 +51,7 @@ export default function CreateEvent() {
 
 
     useEffect(() => {
-        if (submittedData) {
+        if (location.state) {
             formFieldValue.event_id = submittedData.id;
             formFieldValue.event_title = submittedData.name;
             formFieldValue.img = submittedData.image_url;
@@ -63,7 +60,8 @@ export default function CreateEvent() {
             formFieldValue.end_datetime = submittedData.end_date;
             formFieldValue.level_id = submittedData.data_level_id;
             formFieldValue.event_type = submittedData.event_type;
-            formFieldValue.location_ids = submittedData.state_ids;
+            formFieldValue.location_ids = submittedData.state_ids.map(obj => obj.id);
+            formFieldValue.state_obj = submittedData.state_ids;
         }
         getDataLevels();
         getStates();
@@ -87,7 +85,7 @@ export default function CreateEvent() {
     }
 
     const handleStateChange = (event, value) => {
-        formFieldValue.location_ids = [value.id]
+        formFieldValue.location_ids = value.map(obj => obj.id);
     }
 
 
@@ -107,9 +105,9 @@ export default function CreateEvent() {
 
     async function CreateEvents() {
         try {
-
             const formData = new FormData();
             formData.append('start_datetime', formFieldValue.start_datetime);
+            formData.append('event_id', formFieldValue.event_id);
             formData.append('event_title', formFieldValue.event_title);
             formData.append('end_datetime', formFieldValue.end_datetime);
             formData.append('level_id', formFieldValue.level_id);
@@ -251,7 +249,6 @@ export default function CreateEvent() {
                     </div>
                     { location.state ?
                        <div>
-                           <p>ffk</p>
                            <div className="mt-5">
                                <Autocomplete
                                    options={dataLevels}
@@ -266,10 +263,11 @@ export default function CreateEvent() {
                            <div className="mt-2">
                                <Autocomplete
                                    className="w-100"
+                                   multiple
                                    options={countryStates}
-                                   getOptionLabel={(option) => option.name || ""}
-                                   getOptionValue={(option) => option.id || ""}
-                                   value={countryStates.find((option) => option.id === (formFieldValue.location_ids ? formFieldValue.location_ids[0] : null)) || null}
+                                   getOptionLabel={(option) => option?.name || ""}
+                                   getOptionValue={(option) => option?.id || ""}
+                                   value={formFieldValue.state_obj}
                                    onChange={handleStateChange}
                                    renderInput={(params) => <TextField {...params} label={`Select State`}/>}
                                />
@@ -290,6 +288,7 @@ export default function CreateEvent() {
                             <div className="mt-2">
                                 <Autocomplete
                                     className="w-100"
+                                    multiple
                                     options={countryStates}
                                     getOptionLabel={(option) => option.name || ""}
                                     getOptionValue={(option) => option.id || ""}
@@ -307,6 +306,7 @@ export default function CreateEvent() {
                                 row
                                 aria-labelledby="demo-row-radio-buttons-group-label"
                                 name="row-radio-buttons-group"
+                                value={formFieldValue.event_type}
                             >
                                 <FormControlLabel value="open_event"
                                                   onChange={(event) => setFormField(event, 'event_type')}

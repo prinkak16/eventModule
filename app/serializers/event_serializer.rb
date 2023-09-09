@@ -36,6 +36,6 @@ class EventSerializer < ActiveModel::Serializer
     end
   end
   def state_ids
-    object&.event_locations&.pluck(:state_id)
+    object&.event_locations.joins(:state).select('saral_locatable_states.id as id, saral_locatable_states.name as name')
   end
 end

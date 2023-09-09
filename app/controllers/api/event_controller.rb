@@ -81,7 +81,7 @@ class Api::EventController < Api::ApplicationController
   def create_event
     ActiveRecord::Base.transaction do
       begin
-        locations = Saral::Locatable::State.where(id: params[:location_ids])
+        locations = Saral::Locatable::State.where(id: [params[:location_ids].split(',')])
 
         if params[:event_id].present?
           event = Event.find_by(id: params[:event_id])
@@ -89,7 +89,7 @@ class Api::EventController < Api::ApplicationController
           event = Event.new
         end
 
-        if params[:img].present?
+        if params[:img].present? && !valid_url?(params[:img])
           event.image_url = nil
           event.image = params[:img]
         end
@@ -100,7 +100,6 @@ class Api::EventController < Api::ApplicationController
         event.end_date = params[:end_datetime].to_datetime
         event.save!
         event.event_locations.destroy_all if event.event_locations.exists?
-
         locations.each do |location|
           EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
         end
@@ -132,5 +131,11 @@ class Api::EventController < Api::ApplicationController
   def get_date_diff(date)
     date = date + 5.50.hours
     (date.beginning_of_day..date.end_of_day)
+  end
+
+  def valid_url?(url)
+  return false if url.include?("<script")
+  url_regexp = /\A(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?\z/ix
+  url =~ url_regexp ? true : false
   end
 end
