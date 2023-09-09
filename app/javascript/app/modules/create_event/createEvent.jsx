@@ -2,9 +2,7 @@ import React, {useEffect, useState} from 'react';
 import './createEvent.scss';
 import {
     Autocomplete,
-    FormControl,
     FormControlLabel,
-    FormLabel,
     Radio,
     RadioGroup,
     TextField,
@@ -20,8 +18,6 @@ import {useLocation, useNavigate} from "react-router-dom";
 import Loader from "react-js-loader";
 
 
-
-
 export default function CreateEvent() {
     const imgDefault = 'https://storage.googleapis.com/public-saral/public_document/upload-img.jpg';
     const imgCross = 'https://storage.googleapis.com/public-saral/public_document/icon.jpg';
@@ -34,10 +30,11 @@ export default function CreateEvent() {
     const location = useLocation();
     const [submittedData, setSubmittedData] = useState(location.state ? location.state.event : {})
     const [loader, setLoader] = useState(false)
+    const [isEdit, setIsEdit] = useState(location.state)
 
     // Form field values
     const [formFieldValue, setFormFieldValue] = useState({
-        event_title: '',
+        event_title: isEdit ? submittedData.event_title : '',
         start_datetime: '',
         end_datetime: '',
         level_id: '',
@@ -51,9 +48,8 @@ export default function CreateEvent() {
     const requiredField = ['start_datetime']
 
 
-
     useEffect(() => {
-        if (location.state) {
+        if (isEdit) {
             formFieldValue.event_id = submittedData.id;
             formFieldValue.event_title = submittedData.name;
             formFieldValue.img = submittedData.image_url;
@@ -79,7 +75,7 @@ export default function CreateEvent() {
             }
         });
         const res = await levels.json();
-       setDataLevels(res.data);
+        setDataLevels(res.data);
     }
 
     const handleLevelChange = (event, value) => {
@@ -89,7 +85,6 @@ export default function CreateEvent() {
     const handleStateChange = (event, value) => {
         formFieldValue.location_ids = value.map(obj => obj.id);
     }
-
 
 
     async function getStates() {
@@ -160,7 +155,7 @@ export default function CreateEvent() {
     };
 
 
-    const removeImage = () =>  {
+    const removeImage = () => {
         formFieldValue.img = ''
         setImage('');
     }
@@ -168,7 +163,7 @@ export default function CreateEvent() {
 
     const submit = () => {
         for (let i = 0; i < requiredField.length; i++) {
-           const item = formFieldValue[requiredField[i]]
+            const item = formFieldValue[requiredField[i]]
             if (!item) {
                 toast.error(`Please enter ${requiredField[i]}`, {
                     position: "top-center",
@@ -181,7 +176,7 @@ export default function CreateEvent() {
         CreateEvents()
     }
 
-    const  navigateToHome = () => {
+    const navigateToHome = () => {
         navigate(
             {
                 pathname: '/',
@@ -199,21 +194,14 @@ export default function CreateEvent() {
             }
             <div className="container mt-5">
                 <div className="event-path">
-                    <h6>Events  /</h6>
+                    <h6>Events /</h6>
                     <h6> Create an Event</h6>
                 </div>
                 <h3 className="font-weight-300">Create an Event</h3>
                 <div className="event-create-form-bg">
-                    { location.state ?
-                        <TextField id="outlined-basic"
-                                   value={formFieldValue.event_title}
-                                   onChange={(event) => setFormField(event, 'event_title')}
-                                   label="Event title" variant="outlined" className="w-100"/>
-                        :
                         <TextField id="outlined-basic"
                                    onChange={(event) => setFormField(event, 'event_title')}
                                    label="Event title" variant="outlined" className="w-100"/>
-                    }
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
                             <div className="d-flex justify-content-between">
@@ -230,7 +218,7 @@ export default function CreateEvent() {
                                             }
                                         }
                                     }
-                                }
+                                    }
                                 />
                                 <DateTimePicker
                                     label="End date & Time"
@@ -251,7 +239,7 @@ export default function CreateEvent() {
                     <p className="mt-5">Upload Image/ Banner:</p>
                     <div>
                         <div className="image-container">
-                            { image ?
+                            {image ?
                                 <img
                                     onClick={removeImage}
                                     className="close-icon-img"
@@ -261,35 +249,35 @@ export default function CreateEvent() {
                                 <></>
                             }
                             <img src={image ? image : imgDefault} alt="upload image" className="preview-image"/>
-                            <input type="file" className="file-input"  onChange={handleImagesChange}/>
+                            <input type="file" className="file-input" onChange={handleImagesChange}/>
                         </div>
                     </div>
-                    { location.state ?
-                       <div>
-                           <div className="mt-5">
-                               <Autocomplete
-                                   options={dataLevels}
-                                   getOptionLabel={(option) => option.name || ""}
-                                   getOptionValue={(option) => option.id || ""}
-                                   value={dataLevels.find((option) => option.id === formFieldValue.level_id) || formFieldValue.level_id || null}
-                                   className="w-100"
-                                   onChange={handleLevelChange}
-                                   renderInput={(params) => <TextField {...params} label="Select levels"/>}
-                               />
-                           </div>
-                           <div className="mt-2">
-                               <Autocomplete
-                                   className="w-100"
-                                   multiple
-                                   options={countryStates}
-                                   getOptionLabel={(option) => option?.name || ""}
-                                   getOptionValue={(option) => option?.id || ""}
-                                   value={formFieldValue.state_obj}
-                                   onChange={handleStateChange}
-                                   renderInput={(params) => <TextField {...params} label={`Select State`}/>}
-                               />
-                           </div>
-                       </div>
+                    { isEdit ?
+                        <div>
+                            <div className="mt-5">
+                                <Autocomplete
+                                    options={dataLevels}
+                                    getOptionLabel={(option) => option.name || ""}
+                                    getOptionValue={(option) => option.id || ""}
+                                    value={dataLevels.find((option) => option.id === formFieldValue.level_id) || formFieldValue.level_id || null}
+                                    className="w-100"
+                                    onChange={handleLevelChange}
+                                    renderInput={(params) => <TextField {...params} label="Select levels"/>}
+                                />
+                            </div>
+                            <div className="mt-2">
+                                <Autocomplete
+                                    className="w-100"
+                                    multiple
+                                    options={countryStates}
+                                    getOptionLabel={(option) => option?.name || ""}
+                                    getOptionValue={(option) => option?.id || ""}
+                                    value={formFieldValue.state_obj}
+                                    onChange={handleStateChange}
+                                    renderInput={(params) => <TextField {...params} label={`Select State`}/>}
+                                />
+                            </div>
+                        </div>
                         :
                         <div>
                             <div className="mt-5">
@@ -317,7 +305,7 @@ export default function CreateEvent() {
                     }
 
                     <div className="mt-2">
-                        {location.state ?
+                        { isEdit ?
                             <RadioGroup
                                 row
                                 aria-labelledby="demo-row-radio-buttons-group-label"
@@ -327,7 +315,7 @@ export default function CreateEvent() {
                             >
                                 <FormControlLabel value="open_event"
                                                   onChange={(event) => setFormField(event, 'event_type')}
-                                                  control={<Radio />} label="Open event" />
+                                                  control={<Radio/>} label="Open event"/>
                             </RadioGroup>
                             :
                             <RadioGroup
@@ -337,7 +325,7 @@ export default function CreateEvent() {
                             >
                                 <FormControlLabel value="open_event"
                                                   onChange={(event) => setFormField(event, 'event_type')}
-                                                  control={<Radio />} label="Open event" />
+                                                  control={<Radio/>} label="Open event"/>
                             </RadioGroup>
                         }
                     </div>
