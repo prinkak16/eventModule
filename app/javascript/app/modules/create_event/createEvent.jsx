@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import './createEvent.scss';
 import {
     Autocomplete,
@@ -79,11 +79,21 @@ export default function CreateEvent() {
     }
 
     const handleLevelChange = (event, value) => {
-        formFieldValue.level_id = value.id
+        setFormFieldValue((prevFormValues) => ({
+            ...prevFormValues,
+            level_id: value.id,
+        }));
     }
 
     const handleStateChange = (event, value) => {
-        formFieldValue.location_ids = value.map(obj => obj.id);
+        // Extract the selected location IDs from the 'value' array
+        const selectedLocationIds = value.map(location => location.id);
+
+        setFormFieldValue((prevFormValues) => ({
+            ...prevFormValues,
+            location_ids: selectedLocationIds,
+            state_obj: value,
+        }));
     }
 
 
@@ -137,6 +147,11 @@ export default function CreateEvent() {
             setEndDateCal(event.$d)
         } else {
             formFieldValue[field] = event.target.value;
+            const newValue = event.target.value;
+            setFormFieldValue((prevFormValues) => ({
+                ...prevFormValues,
+                [field]: newValue,
+            }));
         }
     }
 
@@ -176,6 +191,16 @@ export default function CreateEvent() {
         CreateEvents()
     }
 
+    const fileInputRef = useRef(null);
+
+
+    const handleImageUploadClick = () => {
+        // Trigger the input[type="file"] element when the image is clicked
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
     const navigateToHome = () => {
         navigate(
             {
@@ -201,7 +226,9 @@ export default function CreateEvent() {
                 <div className="event-create-form-bg">
                         <TextField id="outlined-basic"
                                    onChange={(event) => setFormField(event, 'event_title')}
-                                   label="Event title" variant="outlined" className="w-100"/>
+                                   label="Event title" variant="outlined" className="w-100"
+                                   value={formFieldValue.event_title}
+                        />
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
                             <div className="d-flex justify-content-between">
@@ -248,8 +275,8 @@ export default function CreateEvent() {
                                 :
                                 <></>
                             }
-                            <img src={image ? image : imgDefault} alt="upload image" className="preview-image"/>
-                            <input type="file" className="file-input" onChange={handleImagesChange}/>
+                            <img src={image ? image : imgDefault} alt="upload image" className="preview-image"  onClick={handleImageUploadClick}/>
+                            <input type="file" className="file-input" onChange={handleImagesChange} ref={fileInputRef} />
                         </div>
                     </div>
                     { isEdit ?
@@ -328,8 +355,6 @@ export default function CreateEvent() {
                                                   control={<Radio/>} label="Open event"/>
                             </RadioGroup>
                         }
-                    </div>
-                    <div>
                     </div>
                 </div>
             </div>
