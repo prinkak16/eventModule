@@ -23,6 +23,8 @@ const HomeComponent = () => {
     const [hoveredEventId, setHoveredEventId] = useState()
     const [LeftMargin, setLeftMargin] = useState(0);
     const [loader, setLoader] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 3;
     const demoData = [
         {
             id: 1,
@@ -262,6 +264,14 @@ const HomeComponent = () => {
         );
     }
 
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentEvents = eventsList.slice(startIndex, endIndex);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
     return (
         <div className="home-main-container">
             {loader ?
@@ -330,8 +340,8 @@ const HomeComponent = () => {
             </div>
 
             <div className="events-container">
-                {eventsList.length > 0 ? <>
-                { eventsList.map((event) => (
+                {currentEvents.length > 0 ? <>
+                { currentEvents.map((event) => (
                     <div key={`${event.id}${event.name}`}>
                         <div className="event-list"
                              onMouseEnter={() => handleMouseEnter(event.id)}
@@ -430,7 +440,19 @@ const HomeComponent = () => {
                     </div>
                 }
             </div>
-
+            <div className="pagination">
+                {currentPage > 1 && (
+                    <span className="pagination-arrow" onClick={() => handlePageChange(currentPage - 1)}>
+      &lt; Previous
+    </span>
+                )}
+                <span className="pagination-page">Page {currentPage}</span>
+                {endIndex < eventsList.length && (
+                    <span className="pagination-arrow" onClick={() => handlePageChange(currentPage + 1)}>
+      Next &gt;
+    </span>
+                )}
+            </div>
         </div>
     );
 }
