@@ -79,11 +79,21 @@ export default function CreateEvent() {
     }
 
     const handleLevelChange = (event, value) => {
-        formFieldValue.level_id = value.id
+        setFormFieldValue((prevFormValues) => ({
+            ...prevFormValues,
+            level_id: value.id,
+        }));
     }
 
     const handleStateChange = (event, value) => {
-        formFieldValue.location_ids = value.map(obj => obj.id);
+        // Extract the selected location IDs from the 'value' array
+        const selectedLocationIds = value.map(location => location.id);
+
+        setFormFieldValue((prevFormValues) => ({
+            ...prevFormValues,
+            location_ids: selectedLocationIds,
+            state_obj: value,
+        }));
     }
 
 
