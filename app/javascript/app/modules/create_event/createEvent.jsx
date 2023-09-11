@@ -356,8 +356,6 @@ export default function CreateEvent() {
                             </RadioGroup>
                         }
                     </div>
-                    <div>
-                    </div>
                 </div>
             </div>
             <div className="submit-btn cursor-pointer" onClick={submit}>
