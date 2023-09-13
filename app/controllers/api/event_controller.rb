@@ -106,11 +106,11 @@ class Api::EventController < Api::ApplicationController
         end
         if event.event_form.blank?
           EventForm.create!(event_id: event.id, uuid: SecureRandom.uuid)
-          data = { event_id: event.id, form_uuid: event.event_form&.uuid, event_name: event.name, start_date: event.start_date, end_date: event.end_date, user: {name: current_user.name}, data_level: event.data_level&.name, event_state_ids: event.event_locations.pluck(:state_id)}
-          token = JWT.encode(data, ENV['JWT_SECRET_KEY'].present? ? ENV['JWT_SECRET_KEY'] : 'thisisasamplesecret')
-          redirect_data = "#{ENV['FORM_CREATE_URL']}?authToken=""&formToken=#{token}"
         end
-        render json: { success: true, message: "Event Submitted Successfully", redirect_data: redirect_data || '', event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil) }, status: 200
+        data = { eventId: event.id, formId: event.event_form&.uuid, eventName: event.name, eventStartDate: event.start_date, isFormCreator: true, eventEndDate: event.end_date, user: {name: current_user.name}, dataLevel: event.data_level&.name, eventStateIds: EventLocation.where(event_id: event.id).pluck(:state_id)}
+        token = JWT.encode(data, ENV['JWT_SECRET_KEY'].present? ? ENV['JWT_SECRET_KEY'] : 'thisisasamplesecret')
+        redirect_data = "#{ENV['FORM_CREATE_URL']}?authToken=""&formToken=#{token}"
+        render json: { success: true, message: "Event Submitted Successfully", redirect_data: redirect_data, event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
         raise ActiveRecord::Rollback
