@@ -126,14 +126,21 @@ export default function CreateEvent() {
                 'api/event/create', formData,
                 {
                     headers: {
-                        'content-type': 'multipart/form-data;'
+                        'content-type': 'multipart/form-data;',
+                        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
                     },
                 }
             );
             if (response.data.success) {
                 setLoader(false)
                 toast.success(response.data.message);
+                if(response.data.redirect_data) {
+                    window.location.href = response.data.redirect_data
+                }
                 navigateToHome()
+            } else {
+                setLoader(false)
+                toast.error(response.data.message);
             }
         } catch (error) {
             setLoader(false)

@@ -3,6 +3,8 @@ class Event < ApplicationRecord
   belongs_to :data_level
   has_many :event_locations, dependent: :destroy
   has_one_attached :image
+  has_one :event_form, dependent: :destroy
+  belongs_to :created_by, class_name: 'User'
   aasm(:event, column: 'status_aasm_state') do
     state :upcoming, initial: true
     state :active

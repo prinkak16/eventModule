@@ -1,7 +1,7 @@
 class Api::EventController < Api::ApplicationController
-  skip_before_action :verify_authenticity_token, only: :create_event
   require "net/https"
   require 'uri'
+  include ApplicationHelper
 
   def data_levels
     levels = DataLevel.select(:id, :name, :level_class)
@@ -98,13 +98,19 @@ class Api::EventController < Api::ApplicationController
         event.event_type = params[:event_type]
         event.start_date = params[:start_datetime].to_datetime
         event.end_date = params[:end_datetime].to_datetime
+        event.created_by_id = current_user&.id
         event.save!
         event.event_locations.destroy_all if event.event_locations.exists?
         locations.each do |location|
           EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
         end
-
-        render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil) }, status: 200
+        if event.event_form.blank?
+          EventForm.create!(event_id: event.id, uuid: SecureRandom.uuid)
+          data = { event_id: event.id, form_uuid: event.event_form&.uuid, event_name: event.name, start_date: event.start_date, end_date: event.end_date, user: {name: current_user.name}, data_level: event.data_level&.name, event_state_ids: event.event_locations.pluck(:state_id)}
+          token = JWT.encode(data, ENV['JWT_SECRET_KEY'].present? ? ENV['JWT_SECRET_KEY'] : 'thisisasamplesecret')
+          redirect_data = "#{ENV['FORM_CREATE_URL']}?authToken=""&formToken=#{token}"
+        end
+        render json: { success: true, message: "Event Submitted Successfully", redirect_data: redirect_data || '', event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
         raise ActiveRecord::Rollback
@@ -138,5 +144,22 @@ class Api::EventController < Api::ApplicationController
     !uri.host.nil?
   rescue URI::InvalidURIError
     false
+  end
+
+  def login_user_detail
+    data = {
+      name: current_user&.name || '',
+      email: current_user&.email || '',
+      phone_number: current_user&.phone_number || '',
+      photo: current_user&.sso_payload['avatar'] || '',
+      logout_url: ENV['SIGN_OUT_URL']
+    }
+    render json: {
+      data: data,
+      message: "User detail",
+      success: true
+    }, status: 200
+  rescue StandardError => e
+    render json: { success: false, message: e.message }, status: 400
   end
 end

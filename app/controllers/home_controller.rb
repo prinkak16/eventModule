@@ -1,5 +1,6 @@
 class HomeController < ApplicationController
-  #before_action :authenticate_user_permission
+  protect_from_forgery with: :null_session
+  before_action :authenticate_user
   def index
   end
 end
