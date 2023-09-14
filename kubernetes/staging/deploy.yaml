@@ -58,7 +58,7 @@ spec:
             - exec
           image: gcr.io/bjp-saral/github.com/jarvisconsulting/event-module
           imagePullPolicy: Always
-          name: event-module-config-staging-sidekiq
+          name: event-module-staging-sidekiq
           resources:
             limits:
               cpu: 2000m
@@ -68,11 +68,21 @@ spec:
               memory: 1024Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+        - name: redis
+          image: redis:7.0.4
+          imagePullPolicy: Always  
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: { }
       terminationGracePeriodSeconds: 30
+      nodeSelector:
+        cloud.google.com/gke-nodepool: staging
+      tolerations:
+        - key: "app"
+          operator: "Equal"
+          value: "staging"
+          effect: "NoSchedule"
 
 ---
 
