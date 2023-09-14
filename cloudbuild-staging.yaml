@@ -54,16 +54,16 @@ options:
   substitutionOption: ALLOW_LOOSE
   machineType: 'N1_HIGHCPU_8'
 substitutions:
-  _K8S_APP_NAME: jumpstart-temp
+  _K8S_APP_NAME: event-module-staging
   _GKE_CLUSTER: saral-cluster
   _OUTPUT_BUCKET_PATH: bjp-saral_cloudbuild/deploy
   _DOCKERFILE_DIR: ''
   _K8S_ANNOTATIONS: gcb-trigger-id=770b733e-24d1-4e1d-838a-f8af667d4987
   _K8S_LABELS: ''
-  _IMAGE_NAME: gcr.io/bjp-saral/github.com/jarvisconsulting/jumpstart
+  _IMAGE_NAME: gcr.io/bjp-saral/github.com/jarvisconsulting/event-module
   _DOCKERFILE_NAME: Dockerfile
-  _K8S_NAMESPACE: jumpstart
-  _K8S_YAML_PATH: kubernetes/temp/
+  _K8S_NAMESPACE: common
+  _K8S_YAML_PATH: kubernetes/staging/
   _GKE_LOCATION: asia-south1-c
 tags:
   - gcp-cloud-build-deploy
