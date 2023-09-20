@@ -14,7 +14,7 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 import {toast} from 'react-toastify';
 import axios from "axios";
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate,Link} from "react-router-dom";
 import Loader from "react-js-loader";
 
 
@@ -222,9 +222,9 @@ export default function CreateEvent() {
                 :
                 <></>
             }
-            <div className="container mt-5">
+            <div className="container mt-5 container-adjust">
                 <div className="event-path">
-                    <h6>Events /</h6>
+                    <h6><Link to="/">Events</Link>/</h6>
                     <h6> Create an Event</h6>
                 </div>
                 <h3 className="font-weight-300">Create an Event</h3>

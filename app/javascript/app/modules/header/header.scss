@@ -9,9 +9,10 @@
 }
 .header-bg {
   box-shadow: 0 2px 20px rgb(0 0 0 / 15%);
-  display: flex;
+  display: flex !important;
+  background-color: white !important;
   justify-content: space-between;
-  position: fixed;
+  position: fixed !important;
   height: 80px;
   top: 0;
   width: 100%;
