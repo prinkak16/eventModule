@@ -18,9 +18,9 @@ function App() {
     return (
         <>
             <ToastContainer/>
-            {/*<Header>*/}
+
             <HeaderBar/>
-            {/*</Header>*/}
+
             <Routes>
                 <Route path='/*' element={<Navigate to="/"/>}/>
                 <Route path='/' element={<HomeComponent/>}/>
