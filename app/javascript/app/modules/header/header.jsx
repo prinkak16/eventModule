@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { Toolbar, Select, MenuItem, Icon } from '@material-ui/core';
 import './header.scss';
-import {redirect, useNavigate} from "react-router-dom"; // Import your CSS file
+import {Link, redirect, useNavigate} from "react-router-dom"; // Import your CSS file
 
 const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName = 'Ram Avtar' }) => {
     const bjpLogo = 'https://storage.googleapis.com/public-saral/public_document/BJP-logo.png';
@@ -30,8 +30,10 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
         <Toolbar className="header-bg" id="header">
 
             <div className="left-header-container">
+                <Link to="/">
                 <img src={bjpLogo} alt="" className="header-img" />
                 <span className="navbar-header-title"> भारतीय जनता पार्टी </span>
+                    </Link>
             </div>
             {!isSaralUser && (
                 <>

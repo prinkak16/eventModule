@@ -11,6 +11,9 @@ import dayjs from "dayjs";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen,faArchive, faEye } from '@fortawesome/free-solid-svg-icons';
 import Loader from "react-js-loader";
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchIcon from '@mui/icons-material/Search';
+
 
 
 
@@ -287,11 +290,27 @@ const HomeComponent = () => {
                     </h1>
                     <span className="sub-heading">List view of all the Events</span>
                 </div>
-                <input onChange={filterData} className="search-input" placeholder="Search by Event Name"/>
+                <TextField
+                    onChange={filterData}
+                    className="search-input"
+                    placeholder="Search by Event Name"
+                    variant="outlined"
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+
                 <button
                     className='dynamic-form-submit-button'
                     onClick={addEvent}>
-                    Add Event
+                        <div style={{display:'flex',gap:'8px'}}>
+                            <span>+</span>
+                            <span>Add Event</span>
+                        </div>
                 </button>
             </div>
 
@@ -352,12 +371,8 @@ const HomeComponent = () => {
                                     <img className="event-photo" src={event.image_url ? event.image_url : imgDefault} />
                                 </div>
                                 <div className="event-header-name">
-                                    <h2>
-                                        {event.name}
-                                    </h2>
-                                    <span className="event-sub-header">
-                                     Level : {event.data_level}
-                                </span>
+                                    <h2 className='event-header-name-ellipsis'>{event.name}</h2>
+                                    <span className="event-sub-header">Level : {event.data_level}</span>
                                 </div>
                                 <div className={event.status.class_name}>
                                 <span>

@@ -10,17 +10,17 @@ body {
 
 .home-main-container {
   padding: 0 8rem 0 8rem;
-  margin-top: 1rem;
+  margin-top: 10rem;
 }
 
 .home-search-div {
   display: flex;
   align-items: flex-end;
-  gap: 3rem;
-
+  gap: 2rem;
 }
 
 .event-header {
+  flex: 3;
   width: 100%;
 }
 
@@ -31,29 +31,37 @@ body {
 
 
 .search-input {
-  width: 80%;
-  border: 0.5px solid #d3cbcb;
+  flex: 6;
   border-radius: 8px;
   padding-left: 0.5rem;
-  height: 30px; /* Adjust the height as needed */
+  transition: none !important;
+}
+.css-1q6at85-MuiInputBase-root-MuiOutlinedInput-root{
+  height:40px;
 }
 
+.search-input:focus {
+  border-color: gray !important;
+  outline: none !important;
+}
 
 .search-input::placeholder {
   color: rgba(40, 38, 34, 0.3);
 }
 
-
 .dynamic-form-submit-button{
   display: flex !important;
-  width: 20%;
-  border-radius: 30px !important;
+  width: 172px;
+  height: 40px;
+  border-radius: 100px !important;
   text-transform: capitalize !important;
   justify-content: center !important;
   background: #FF9559 !important;
   font-weight: 600;
   color: #FFFFFF;
   border: none;
+  align-items: center;
+  gap: 8px !important;
 }
 
 .filters-container-main {
@@ -61,34 +69,39 @@ body {
   margin-top: 2rem;
   border-radius: 1rem;
   padding-bottom: 2rem;
+
 }
 
 .filters-container {
   display: flex;
-  gap: 7rem;
+  gap: 20rem;
   padding: 1rem;
   align-items: flex-end;
+  margin-right: 24px;
 }
 
 .dynamic-filters {
   width: 20rem;
+
 }
 
 .filters-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 3rem;
-  margin-right: 10%;
+  margin-right: 40px;
 }
 
 .clear-btn {
   width: 7rem;
   background: #F3F3F3;
+  border-radius: 100px;
 }
 
 .apply-btn {
   width: 7rem;
   background: #4861AA;
+  border-radius: 100px;
 }
 
 .events-container {
@@ -157,6 +170,9 @@ body {
   margin-top: 0.5rem;
   width: 200px; /* Adjust the width as needed */
   white-space: nowrap;
+
+}
+.event-header-name-ellipsis{
   overflow: hidden;
   text-overflow: ellipsis;
 }
