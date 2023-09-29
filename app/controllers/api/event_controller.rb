@@ -104,10 +104,12 @@ class Api::EventController < Api::ApplicationController
         locations.each do |location|
           EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
         end
+        form_id = event.event_form&.uuid
         if event.event_form.blank?
-          EventForm.create!(event_id: event.id, uuid: SecureRandom.uuid)
+          e_form = EventForm.create!(event_id: event.id, uuid: SecureRandom.uuid)
+          form_id = e_form&.uuid
         end
-        data = { eventId: event.id, formId: event.event_form&.uuid, eventName: event.name, eventStartDate: event.start_date, isFormCreator: true, eventEndDate: event.end_date, user: {name: current_user.name}, dataLevel: event.data_level&.name, eventStateIds: EventLocation.where(event_id: event.id).pluck(:state_id)}
+        data = { eventId: event.id, formId: form_id, eventName: event.name, eventStartDate: event.start_date, isFormCreator: true, eventEndDate: event.end_date, user: {name: current_user.name}, dataLevel: event.data_level&.name, eventStateIds: EventLocation.where(event_id: event.id).pluck(:state_id)}
         token = JWT.encode(data, ENV['JWT_SECRET_KEY'].present? ? ENV['JWT_SECRET_KEY'] : 'thisisasamplesecret')
         redirect_data = "#{ENV['FORM_CREATE_URL']}?authToken=#{ENV['AUTH_TOKEN_FOR_REDIRECTION']}&formToken=#{token}"
         render json: { success: true, message: "Event Submitted Successfully", redirect_data: redirect_data, event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil) }, status: 200
