@@ -1,0 +1,283 @@
+.hello {
+  font-size: 28px;
+  color: orange;
+  font-weight: bold;
+}
+body {
+  background-color: rgba(0, 0, 0, 0.03);
+  //color: rgba(0, 0, 0, 0.15);
+}
+
+.home-main-container {
+  padding: 0 8rem 0 8rem;
+  margin-top: 10rem;
+}
+
+.home-search-div {
+  display: flex;
+  align-items: flex-end;
+  gap: 2rem;
+}
+
+.event-header {
+  flex: 3;
+  width: 100%;
+}
+
+.sub-heading {
+  font-family: Mulish;
+  color: #868686;
+}
+
+
+.search-input {
+  flex: 6;
+  border-radius: 8px;
+  padding-left: 0.5rem;
+  transition: none !important;
+}
+.css-1q6at85-MuiInputBase-root-MuiOutlinedInput-root{
+  height:40px;
+}
+
+.search-input:focus {
+  border-color: gray !important;
+  outline: none !important;
+}
+
+.search-input::placeholder {
+  color: rgba(40, 38, 34, 0.3);
+}
+
+.dynamic-form-submit-button{
+  display: flex !important;
+  width: 172px;
+  height: 40px;
+  border-radius: 100px !important;
+  text-transform: capitalize !important;
+  justify-content: center !important;
+  background: #FF9559 !important;
+  font-weight: 600;
+  color: #FFFFFF;
+  border: none;
+  align-items: center;
+  gap: 8px !important;
+}
+
+.filters-container-main {
+  background: #FFFFFF;
+  margin-top: 2rem;
+  border-radius: 1rem;
+  padding-bottom: 2rem;
+
+}
+
+.filters-container {
+  display: flex;
+  gap: 15rem;
+  padding: 1rem;
+  align-items: flex-end;
+  margin-right: 24px;
+}
+
+.dynamic-filters {
+  width: 20rem;
+
+}
+
+.filters-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 3rem;
+  margin-right: 40px;
+}
+
+.clear-btn {
+  width: 7rem;
+  background: #F3F3F3;
+  border-radius: 100px;
+}
+
+.apply-btn {
+  width: 7rem;
+  background: #4861AA;
+  border-radius: 100px;
+}
+
+.events-container {
+  height: 50vh;
+  overflow: scroll;
+}
+
+.event-list {
+  height: 7.5rem;
+  width: 100%;
+  background: #FFFFFF;
+  margin-top: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid lightgrey;
+  padding: 1rem 0rem 1rem 1rem;
+  display: flex;
+}
+.cursor{
+  cursor: pointer;
+}
+
+.events-container::-webkit-scrollbar {
+  display: none;
+}
+
+.event-status {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+  width: 74px;
+  padding: 2px;
+  height: 24px;
+  border-radius: 50px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.event-status-heading {
+  display: block;
+  text-align: center;
+  border-radius: 1rem;
+}
+
+.status-active {
+  background: #CAF5D6;
+  color: #1D6B32;
+  width: 6rem;
+}
+
+.status-expired {
+  background: #FFC3C3;
+  color:#A82A2A;
+  width: 7rem;
+}
+
+.status-upcoming {
+  background: #DBE4FF;
+  color: #294188;
+  width: 7rem;
+}
+
+
+
+.event-photo {
+  width: 6rem;
+}
+
+.event-header-name {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+  width: 200px; /* Adjust the width as needed */
+  white-space: nowrap;
+
+}
+.event-header-name-ellipsis{
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-sub-header {
+  margin-top: -0.5rem;
+  display: block;
+  font-size: 1rem;
+  color: rgba(73, 69, 79, 0.6);
+}
+
+.hr {
+  width: 1rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.2);
+  height: 4rem;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.event-list-fir {
+  display: flex;
+  width: 40%;
+}
+
+.event-list-sec {
+  display: flex;
+  justify-content: flex-end;
+  width: 60%;
+}
+
+.event-list-item {
+  width: 25%;
+}
+
+.edit-bar {
+  display: flex;
+  justify-content: space-around;
+  width: 30rem;
+  background: #F3F3F3;
+  height: 8rem;
+  margin-top: -1.1rem;
+  padding: 1.7rem 0rem;
+}
+
+.edit-bar-sub-div {
+  display: grid;
+  text-align: center;
+}
+
+.edit-bar-imgage {
+  width: 4rem;
+  border-radius: 2rem;
+}
+
+.font1-2rem {
+  font-size: 1.2rem;
+}
+
+.no-event-data {
+  height: 10rem;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  display: flex;
+  font-size: 2rem;
+  font-family: revert;
+}
+.active-bg{
+  background-color: #CAF5D6;
+}
+.upcoming-bg{
+  background-color: #DBE4FF;
+}
+.expired-bg{
+  background-color: #FFC3C3;
+}
+
+.active-text{
+  color: #1D6B32;
+}
+.upcoming-text{
+  color: #294188;
+}
+.expired-text{
+  color: #A82A2A;
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.pagination-arrow {
+  cursor: pointer;
+  padding: 0.5rem;
+  margin: 0.2rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.pagination-page {
+  margin: 0 1rem;
+  font-weight: bold;
+}

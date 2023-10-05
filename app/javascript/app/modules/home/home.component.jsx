@@ -27,7 +27,7 @@ const HomeComponent = () => {
     const [LeftMargin, setLeftMargin] = useState(0);
     const [loader, setLoader] = useState(false)
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 3;
+    const itemsPerPage = 10;
     const demoData = [
         {
             id: 1,
