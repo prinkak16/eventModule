@@ -134,7 +134,6 @@ export default function CreateEvent() {
             if (response.data.success) {
                 setLoader(false)
                 toast.success(response.data.message);
-                debugger
                 window.location.href = response.data.event.create_form_url
                 navigateToHome()
             } else {
