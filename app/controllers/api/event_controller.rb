@@ -104,15 +104,8 @@ class Api::EventController < Api::ApplicationController
         locations.each do |location|
           EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
         end
-        form_id = event.event_form&.uuid
-        if event.event_form.blank?
-          e_form = EventForm.create!(event_id: event.id, uuid: SecureRandom.uuid)
-          form_id = e_form&.uuid
-        end
-        data = { eventId: event.id, formId: form_id, eventName: event.name, eventStartDate: event.start_date, isFormCreator: true, eventEndDate: event.end_date, user: {name: current_user.name}, dataLevel: event.data_level&.name, eventStateIds: EventLocation.where(event_id: event.id).pluck(:state_id)}
-        token = JWT.encode(data, ENV['JWT_SECRET_KEY'].present? ? ENV['JWT_SECRET_KEY'] : 'thisisasamplesecret')
-        redirect_data = "#{ENV['FORM_CREATE_URL']}?authToken=#{ENV['AUTH_TOKEN_FOR_REDIRECTION']}&formToken=#{token}"
-        render json: { success: true, message: "Event Submitted Successfully", redirect_data: redirect_data, event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil) }, status: 200
+        EventForm.create!(event_id: event.id, uuid: SecureRandom.uuid)
+        render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
         raise ActiveRecord::Rollback
@@ -123,13 +116,17 @@ class Api::EventController < Api::ApplicationController
 
   def event_list
     query_conditions = {}
+    # limit = params[:limit].present? ? params[:limit] : 10
+    # offset = params[:offset].present? ? params[:offset] : 0
     query_conditions[:start_date] = get_date_diff(params[:start_date].to_datetime) if params[:start_date].present?
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     query_conditions[:status_aasm_state] = params[:event_status] if params[:event_status].present?
     events = Event.where(query_conditions)
     events = events.joins(:event_locations).where(event_locations: {state_id: params[:state_id]}) if params[:state_id].present?
+    total = events.size
+    events = events
     render json: {
-      data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id]),
+      data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user),
       message: ['Event list'],
       success: true
     }, status: 200
