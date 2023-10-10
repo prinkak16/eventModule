@@ -9,13 +9,17 @@ body {
 }
 
 .home-main-container {
-  padding: 0 8rem 0 8rem;
+  padding: 0 8rem 10rem 8rem;
   margin-top: 10rem;
+  .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar{
+    align-items: baseline;
+    }
+    
 }
 
 .home-search-div {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 2rem;
 }
 
@@ -68,20 +72,21 @@ body {
   background: #FFFFFF;
   margin-top: 2rem;
   border-radius: 1rem;
-  padding-bottom: 2rem;
+  padding: 2rem 1rem;
 
 }
 
 .filters-container {
   display: flex;
-  gap: 20rem;
+  gap: 2rem;
   padding: 1rem;
   align-items: flex-end;
   margin-right: 24px;
 }
 
 .dynamic-filters {
-  width: 20rem;
+  // width: 20rem;
+  flex-grow: 1;
 
 }
 
@@ -105,8 +110,7 @@ body {
 }
 
 .events-container {
-  height: 50vh;
-  overflow: scroll;
+  
 }
 
 .event-list {
@@ -118,6 +122,8 @@ body {
   border: 1px solid lightgrey;
   padding: 1rem 0rem 1rem 1rem;
   display: flex;
+  position: relative;
+  overflow: hidden;
 }
 
 .events-container::-webkit-scrollbar {
@@ -162,7 +168,8 @@ body {
 
 
 .event-photo {
-  width: 6rem;
+  width: 6.1rem;
+  height: 5.2rem;;
 }
 
 .event-header-name {
@@ -196,7 +203,18 @@ body {
   display: flex;
   width: 40%;
  }
+ .visible-divs {
+  transition: transform 0.7s;
+}
 
+.event-list:hover .visible-divs{
+  transform: translateX(-20%);
+
+}
+
+.event-list:hover .edit-bar{
+display: flex;
+}
 .event-list-sec {
   display: flex;
   justify-content: flex-end;
@@ -208,13 +226,15 @@ body {
 }
 
 .edit-bar {
-  display: flex;
+  display: none;
   justify-content: space-around;
   width: 30rem;
   background: #F3F3F3;
   height: 8rem;
   margin-top: -1.1rem;
   padding: 1.7rem 0rem;
+  position: relative;
+  right:0;
 }
 
 .edit-bar-sub-div {
@@ -261,10 +281,11 @@ body {
 }
 .pagination {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: baseline;
+  justify-content: flex-end;
   margin-top: 1rem;
 }
+
 
 .pagination-arrow {
   cursor: pointer;
