@@ -25,7 +25,7 @@ const HomeComponent = () => {
   const [page, setPage] = useState(0);
   const itemsPerPage = 10;
   const [totalCount, setTotalCount] = useState(0);
-  const[clearFilter,setClearFilter]=useState(false);
+  const [clearFilter, setClearFilter] = useState(false);
 
   const demoData = [
     {
@@ -178,7 +178,6 @@ const HomeComponent = () => {
       event_status_id: "",
     });
 
-
     setClearFilter(!clearFilter);
   };
 
@@ -240,7 +239,7 @@ const HomeComponent = () => {
 
   useEffect(() => {
     getEventsList();
-  }, [page,clearFilter]);
+  }, [page, clearFilter]);
 
   const getFilterEvents = () => {
     getEventsList();
@@ -251,8 +250,6 @@ const HomeComponent = () => {
       .toLowerCase()
       .replace(/(?:^|\s)\S/g, (char) => char.toUpperCase());
   }
-
-
 
   function EditEvent(event) {
     navigate(
@@ -267,19 +264,16 @@ const HomeComponent = () => {
     );
   }
 
- 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  const disableClearFilterButton=()=>{
-    for(let key in filtersFieldValue){
-      if(filtersFieldValue[key]!=="")
-      return false;
+  const disableClearFilterButton = () => {
+    for (let key in filtersFieldValue) {
+      if (filtersFieldValue[key] !== "") return false;
     }
     return true;
-
-  }
+  };
 
   return (
     <div className="home-main-container">
@@ -380,14 +374,8 @@ const HomeComponent = () => {
           <>
             {allEventList.map((event) => (
               <div key={`${event.id}${event.name}`}>
-                <div
-                  className="event-list"
-                 
-                >
-                  <div
-                    className="event-list-fir visible-divs"
-
-                  >
+                <div className="event-list">
+                  <div className="event-list-fir visible-divs">
                     <div>
                       <img
                         className="event-photo"
@@ -431,10 +419,7 @@ const HomeComponent = () => {
                     </div>
                   </div>
 
-                  <div
-                    className="edit-bar"
-                   
-                  >
+                  <div   className="edit-bar">
                     <div
                       className="edit-bar-sub-div cursor-pointer"
                       onClick={() => EditEvent(event)}
