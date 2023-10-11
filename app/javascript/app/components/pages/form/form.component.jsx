@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import "./home.styles.scss";
+import "./form.module.scss";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Autocomplete, TablePagination, TextField } from "@mui/material";
+import { Autocomplete, Pagination, TextField } from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
@@ -14,19 +14,18 @@ import Loader from "react-js-loader";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 
-const HomeComponent = () => {
+const FormComponent = () => {
   const imgDefault =
     "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
   const navigate = useNavigate();
   const [eventsList, setEventsList] = useState([]);
   const [allEventList, setAllEventList] = useState([]);
-
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(1);
   const [loader, setLoader] = useState(false);
-  const [page, setPage] = useState(0);
-  const itemsPerPage = 10;
-  const [totalCount, setTotalCount] = useState(0);
-  const [clearFilter, setClearFilter] = useState(false);
-
+  const rowsPerPage = 10;
+  const nextBtn =
+    "https://storage.googleapis.com/public-saral/public_document/button.png";
   const demoData = [
     {
       id: 1,
@@ -87,7 +86,6 @@ const HomeComponent = () => {
     let data = [];
     if (filter) {
       const transformedFilter = convertSnackCase(filter);
-
       data =
         filtersFieldData[
           filter === "Event Status"
@@ -97,7 +95,6 @@ const HomeComponent = () => {
     }
     return data;
   };
-
   const convertSnackCase = (value) => {
     return value.replace(/\s+/g, "_").toLowerCase();
   };
@@ -133,7 +130,6 @@ const HomeComponent = () => {
       setFieldvalue(filterType, valueId);
     }
   };
-
   const callApis = (fetchType, value) => {
     for (let i = 0; i < filterList.length; i++) {
       const filter = filterList[i];
@@ -161,7 +157,6 @@ const HomeComponent = () => {
       [`${transformedType}_id`]: value,
     }));
   };
-
   const setDate = (date) => {
     setFiltersFieldValue({ ...filtersFieldValue, date });
   };
@@ -177,8 +172,6 @@ const HomeComponent = () => {
       state_id: "",
       event_status_id: "",
     });
-
-    setClearFilter(!clearFilter);
   };
 
   const data = [
@@ -213,8 +206,8 @@ const HomeComponent = () => {
       filtersFieldValue.level_id
     }&state_id=${filtersFieldValue.state_id}&event_status=${
       filtersFieldValue.event_status_id
-    }&limit=${itemsPerPage}&offset=${itemsPerPage * page}`;
-    let levels = await fetch(`api/event/event_list?` + params, {
+    }&limit=${rowsPerPage}&offset=${rowsPerPage * (page - 1)}`;
+    let resopnse = await fetch(`api/event/event_list?` + params, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -222,8 +215,8 @@ const HomeComponent = () => {
         Authorization: "",
       },
     });
-    const res = await levels.json();
-    console.log("res is ", res);
+    const res = await resopnse.json();
+    console.log(res);
     if (res.success) {
       setEventsList(res.data);
       setAllEventList(res.data);
@@ -231,7 +224,7 @@ const HomeComponent = () => {
     } else {
       toast.error(`Please enter ${res.message}`, {
         position: "top-center",
-        autoClose: 2000,
+        autoClose: false,
         theme: "colored",
       });
     }
@@ -239,10 +232,14 @@ const HomeComponent = () => {
 
   useEffect(() => {
     getEventsList();
-  }, [page, clearFilter]);
+  }, [page]);
 
   const getFilterEvents = () => {
     getEventsList();
+  };
+
+  const submit = (url) => {
+    window.location.href = url;
   };
 
   function toProperCase(inputString) {
@@ -251,28 +248,8 @@ const HomeComponent = () => {
       .replace(/(?:^|\s)\S/g, (char) => char.toUpperCase());
   }
 
-  function EditEvent(event) {
-    navigate(
-      {
-        pathname: "/create_event",
-      },
-      {
-        state: {
-          event: event,
-        },
-      }
-    );
-  }
-
-  const handleChangePage = (event, newPage) => {
+  const handlePageChange = (e, newPage) => {
     setPage(newPage);
-  };
-
-  const disableClearFilterButton = () => {
-    for (let key in filtersFieldValue) {
-      if (filtersFieldValue[key] !== "") return false;
-    }
-    return true;
   };
 
   return (
@@ -294,7 +271,6 @@ const HomeComponent = () => {
           <span className="sub-heading">List view of all the Events</span>
         </div>
         <TextField
-          onChange={filterData}
           className="search-input"
           placeholder="Search by Event Name"
           variant="outlined"
@@ -306,67 +282,6 @@ const HomeComponent = () => {
             ),
           }}
         />
-
-        <button className="dynamic-form-submit-button" onClick={addEvent}>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <span>+</span>
-            <span>Add Event</span>
-          </div>
-        </button>
-      </div>
-
-      <div className="filters-container-main">
-        <div className="filters-container">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Start Date"
-              onChange={setDate}
-              value={
-                filtersFieldValue.date ? dayjs(filtersFieldValue.date) : null
-              }
-              slotProps={{
-                textField: {
-                  readOnly: true,
-                },
-              }}
-            />
-          </LocalizationProvider>
-          {filterList &&
-            filterList.map((filter, index) => (
-              <div className="dynamic-filters">
-                <Autocomplete
-                  key={`${filter}${index}`}
-                  className="w-100"
-                  value={
-                    getOptions(filter).find(
-                      (value) => value.id === parseInt(fieldValue(filter))
-                    ) || null
-                  }
-                  options={getOptions(filter)}
-                  getOptionLabel={(option) => option.name || ""}
-                  onChange={handleFilterChange(filter, index)}
-                  renderInput={(params) => (
-                    <TextField {...params} label={`Select ${filter}`} />
-                  )}
-                />
-              </div>
-            ))}
-        </div>
-        <div className="filters-buttons">
-          <button
-            onClick={clearFiltersValue}
-            className="btn btn-light clear-btn"
-            disabled={disableClearFilterButton()}
-          >
-            Clear
-          </button>
-          <button
-            onClick={getFilterEvents}
-            className="btn btn-primary apply-btn"
-          >
-            Apply
-          </button>
-        </div>
       </div>
 
       <div className="events-container">
@@ -374,8 +289,11 @@ const HomeComponent = () => {
           <>
             {allEventList.map((event) => (
               <div key={`${event.id}${event.name}`}>
-                <div className="event-list">
-                  <div className="event-list-fir visible-divs">
+                <div
+                  className="event-list submit-btn cursor"
+                  onClick={() => submit(event.submit_form_url)}
+                >
+                  <div className="event-list-fir ">
                     <div>
                       <img
                         className="event-photo"
@@ -395,8 +313,7 @@ const HomeComponent = () => {
                     </div>
                     <div></div>
                   </div>
-
-                  <div className="event-list-sec visible-divs">
+                  <div className="event-list-sec">
                     <div className="hr"></div>
                     <div className="event-list-item">
                       <h5>States</h5>
@@ -418,41 +335,6 @@ const HomeComponent = () => {
                       </span>
                     </div>
                   </div>
-
-                  <div   className="edit-bar">
-                    <div
-                      className="edit-bar-sub-div cursor-pointer"
-                      onClick={() => EditEvent(event)}
-                    >
-                      <FontAwesomeIcon
-                        className="edit-bar-imgage"
-                        size="2x"
-                        style={{ color: "blue" }}
-                        icon={faPen}
-                      />
-                      <span className="font1-2rem">Edit</span>
-                    </div>
-
-                    <div className="edit-bar-sub-div cursor-pointer">
-                      <FontAwesomeIcon
-                        className="edit-bar-imgage"
-                        size="2x"
-                        style={{ color: "orange" }}
-                        icon={faArchive}
-                      />
-                      <span className="font1-2rem">Archive</span>
-                    </div>
-
-                    <div className="edit-bar-sub-div cursor-pointer">
-                      <FontAwesomeIcon
-                        className="edit-bar-imgage"
-                        size="2x"
-                        style={{ color: "lightgreen" }}
-                        icon={faEye}
-                      />
-                      <span className="font1-2rem">View</span>
-                    </div>
-                  </div>
                 </div>
               </div>
             ))}
@@ -462,19 +344,16 @@ const HomeComponent = () => {
         )}
       </div>
       <div className="pagination">
-        <TablePagination
-          style={{ display: "flex", alignItems: "baseline" }}
-          component="div"
-          count={totalCount}
+        <Pagination
+          count={Math.ceil(totalCount / 10)}
           page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={itemsPerPage}
-          labelRowsPerPage=""
-          rowsPerPageOptions=""
+          onChange={handlePageChange}
+          variant="outlined"
+          shape="rounded"
         />
       </div>
     </div>
   );
 };
 
-export default HomeComponent;
+export default FormComponent;
