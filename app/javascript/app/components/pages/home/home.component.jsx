@@ -84,7 +84,7 @@ const HomeComponent = () => {
 
   const addEvent = () => {
     navigate({
-      pathname: "/create_event",
+      pathname: "/event/create_event",
     });
   };
 
@@ -259,7 +259,7 @@ const HomeComponent = () => {
   function EditEvent(event) {
     navigate(
       {
-        pathname: "/edit_event",
+        pathname: "/event/edit_event",
       },
       {
         state: {

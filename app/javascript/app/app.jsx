@@ -24,12 +24,13 @@ function App() {
       <HeaderBar />
 
       <Routes>
-        <Route path="/*" element={<Navigate to="/" />} />
         <Route path="/" element={<HomeComponent />} />
+        <Route path="/events" element={<HomeComponent />} />
         <Route path="/form" element={<FormComponent />} />
 
-        <Route path="/create_event" element={<CreateEvent />} />
-        <Route path="/edit_event" element={<EditEvent />} />
+        <Route path="/event/create_event" element={<CreateEvent />} />
+        <Route path="/event/edit_event" element={<EditEvent />} />
+        <Route path="/*" element={<Navigate to="/" />} />
       </Routes>
     </>
   );

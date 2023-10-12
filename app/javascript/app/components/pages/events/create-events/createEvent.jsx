@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import Loader from "react-js-loader";
+import MyBreadcrumbs from "../../../shared/breadcrumbs/Breadcrumbs";
 
 export default function CreateEvent({ isEdit, editData }) {
   console.log("edit data i s", editData);
@@ -41,7 +42,7 @@ export default function CreateEvent({ isEdit, editData }) {
     event_title: "",
     start_datetime: "",
     end_datetime: "",
-    level_id: "",
+    level_id: 1,
     location_ids: [],
     event_type: "",
     img: "",
@@ -228,10 +229,7 @@ export default function CreateEvent({ isEdit, editData }) {
       )}
       <div className="mt-5 container-adjust">
         <div className="event-path">
-          <h6>
-            <Link to="/">Events</Link>/
-          </h6>
-          <h6>{isEdit ? "Edit the Event" : "Create an Event"}</h6>
+          <MyBreadcrumbs />
         </div>
         <h3 className="font-weight-300">
           {isEdit ? "Edit the Event" : "Create an Event"}
@@ -330,9 +328,7 @@ export default function CreateEvent({ isEdit, editData }) {
                     height: "40px",
                     width: "120px",
                     background:
-                      item?.id === formFieldValue?.level_id
-                        ? "#163560"
-                        : "#E3ECFF",
+                      item?.id === formFieldValue?.level_id ? "#163560" : "",
                     color:
                       item?.id === formFieldValue?.level_id ? "white" : "black",
                   }}
@@ -385,7 +381,7 @@ export default function CreateEvent({ isEdit, editData }) {
 
       <div className="submit-btn cursor-pointer">
         {!isEdit && (
-          <div className="submit-btn" onClick={submit}>
+          <div className="next-btn" onClick={submit}>
             <h4>Next</h4>
             <img className="next-btn" src={nextBtn} />
           </div>
