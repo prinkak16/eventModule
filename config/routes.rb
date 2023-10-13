@@ -19,7 +19,10 @@ Rails.application.routes.draw do
       get 'event/state_zones' => 'event#state_zones'
       post 'event/create' => 'event#create_event'
       get 'event/event_list' => 'event#event_list'
+      get 'event/event_page' => 'event#event_page'
       get 'event/login_user_detail' => 'event#login_user_detail'
+      get 'event_submission/redirect_to_form' => 'event_submission#redirect_to_form'
+
   end
   #noinspection RailsParamDefResolve
   match '*path', to: 'home#index', via: :all, constraints: lambda { |req|

@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import "./form.styles.scss"
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import {DemoContainer} from '@mui/x-date-pickers/internals/demo';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import {Autocomplete, TextField} from "@mui/material";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router";
 import dayjs from "dayjs";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen,faArchive, faEye } from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faPen, faArchive, faEye} from '@fortawesome/free-solid-svg-icons';
 import Loader from "react-js-loader";
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
@@ -41,21 +41,21 @@ const FormComponent = () => {
             name: "expired"
         }
     ]
-    const filterList = ["Level","State", "Event Status"]
+    const filterList = ["Level", "State", "Event Status"]
     const [filtersFieldData, setFiltersFieldData] = useState({
         levels: [],
         states: [],
         event_status: demoData,
     });
     const [filtersFieldValue, setFiltersFieldValue] = useState({
-        date : '',
+        date: '',
         level_id: '',
         state_id: '',
         event_status_id: '',
     });
 
 
-    async function getApisValue(filerType,apiPath) {
+    async function getApisValue(filerType, apiPath) {
         setLoader(true);
         let levels = await fetch(`api/event/${apiPath}`, {
             method: 'GET',
@@ -68,7 +68,7 @@ const FormComponent = () => {
         setLoader(false)
         const res = await levels.json();
         const transformedFilter = convertSnackCase(filerType)
-        const key = filerType === 'Event Status' ? transformedFilter :`${transformedFilter}s`
+        const key = filerType === 'Event Status' ? transformedFilter : `${transformedFilter}s`
         setFiltersFieldData((prevState) => ({
             ...prevState,
             [key]: res.data
@@ -88,7 +88,7 @@ const FormComponent = () => {
         let data = []
         if (filter) {
             const transformedFilter = convertSnackCase(filter)
-            data = filtersFieldData[filter === 'Event Status' ? transformedFilter :`${transformedFilter}s`
+            data = filtersFieldData[filter === 'Event Status' ? transformedFilter : `${transformedFilter}s`
                 ]
         }
         return data
@@ -100,7 +100,7 @@ const FormComponent = () => {
     const fieldValue = (filter) => {
         if (filter) {
             const transformedFilter = convertSnackCase(filter)
-            return  filtersFieldValue[`${transformedFilter}_id`]
+            return filtersFieldValue[`${transformedFilter}_id`]
         }
     }
 
@@ -121,16 +121,16 @@ const FormComponent = () => {
 
     };
 
-    const handleFilterChange = (filterType,index) => (event, value) => {
+    const handleFilterChange = (filterType, index) => (event, value) => {
         if (filterType) {
             let valueId = value.id
-            if (filterType === 'Event Status'){
+            if (filterType === 'Event Status') {
                 valueId = value.name
             }
-            setFieldvalue(filterType,valueId)
+            setFieldvalue(filterType, valueId)
         }
     }
-    const callApis = (fetchType,value) => {
+    const callApis = (fetchType, value) => {
         for (let i = 0; i < filterList.length; i++) {
             const filter = filterList[i]
             let apiPath = ''
@@ -141,7 +141,7 @@ const FormComponent = () => {
                 apiPath = `states`
             }
             if (filter !== 'Event Status') {
-                getApisValue(filter,apiPath)
+                getApisValue(filter, apiPath)
             }
         }
     }
@@ -159,16 +159,16 @@ const FormComponent = () => {
 
     }
     const setDate = (date) => {
-        setFiltersFieldValue({ ...filtersFieldValue, date });
+        setFiltersFieldValue({...filtersFieldValue, date});
     };
 
     const clearFiltersValue = () => {
         for (let i = 0; i < filterList.length; i++) {
             const filter = filterList[i]
-            setFieldvalue(filter,'')
+            setFieldvalue(filter, '')
         }
         setFiltersFieldValue({
-            date : '',
+            date: '',
             level_id: '',
             state_id: '',
             event_status_id: ''
@@ -177,14 +177,15 @@ const FormComponent = () => {
 
 
     const data = [{
-        name:"Mann Ki Baat",
-        level:"state",
-        states:[{id:1,name:"up"},
-            {id:2,name:"assam"},
-            {id:3,name:"delhi"}],
-        status:"Active",
-        startDate:'Thu Aug 03 2023 15:12:30 GMT+0530 (India Standard Time)',
-        endDate:'Fri Aug 04 2023 15:12:30 GMT+0530 (India Standard Time)'}]
+        name: "Mann Ki Baat",
+        level: "state",
+        states: [{id: 1, name: "up"},
+            {id: 2, name: "assam"},
+            {id: 3, name: "delhi"}],
+        status: "Active",
+        startDate: 'Thu Aug 03 2023 15:12:30 GMT+0530 (India Standard Time)',
+        endDate: 'Fri Aug 04 2023 15:12:30 GMT+0530 (India Standard Time)'
+    }]
 
     function convertToDate(dateString) {
         // Create a new Date object using the provided date string
@@ -198,7 +199,7 @@ const FormComponent = () => {
         return newDate;
     }
 
-    async function getEventsList () {
+    async function getEventsList() {
         const params = `start_date=${filtersFieldValue.date}&level_id=${filtersFieldValue.level_id}&state_id=${filtersFieldValue.state_id}&event_status=${filtersFieldValue.event_status_id}`
         let resopnse = await fetch(`api/event/event_list?` + params, {
             method: 'GET',
@@ -209,14 +210,12 @@ const FormComponent = () => {
             }
 
         });
-        debugger
         const res = await resopnse.json();
         console.log(res);
         if (res.success) {
             setEventsList(res.data)
             setAllEventList(res.data)
-        }
-        else {
+        } else {
             toast.error(`Please enter ${res.message}`, {
                 position: "top-center",
                 autoClose: false,
@@ -247,9 +246,14 @@ const FormComponent = () => {
     const currentEvents = eventsList.slice(startIndex, endIndex);
 
     const handlePageChange = (page) => {
-        debugger
         setCurrentPage(page);
     };
+    const tabClickHandler = (event_id) => {
+        console.log('submit api fetched');
+        fetch('/api/event_submission/redirect_to_form?event_id=' + event_id).then(res => res.json()).then(
+            data => window.location.href = data.data.redirect_url
+        )
+    }
 
     return (
         <div className="home-main-container">
@@ -331,7 +335,7 @@ const FormComponent = () => {
                 {currentEvents.length > 0 ? <>
                         { currentEvents.map((event) => (
                             <div key={`${event.id}${event.name}`}>
-                                <div className="event-list submit-btn cursor" onClick={() => submit(event.submit_form_url)}>
+                                <div className="event-list submit-btn cursor" onClick={() => tabClickHandler(event.id)}>
                                     <div className="event-list-fir"  style={{marginLeft: isHovered && event.id === hoveredEventId? `-${LeftMargin}rem` : ''}}>
                                         <div>
                                             <img className="event-photo" src={event.image_url ? event.image_url : imgDefault} />
