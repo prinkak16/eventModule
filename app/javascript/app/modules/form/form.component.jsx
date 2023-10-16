@@ -201,7 +201,7 @@ const FormComponent = () => {
 
     async function getEventsList() {
         const params = `start_date=${filtersFieldValue.date}&level_id=${filtersFieldValue.level_id}&state_id=${filtersFieldValue.state_id}&event_status=${filtersFieldValue.event_status_id}`
-        let resopnse = await fetch(`api/event/event_list?` + params, {
+        let resopnse = await fetch(`api/event/event_user_list?` + params, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json",
