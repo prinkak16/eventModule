@@ -23,6 +23,7 @@ const FormComponent = () => {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(1);
   const [loader, setLoader] = useState(false);
+  const [eventName, setEventName] = useState("");
   const rowsPerPage = 10;
   const nextBtn =
     "https://storage.googleapis.com/public-saral/public_document/button.png";
@@ -202,9 +203,11 @@ const FormComponent = () => {
   }
 
   async function getEventsList() {
-    const params = `start_date=${filtersFieldValue.date}&level_id=${
-      filtersFieldValue.level_id
-    }&state_id=${filtersFieldValue.state_id}&event_status=${
+    const params = `event_name=${eventName}&start_date=${
+      filtersFieldValue.date
+    }&level_id=${filtersFieldValue.level_id}&state_id=${
+      filtersFieldValue.state_id
+    }&event_status=${
       filtersFieldValue.event_status_id
     }&limit=${rowsPerPage}&offset=${rowsPerPage * (page - 1)}`;
     let resopnse = await fetch(`api/event/event_list?` + params, {
@@ -252,6 +255,17 @@ const FormComponent = () => {
     setPage(newPage);
   };
 
+  useEffect(() => {
+    let timer;
+    timer = setTimeout(() => {
+      getEventsList();
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [eventName]);
+
   return (
     <div className="home-main-container">
       {loader ? (
@@ -274,6 +288,8 @@ const FormComponent = () => {
           className="search-input"
           placeholder="Search by Event Name"
           variant="outlined"
+          value={eventName}
+          onChange={(e) => setEventName(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

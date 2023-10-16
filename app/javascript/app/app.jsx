@@ -5,7 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import "./app.scss";
-import { Navigate } from "react-router";
+import { Navigate, useParams } from "react-router";
 import HomeComponent from "./components/pages/home/home.component";
 import FormComponent from "./components/pages/form/form.component";
 
@@ -17,6 +17,8 @@ import Header from "./components/shared/header/header";
 import EditEvent from "./components/pages/events/edit-events/EditEvent";
 
 function App() {
+  const params = useParams();
+  console.log("param is ", params);
   return (
     <>
       <ToastContainer />
@@ -29,7 +31,7 @@ function App() {
         <Route path="/form" element={<FormComponent />} />
 
         <Route path="/event/create_event" element={<CreateEvent />} />
-        <Route path="/event/edit_event" element={<EditEvent />} />
+        <Route path="/event/edit_event/:id" element={<EditEvent />} />
         <Route path="/*" element={<Navigate to="/" />} />
       </Routes>
     </>

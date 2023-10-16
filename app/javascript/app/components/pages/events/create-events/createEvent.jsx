@@ -16,12 +16,19 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate, Link, useParams } from "react-router-dom";
 import Loader from "react-js-loader";
 import MyBreadcrumbs from "../../../shared/breadcrumbs/Breadcrumbs";
+import { createEvent } from "../../../../services/RestServices/Modules/EventServices/CreateEventServices";
+import {
+  getDataLevels,
+  getStates,
+} from "../../../../services/CommonServices/commonServices";
+import { ApiClient } from "../../../../services/RestServices/BaseRestServices";
 
 export default function CreateEvent({ isEdit, editData }) {
-  console.log("edit data i s", editData);
+  const param = useParams();
+
   const imgDefault =
     "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
   const imgCross =
@@ -35,9 +42,7 @@ export default function CreateEvent({ isEdit, editData }) {
   const [startDate, setStartDate] = useState();
 
   const [loader, setLoader] = useState(false);
-  // const [isEdit, setIsEdit] = useState(location.state);
 
-  // Form field values
   const [formFieldValue, setFormFieldValue] = useState({
     event_title: "",
     start_datetime: "",
@@ -65,22 +70,8 @@ export default function CreateEvent({ isEdit, editData }) {
       formFieldValue.location_ids = editData?.state_ids?.map((obj) => obj.id);
       formFieldValue.state_obj = editData.state_ids ?? [];
     }
-    getDataLevels();
-    getStates();
+    getAllData();
   }, []);
-
-  async function getDataLevels() {
-    let levels = await fetch("api/event/data_levels", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: "",
-      },
-    });
-    const res = await levels.json();
-    setDataLevels(res.data);
-  }
 
   const handleLevelChange = (event, value) => {
     setFormFieldValue((prevFormValues) => ({
@@ -100,18 +91,31 @@ export default function CreateEvent({ isEdit, editData }) {
     }));
   };
 
-  async function getStates() {
-    let states = await fetch("api/event/states", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: "",
-      },
-    });
-    const res = await states.json();
-    setCountryStates(res.data);
-  }
+  const getAllData = async () => {
+    console.log("get all data is called");
+    try {
+      const { data } = await getStates();
+      if (data?.success) {
+        setCountryStates(data?.data ?? []);
+      }
+
+      console.log("response by all states", data);
+    } catch (error) {
+      console.log("error is ", error);
+    }
+
+    try {
+      const dataLevelResponse = await getDataLevels();
+      if (dataLevelResponse?.data?.success) {
+        setDataLevels(dataLevelResponse?.data?.data);
+      }
+      console.log("data levels ", dataLevelResponse);
+    } catch (error) {
+      console.log("error is ", error);
+    }
+    // const data = await Promise.allSettled([getStates(), getDataLevels()]);
+    // console.log("data of promise all", data);
+  };
 
   async function CreateEvents() {
     setLoader(true);
@@ -125,13 +129,21 @@ export default function CreateEvent({ isEdit, editData }) {
       formData.append("location_ids", formFieldValue?.location_ids);
       formData.append("event_type", formFieldValue?.event_type);
       formData.append("img", formFieldValue?.img);
-      const response = await axios.post("api/event/create", formData, {
+      const response = await ApiClient.post("/event/create", formData, {
         headers: {
-          "content-type": "multipart/form-data;",
           "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")
             .content,
         },
       });
+
+      // const response = await createEvent(
+      //   formData,
+      //   null,
+      //   headers = {
+      //     "Custom-Header": "CustomValue",
+      //   }
+      // );
+
       if (response.data.success) {
         setLoader(false);
         toast.success(response.data.message);
