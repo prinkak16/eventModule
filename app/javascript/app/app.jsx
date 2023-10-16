@@ -1,36 +1,39 @@
-'use client'
+"use client";
 
 import React from "react";
-import {Route, Routes} from "react-router-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { Route, Routes } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-import './app.scss';
-import {Navigate} from "react-router";
-import HomeComponent from "./modules/home/home.component";
-import FormComponent from "./modules/form/form.component";
+import "./app.scss";
+import { Navigate } from "react-router";
+import HomeComponent from "./components/pages/home/home.component";
+import FormComponent from "./components/pages/form/form.component";
 
-import {ToastContainer, toast} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import CreateEvent from "./modules/create_event/createEvent";
-import HeaderBar from "./modules/header/header";
-import Header from "./modules/header/header";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CreateEvent from "./components/pages/events/create-events/createEvent";
+import HeaderBar from "./components/shared/header/header";
+import Header from "./components/shared/header/header";
+import EditEvent from "./components/pages/events/edit-events/EditEvent";
 
 function App() {
+  return (
+    <>
+      <ToastContainer />
 
-    return (
-        <>
-            <ToastContainer/>
+      <HeaderBar />
 
-            <HeaderBar/>
+      <Routes>
+        <Route path="/" element={<HomeComponent />} />
+        <Route path="/events" element={<HomeComponent />} />
+        <Route path="/form" element={<FormComponent />} />
 
-            <Routes>
-                <Route path='/*' element={<Navigate to="/"/>}/>
-                <Route path='/' element={<HomeComponent/>}/>
-                <Route path='/form' element={<FormComponent/>}/>
-                <Route path='/create_event' element={<CreateEvent/>}/>
-            </Routes>
-        </>
-    );
+        <Route path="/event/create_event" element={<CreateEvent />} />
+        <Route path="/event/edit_event" element={<EditEvent />} />
+        <Route path="/*" element={<Navigate to="/" />} />
+      </Routes>
+    </>
+  );
 }
 
 export default App;
