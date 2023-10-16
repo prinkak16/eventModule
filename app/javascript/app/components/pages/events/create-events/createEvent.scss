@@ -1,0 +1,145 @@
+.font-weight-300 {
+  font-weight: 300;
+}
+
+.create-event-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.event-create-form-bg {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 2rem;
+}
+.w-49 {
+  width: 49.5%;
+}
+.file-input {
+  position: absolute;
+  margin-top: -6.5rem;
+  width: 6.5rem;
+  height: 8rem;
+  display: inline-block;
+  padding: 120px 0 0 0;
+  overflow: hidden;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background: url(https://cdn1.iconfinder.com/data/icons/hawcons/32/698394-icon-130-cloud-upload-512.png)
+    center center no-repeat #fff;
+  border-radius: 20px;
+  background-size: 45px 46px;
+  border-style: dotted;
+  border-color: #e1e1e1;
+  opacity: 0;
+}
+.ml-10 {
+  margin-left: 9px;
+}
+.event-path {
+  //styleName: Headline/Medium-H5;
+  font-family: Roboto;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: -0.003em;
+}
+
+.image-container {
+  width: 6.5rem;
+  border: 1.5px dashed;
+  height: 7.3rem;
+}
+
+.close-icon-img {
+  width: 1.5rem;
+  position: absolute;
+  margin-left: 4.5rem;
+  margin-top: 0.5rem;
+  z-index: 1000;
+}
+
+.preview-image {
+  height: 100px;
+  width: 100px;
+}
+
+.next-btn {
+  width: 6rem;
+}
+
+.submit-btn {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 1rem;
+  font-size: 1.5rem;
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.10000000149011612px;
+  text-align: center;
+}
+.next-btn {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.10000000149011612px;
+  text-align: center;
+}
+
+.event-path h6:first-child {
+  color: #000000a6;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.sl-bubble3 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #666;
+  opacity: 0.8;
+  z-index: 998;
+  height: 100%;
+  width: 100%;
+}
+.container-adjust {
+  margin-top: 8rem !important;
+  width: 90%;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.levels {
+  display: flex;
+  gap: 10px;
+  //styleName: M3/label/large;
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.10000000149011612px;
+}
+
+.edit-chip {
+  background-color: black;
+  color: white;
+}
+.edit-chip:hover {
+  background-color: rgb(57, 56, 56);
+}
