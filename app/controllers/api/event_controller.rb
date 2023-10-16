@@ -104,7 +104,7 @@ class Api::EventController < Api::ApplicationController
         locations.each do |location|
           EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
         end
-        EventForm.create!(event_id: event.id, uuid: SecureRandom.uuid)
+        EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid)
         render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
@@ -116,15 +116,33 @@ class Api::EventController < Api::ApplicationController
 
   def event_list
     query_conditions = {}
-    # limit = params[:limit].present? ? params[:limit] : 10
-    # offset = params[:offset].present? ? params[:offset] : 0
+     limit = params[:limit].present? ? params[:limit] : 10
+     offset = params[:offset].present? ? params[:offset] : 0
+    query_conditions[:start_date] = get_date_diff(params[:start_date].to_datetime) if params[:start_date].present?
+    query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
+    query_conditions[:status_aasm_state] = params[:event_status] if params[:event_status].present?
+    events = Event.where(query_conditions).limit(limit).offset(offset)
+    events = events.joins(:event_locations).where(event_locations: {state_id: params[:state_id]}) if params[:state_id].present?
+    events = events.order(created_at: :desc).limit(limit).offset(offset)
+    render json: {
+      data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user),
+      message: ['Event list'],
+      success: true
+    }, status: 200
+  rescue StandardError => e
+    render json: { success: false, message: e.message }, status: 400
+  end
+
+  def event_user_list
+    limit = params[:limit].present? ? params[:limit] : 10
+    offset = params[:offset].present? ? params[:offset] : 0
+    query_conditions = {}
     query_conditions[:start_date] = get_date_diff(params[:start_date].to_datetime) if params[:start_date].present?
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     query_conditions[:status_aasm_state] = params[:event_status] if params[:event_status].present?
     events = Event.where(query_conditions)
     events = events.joins(:event_locations).where(event_locations: {state_id: params[:state_id]}) if params[:state_id].present?
-    total = events.size
-    events = events
+    events = events.order(created_at: :desc).limit(limit).offset(offset)
     render json: {
       data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user),
       message: ['Event list'],
@@ -160,5 +178,9 @@ class Api::EventController < Api::ApplicationController
     }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
+  end
+
+  def event_page
+    render json: { success: true, message: "Hello World!!!" }, status: 200
   end
 end
