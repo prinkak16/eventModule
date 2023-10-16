@@ -36,6 +36,3 @@
 /node_modules
 .env
 .idea
-
-/db/schema.rb
-Gemfile.lock
