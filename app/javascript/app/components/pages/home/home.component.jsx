@@ -33,6 +33,10 @@ const HomeComponent = () => {
   const [clearFilter, setClearFilter] = useState(false);
   const [eventName, setEventName] = useState("");
 
+  useEffect(() => {
+    console.log("event name is", eventName);
+  }, [eventName]);
+
   const demoData = [
     {
       id: 1,
@@ -187,9 +191,6 @@ const HomeComponent = () => {
     setClearFilter(!clearFilter);
   };
 
- 
-  
-
   async function getEventsList() {
     const params = `event_name=${eventName}&start_date=${
       filtersFieldValue.date
@@ -227,7 +228,6 @@ const HomeComponent = () => {
   const getFilterEvents = () => {
     getEventsList();
   };
-
 
   function EditEvent(data, id) {
     navigate(

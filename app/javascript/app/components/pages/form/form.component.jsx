@@ -205,11 +205,20 @@ const FormComponent = () => {
   async function getEventsList() {
     const params = `event_name=${eventName}&start_date=${
       filtersFieldValue.date
-    }&level_id=${filtersFieldValue.level_id}&state_id=${
+    }&level_id=${filtersFieldData?.level_id}&state_id=${
       filtersFieldValue.state_id
     }&event_status=${
       filtersFieldValue.event_status_id
     }&limit=${rowsPerPage}&offset=${rowsPerPage * (page - 1)}`;
+    // const params={
+    //   event_name:eventName,
+    //   start_date:filtersFieldValue?.date,
+    //   level_id:filtersFieldValue.level_id,
+    //   state_id:filtersFieldValue?.state_id,
+    //   event_status:filtersFieldValue?.event_status_id,
+    //   limit:rowsPerPage,
+    //   offset:rowsPerPage*(page-1)
+    // }
     let resopnse = await fetch(`api/event/event_list?` + params, {
       method: "GET",
       headers: {
@@ -259,7 +268,7 @@ const FormComponent = () => {
     let timer;
     timer = setTimeout(() => {
       getEventsList();
-    }, 500);
+    }, 1000);
 
     return () => {
       clearTimeout(timer);
