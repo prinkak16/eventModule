@@ -6,7 +6,9 @@ export default function MyBreadcrumbs() {
   const { pathname } = useLocation();
   const urls = pathname?.split("/").filter(Boolean);
 
-  console.log("urls ", urls);
+  
+
+  
   const breadcrumbsNames = {
     event: "Event",
     create_event: "Create Event",
@@ -25,7 +27,7 @@ export default function MyBreadcrumbs() {
           >
             {breadcrumbsNames[url]}
           </Link>
-          {index < urls.length - 1 && <span> &nbsp; /&nbsp; </span>}
+          {index < urls.length - 1 && <span> &nbsp;/&nbsp; </span>}
         </span>
       ))}
     </div>

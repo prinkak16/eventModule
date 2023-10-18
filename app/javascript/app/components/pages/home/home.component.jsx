@@ -31,19 +31,24 @@ const HomeComponent = () => {
   const itemsPerPage = 10;
   const [totalCount, setTotalCount] = useState(0);
   const [clearFilter, setClearFilter] = useState(false);
+  const [eventName, setEventName] = useState("");
+
+  useEffect(() => {
+    console.log("event name is", eventName);
+  }, [eventName]);
 
   const demoData = [
     {
       id: 1,
-      name: "upcoming",
+      name: "Active",
     },
     {
       id: 2,
-      name: "active",
+      name: "Expired",
     },
     {
       id: 3,
-      name: "expired",
+      name: "Upcoming",
     },
   ];
   const filterList = ["Level", "State", "Event Status"];
@@ -182,41 +187,16 @@ const HomeComponent = () => {
       state_id: "",
       event_status_id: "",
     });
-
+    setEventName("");
     setClearFilter(!clearFilter);
   };
 
-  const data = [
-    {
-      name: "Mann Ki Baat",
-      level: "state",
-      states: [
-        { id: 1, name: "up" },
-        { id: 2, name: "assam" },
-        { id: 3, name: "delhi" },
-      ],
-      status: "Active",
-      startDate: "Thu Aug 03 2023 15:12:30 GMT+0530 (India Standard Time)",
-      endDate: "Fri Aug 04 2023 15:12:30 GMT+0530 (India Standard Time)",
-    },
-  ];
-
-  function convertToDate(dateString) {
-    // Create a new Date object using the provided date string
-    const date = new Date(dateString);
-
-    // Get the date components (year, month, day) and create a new Date object with only the date part
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; // Months are 0-indexed, so add 1 to get the correct month number
-    const day = date.getDate();
-    const newDate = new Date(`${year}-${month}-${day}`);
-    return newDate;
-  }
-
   async function getEventsList() {
-    const params = `start_date=${filtersFieldValue.date}&level_id=${
-      filtersFieldValue.level_id
-    }&state_id=${filtersFieldValue.state_id}&event_status=${
+    const params = `search_query=${eventName}&start_date=${
+      filtersFieldValue.date
+    }&level_id=${filtersFieldValue.level_id}&state_id=${
+      filtersFieldValue.state_id
+    }&event_status=${
       filtersFieldValue.event_status_id
     }&limit=${itemsPerPage}&offset=${itemsPerPage * (page - 1)}`;
     let levels = await fetch(`api/event/event_list?` + params, {
@@ -228,11 +208,10 @@ const HomeComponent = () => {
       },
     });
     const res = await levels.json();
-    console.log("res is ", res);
     if (res.success) {
       setEventsList(res.data);
       setAllEventList(res.data);
-      setTotalCount(res?.count ?? res?.data?.length);
+      setTotalCount(res?.total ?? res?.data?.length);
     } else {
       toast.error(`Please enter ${res.message}`, {
         position: "top-center",
@@ -250,20 +229,14 @@ const HomeComponent = () => {
     getEventsList();
   };
 
-  function toProperCase(inputString) {
-    return inputString
-      .toLowerCase()
-      .replace(/(?:^|\s)\S/g, (char) => char.toUpperCase());
-  }
-
-  function EditEvent(event) {
+  function EditEvent(data, id) {
     navigate(
       {
-        pathname: "/event/edit_event",
+        pathname: `/event/edit_event/${id}`,
       },
       {
         state: {
-          event: event,
+          event: data,
         },
       }
     );
@@ -275,12 +248,23 @@ const HomeComponent = () => {
   };
 
   const disableClearFilterButton = () => {
+    if (eventName !== "") return false;
     for (let key in filtersFieldValue) {
       if (filtersFieldValue[key] !== "") return false;
     }
     return true;
   };
 
+  useEffect(() => {
+    let timer;
+    timer = setTimeout(() => {
+      getEventsList();
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [eventName]);
   return (
     <div className="home-main-container">
       {loader ? (
@@ -300,7 +284,8 @@ const HomeComponent = () => {
           <span className="sub-heading">List view of all the Events</span>
         </div>
         <TextField
-          onChange={filterData}
+          value={eventName}
+          onChange={(e) => setEventName(e.target.value)}
           className="search-input"
           placeholder="Search by Event Name"
           variant="outlined"
@@ -339,7 +324,7 @@ const HomeComponent = () => {
           </LocalizationProvider>
           {filterList &&
             filterList.map((filter, index) => (
-              <div className="dynamic-filters">
+              <div className="dynamic-filters" key={index}>
                 <Autocomplete
                   key={`${filter}${index}`}
                   className="w-100"
@@ -428,7 +413,7 @@ const HomeComponent = () => {
                   <div className="edit-bar">
                     <div
                       className="edit-bar-sub-div cursor-pointer"
-                      onClick={() => EditEvent(event)}
+                      onClick={() => EditEvent(event, event?.id)}
                     >
                       <FontAwesomeIcon
                         className="edit-bar-imgage"
@@ -472,7 +457,6 @@ const HomeComponent = () => {
           count={Math.ceil(totalCount / 10)}
           page={page}
           onChange={handleChangePage}
-          rowsPerPage={itemsPerPage}
           variant="outlined"
           shape="rounded"
         />
