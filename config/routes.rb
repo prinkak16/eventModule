@@ -24,6 +24,7 @@ Rails.application.routes.draw do
 
       get 'event/login_user_detail' => 'event#login_user_detail'
       get 'event_submission/redirect_to_form' => 'event_submission#redirect_to_form'
+      get 'event/edit/:id', to: 'event#edit', as: 'edit_event'
 
   end
   #noinspection RailsParamDefResolve
