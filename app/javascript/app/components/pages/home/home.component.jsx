@@ -324,7 +324,7 @@ const HomeComponent = () => {
           </LocalizationProvider>
           {filterList &&
             filterList.map((filter, index) => (
-              <div className="dynamic-filters">
+              <div className="dynamic-filters" key={index}>
                 <Autocomplete
                   key={`${filter}${index}`}
                   className="w-100"
@@ -457,7 +457,6 @@ const HomeComponent = () => {
           count={Math.ceil(totalCount / 10)}
           page={page}
           onChange={handleChangePage}
-          rowsPerPage={itemsPerPage}
           variant="outlined"
           shape="rounded"
         />

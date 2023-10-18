@@ -129,20 +129,9 @@ export default function CreateEvent({ isEdit, editData }) {
       formData.append("location_ids", formFieldValue?.location_ids);
       formData.append("event_type", formFieldValue?.event_type);
       formData.append("img", formFieldValue?.img);
-      const response = await ApiClient.post("/event/create", formData, {
-        headers: {
-          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")
-            .content,
-        },
-      });
+      // const response = await ApiClient.post("/event/create", formData);
 
-      // const response = await createEvent(
-      //   formData,
-      //   null,
-      //   headers = {
-      //     "Custom-Header": "CustomValue",
-      //   }
-      // );
+      const response = await createEvent(formData);
 
       if (response.data.success) {
         setLoader(false);
@@ -360,7 +349,6 @@ export default function CreateEvent({ isEdit, editData }) {
             value={formFieldValue?.state_obj}
             options={countryStates}
             getOptionLabel={(option) => option.name || ""}
-            getOptionValue={(option) => option.id || ""}
             onChange={handleStateChange}
             renderInput={(params) => (
               <TextField {...params} label={`Select State`} />

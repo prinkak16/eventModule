@@ -18,6 +18,6 @@ import { ApiClient } from "../../BaseRestServices";
  * @param {object} params - Query params in Json format
  */
 
-export const createEvent = (body: any, params: object,headers:object) => {
-  return ApiClient.post("/event/create", body, { params: params,headers:headers });
+export const createEvent = (body: any, params: object) => {
+  return ApiClient.post("/event/create", body, { params: params });
 };

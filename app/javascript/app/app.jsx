@@ -7,8 +7,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./app.scss";
 import { Navigate, useParams } from "react-router";
 import HomeComponent from "./components/pages/home/home.component";
-import FormComponent from "./components/pages/form/form.component";
+// import FormComponent from "./components/pages/form/form.component";
 
+import FormComponent from "./components/pages/form/form.component";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CreateEvent from "./components/pages/events/create-events/createEvent";
@@ -17,8 +18,6 @@ import Header from "./components/shared/header/header";
 import EditEvent from "./components/pages/events/edit-events/EditEvent";
 
 function App() {
-  const params = useParams();
-  console.log("param is ", params);
   return (
     <>
       <ToastContainer />
