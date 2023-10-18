@@ -5,14 +5,14 @@ class Api::EventController < Api::ApplicationController
 
   def data_levels
     levels = DataLevel.select(:id, :name, :level_class)
-    render json: {success: true, data: levels || [], message: "Data levels list."}, status: 200
+    render json: { success: true, data: levels || [], message: "Data levels list." }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
 
   def states
     states = Saral::Locatable::State.select(:id, :name).order(:name)
-    render json: {success: true, data: states || [], message: "States list"}, status: 200
+    render json: { success: true, data: states || [], message: "States list" }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
@@ -22,7 +22,7 @@ class Api::EventController < Api::ApplicationController
     pcs = Saral::Locatable::ParliamentaryConstituency.where(saral_locatable_state_id: state_id)
                                                      .select(:id, "(number || ' - ' || name) as name", :number)
                                                      .order('number::int')
-    render json: {success: true, data: pcs || [], message: "Pcs list"}, status: 200
+    render json: { success: true, data: pcs || [], message: "Pcs list" }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
@@ -30,9 +30,9 @@ class Api::EventController < Api::ApplicationController
   def acs
     state_id = params[:state_id]
     acs = Saral::Locatable::AssemblyConstituency.where(saral_locatable_state_id: state_id)
-                                                     .select(:id, "(number || ' - ' || name) as name", :number)
-                                                     .order('number::int')
-    render json: {success: true, data: acs || [], message: "Acs list"}, status: 200
+                                                .select(:id, "(number || ' - ' || name) as name", :number)
+                                                .order('number::int')
+    render json: { success: true, data: acs || [], message: "Acs list" }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
@@ -40,7 +40,7 @@ class Api::EventController < Api::ApplicationController
   def zilas
     state_id = params[:state_id]
     zilas = Saral::Locatable::Zila.where(saral_locatable_state_id: state_id).select(:id, :name)
-    render json: {success: true, data: zilas || [], message: "Zilas list"}, status: 200
+    render json: { success: true, data: zilas || [], message: "Zilas list" }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
@@ -48,7 +48,7 @@ class Api::EventController < Api::ApplicationController
   def mandals
     zila_id = params[:zila_id]
     mandals = Saral::Locatable::Zila.find_by(id: zila_id)&.get_mandals&.select(:id, :name)
-    render json: {success: true, data: mandals || [], message: "Mandals list"}, status: 200
+    render json: { success: true, data: mandals || [], message: "Mandals list" }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
@@ -56,7 +56,7 @@ class Api::EventController < Api::ApplicationController
   def booths
     ac_id = params[:ac_id]
     booths = Saral::Locatable::AssemblyConstituency.find_by(id: ac_id)&.get_booths&.select(:id, "(number || ' - ' || name) as name", :number).order('number::int')
-    render json: {success: true, data: booths || [], message: "Booths list"}, status: 200
+    render json: { success: true, data: booths || [], message: "Booths list" }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
@@ -64,7 +64,7 @@ class Api::EventController < Api::ApplicationController
   def sks
     ac_id = params[:ac_id]
     sks = Saral::Locatable::ShaktiKendra.where(saral_locatable_assembly_constituency_id: ac_id)&.select(:id, :name)
-    render json: {success: true, data: sks || [], message: "Shakti kendras list"}, status: 200
+    render json: { success: true, data: sks || [], message: "Shakti kendras list" }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
@@ -72,7 +72,7 @@ class Api::EventController < Api::ApplicationController
   def state_zones
     state_id = params[:state_id]
     state_zones = Saral::Locatable::StateZone.where(saral_locatable_state_id: state_id)&.select(:id, :name)
-    render json: {success: true, data: state_zones || [], message: "State Zones list"}, status: 200
+    render json: { success: true, data: state_zones || [], message: "State Zones list" }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
@@ -116,20 +116,21 @@ class Api::EventController < Api::ApplicationController
 
   def event_list
     query_conditions = {}
-     limit = params[:limit].present? ? params[:limit] : 10
-     offset = params[:offset].present? ? params[:offset] : 0
+    limit = params[:limit].present? ? params[:limit] : 10
+    offset = params[:offset].present? ? params[:offset] : 0
     query_conditions[:start_date] = get_date_diff(params[:start_date].to_datetime) if params[:start_date].present?
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     query_conditions[:status_aasm_state] = params[:event_status] if params[:event_status].present?
     events = Event.where(query_conditions)
-    events = events.joins(:event_locations).where(event_locations: {state_id: params[:state_id]}) if params[:state_id].present?
+    events = events.joins(:event_locations).where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
+    total = events.count
     events = events.order(created_at: :desc).limit(limit).offset(offset)
     render json: {
       data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user),
       message: ['Event list'],
       success: true,
-      total: events.count
+      total: total
     }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
@@ -139,19 +140,21 @@ class Api::EventController < Api::ApplicationController
     limit = params[:limit].present? ? params[:limit] : 10
     offset = params[:offset].present? ? params[:offset] : 0
     query_conditions = {}
-    events = Event.where(query_conditions)
-    events = events.joins(:event_locations).where(event_locations: {state_id: params[:state_id]}) if params[:state_id].present?
+    events = Event
+    events = events.joins(:event_locations).where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
+    total = events.count
     events = events.order(created_at: :desc).limit(limit).offset(offset)
     render json: {
       data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user),
       message: ['Event list'],
       success: true,
-      total: events.count
+      total: total
     }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
+
   def get_date_diff(date)
     date = date + 5.50.hours
     (date.beginning_of_day..date.end_of_day)
