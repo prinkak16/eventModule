@@ -27,7 +27,7 @@ const FormComponent = () => {
 
   async function getEventsList() {
     const params = {
-      event_name: eventName,
+      search_query: eventName,
       limit: rowsPerPage,
       offset: rowsPerPage * (page - 1),
     };
@@ -38,7 +38,7 @@ const FormComponent = () => {
       });
       if (data.success) {
         setAllEventList(data.data);
-        setTotalCount(data?.count ?? data?.data?.length);
+        setTotalCount(data?.total ?? data?.data?.length);
       } else {
         toast.error(`Please enter ${data.message}`, {
           position: "top-center",
@@ -70,7 +70,7 @@ const FormComponent = () => {
 
     console.log("data is ", data);
     // navigate(data?.data?.redirect_url);
-    window.location.href = data.data.redirect_url;
+    window.location.href = data.data.redirect_url;  
     // fetch("/api/event_submission/redirect_to_form?event_id=" + event_id)
     //   .then((res) => res.json())
     //   .then((data) => (window.location.href = data.data.redirect_url));

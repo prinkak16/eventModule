@@ -192,7 +192,7 @@ const HomeComponent = () => {
   };
 
   async function getEventsList() {
-    const params = `event_name=${eventName}&start_date=${
+    const params = `search_query=${eventName}&start_date=${
       filtersFieldValue.date
     }&level_id=${filtersFieldValue.level_id}&state_id=${
       filtersFieldValue.state_id
@@ -211,7 +211,7 @@ const HomeComponent = () => {
     if (res.success) {
       setEventsList(res.data);
       setAllEventList(res.data);
-      setTotalCount(res?.count ?? res?.data?.length);
+      setTotalCount(res?.total ?? res?.data?.length);
     } else {
       toast.error(`Please enter ${res.message}`, {
         position: "top-center",

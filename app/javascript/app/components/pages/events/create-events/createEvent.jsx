@@ -211,9 +211,9 @@ export default function CreateEvent({ isEdit, editData }) {
     });
   };
 
-  useEffect(() => {
-    console.log("form value s", formFieldValue);
-  }, [formFieldValue]);
+  // useEffect(() => {
+  //   console.log("form value s", formFieldValue);
+  // }, [formFieldValue]);
 
   return (
     <div className="create-event-container">
