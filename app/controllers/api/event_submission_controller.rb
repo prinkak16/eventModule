@@ -19,4 +19,8 @@ class Api::EventSubmissionController < Api::ApplicationController
   rescue => e
     render json: { message: e.message }, status: 400
   end
+
+  def event_submission
+    render json: { success: true, event: event, message: "success full" }, status: 200
+  end
 end
