@@ -25,9 +25,10 @@ import {
   getStates,
 } from "../../../../services/CommonServices/commonServices";
 import { ApiClient } from "../../../../services/RestServices/BaseRestServices";
+import { getEventById } from "../../../../services/RestServices/Modules/EventServices/EventsServices";
 
 export default function CreateEvent({ isEdit, editData }) {
-  const param = useParams();
+  const { id } = useParams();
 
   const imgDefault =
     "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
@@ -69,6 +70,10 @@ export default function CreateEvent({ isEdit, editData }) {
       formFieldValue.event_type = editData.event_type;
       formFieldValue.location_ids = editData?.state_ids?.map((obj) => obj.id);
       formFieldValue.state_obj = editData.state_ids ?? [];
+      (async () => {
+        const { data } = await getEventById(id);
+        console.log("event by id", data);
+      })();
     }
     getAllData();
   }, []);
