@@ -11,7 +11,7 @@ body {
 .home-main-container {
   padding: 0 8rem 10rem 8rem;
   margin-top: 10rem;
-  .MuiTablePagination-root{
+  .MuiTablePagination-root {
     font-size: 20px;
   }
   .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar {
@@ -19,6 +19,37 @@ body {
   }
 }
 
+.form-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.list-name {
+  display: flex;
+  gap: 10px;
+}
+.svg-icon {
+  width: 15px;
+  height: 20px;
+}
+.date-time-location-container {
+  display: flex;
+  gap:15px
+}
+.list-date {
+}
+.green-line {
+  background: #61be7a;
+  width: 2.63px;
+  height: 40.58px;
+
+  border-radius: 3.16px;
+}
+.level-event-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
 .home-search-div {
   display: flex;
   align-items: center;
@@ -78,7 +109,7 @@ body {
 
 .filters-container {
   display: flex;
-  gap: 2rem ;
+  gap: 2rem;
   padding: 1rem;
   align-items: flex-end;
   margin-right: 24px;
@@ -111,15 +142,15 @@ body {
 .events-container {
 }
 
-.event-list {
+.form-list-card {
   height: 7.5rem;
   width: 100%;
   background: #ffffff;
-  margin-top: 1.5rem;
   border-radius: 1rem;
   border: 1px solid lightgrey;
   padding: 1rem 0rem 1rem 1rem;
   display: flex;
+  gap: 15px;
   position: relative;
   overflow: hidden;
 }
@@ -194,20 +225,26 @@ body {
   margin-bottom: auto;
 }
 
-.event-list-fir {
+.form-list-fir {
   display: flex;
-  width: 40%;
 }
 .visible-divs {
   transition: transform 0.7s;
 }
 
-
-
-.event-list-sec {
+.form-list-sec {
+  flex-grow: 2;
   display: flex;
-  justify-content: flex-end;
-  width: 60%;
+  flex-direction: column;
+  .heading {
+    font-family: Quicksand;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.13174602389335632px;
+  }
+}
+.form-list-third {
 }
 
 .event-list-item {

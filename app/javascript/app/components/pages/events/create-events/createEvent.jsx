@@ -60,18 +60,22 @@ export default function CreateEvent({ isEdit, editData }) {
 
   useEffect(() => {
     if (isEdit) {
-      formFieldValue.event_id = editData.id;
-      formFieldValue.event_title = editData.name;
-      formFieldValue.img = editData.image_url;
-      setImage(editData.image_url);
-      formFieldValue.start_datetime = editData.start_date;
-      formFieldValue.end_datetime = editData.end_date;
-      formFieldValue.level_id = editData.data_level_id;
-      formFieldValue.event_type = editData.event_type;
-      formFieldValue.location_ids = editData?.state_ids?.map((obj) => obj.id);
-      formFieldValue.state_obj = editData.state_ids ?? [];
       (async () => {
         const { data } = await getEventById(id);
+        // if (data?.success) {
+        //   formFieldValue.event_id = data?.event?.id;
+        //   formFieldValue.event_title = data?.event?.name;
+        //   formFieldValue.img = data?.event?.image_url;
+        //   setImage(data?.event?.image_url);
+        //   formFieldValue.start_datetime = data?.event?.start_date;
+        //   formFieldValue.end_datetime = data?.event?.end_date;
+        //   formFieldValue.level_id = data?.event?.data_level_id;
+        //   formFieldValue.event_type = data?.event?.event_type;
+        //   formFieldValue.location_ids = data?.event?.state_ids?.map(
+        //     (obj) => obj.id
+        //   );
+        //   formFieldValue.state_obj = editData.state_ids ?? [];
+        // }
         console.log("event by id", data);
       })();
     }
@@ -141,8 +145,8 @@ export default function CreateEvent({ isEdit, editData }) {
       if (response.data.success) {
         setLoader(false);
         toast.success(response.data.message);
-        window.location.href = response.data.event.create_form_url;
-        navigateToHome();
+        // window.location.href = response.data.event.create_form_url;
+        // navigateToHome();
       } else {
         setLoader(false);
         toast.error(response.data.message);

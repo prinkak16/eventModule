@@ -189,7 +189,7 @@ class Api::EventController < Api::ApplicationController
   end
 
   def edit
-    event = Event.find_by(id: params[:event_id])
+    event = Event.find_by(id: params[:id])
     render json: { success: true, event: event, message: "success full" }, status: 200
   end
 end

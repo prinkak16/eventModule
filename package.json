@@ -22,6 +22,7 @@
     "esbuild-plugin-svgr": "^2.0.0",
     "esbuild-sass-plugin": "^2.10.0",
     "firebase": "^10.1.0",
+    "moment": "^2.29.4",
     "postcss": "^8.4.26",
     "react": "^18.2.0",
     "react-bootstrap": "^2.8.0",
@@ -36,6 +37,11 @@
     "sass": "^1.63.6",
     "tailwindcss": "^3.3.3",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "esbuild-plugin-svgr": "^1.0.1",
+    "sass": "^1.58.3",
+    "webpack-dev-server": "^3"
   },
   "scripts": {
     "build": "node esbuild.config.js",

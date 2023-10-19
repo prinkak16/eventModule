@@ -12,9 +12,12 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 
 import { ApiClient } from "../../../services/RestServices/BaseRestServices";
+import FormEventCard from "./FormEventCard";
 const FormComponent = () => {
   const imgDefault =
     "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
+    const nextBtn =
+      "https://storage.googleapis.com/public-saral/public_document/button.png";
   const navigate = useNavigate();
   const [allEventList, setAllEventList] = useState([]);
   const [page, setPage] = useState(1);
@@ -22,8 +25,6 @@ const FormComponent = () => {
   const [loader, setLoader] = useState(false);
   const [eventName, setEventName] = useState("");
   const rowsPerPage = 10;
-  const nextBtn =
-    "https://storage.googleapis.com/public-saral/public_document/button.png";
 
   async function getEventsList() {
     const params = {
@@ -126,59 +127,11 @@ const FormComponent = () => {
 
       <div className="events-container">
         {allEventList.length > 0 ? (
-          <>
-            {allEventList.map((event) => (
-              <div key={`${event.id}${event.name}`}>
-                <div
-                  className="event-list submit-btn cursor"
-                  onClick={() => tabClickHandler(event?.id)}
-                >
-                  <div className="event-list-fir ">
-                    <div>
-                      <img
-                        className="event-photo"
-                        src={event.image_url ? event.image_url : imgDefault}
-                      />
-                    </div>
-                    <div className="event-header-name">
-                      <h2 className="event-header-name-ellipsis">
-                        {event.name}
-                      </h2>
-                      <span className="event-sub-header">
-                        Level : {event.data_level}
-                      </span>
-                    </div>
-                    <div className={event.status.class_name}>
-                      <span>{event.status.name}</span>
-                    </div>
-                    <div></div>
-                  </div>
-                  <div className="event-list-sec">
-                    <div className="hr"></div>
-                    <div className="event-list-item">
-                      <h5>States</h5>
-
-                      <span className="event-sub-header">{event.states}</span>
-                    </div>
-                    <div className="hr"></div>
-                    <div className="event-list-item">
-                      <h5>Start</h5>
-                      <span className="event-sub-header">
-                        {event.start_datetime}
-                      </span>
-                    </div>
-                    <div className="hr"></div>
-                    <div className="event-list-item">
-                      <h5>End</h5>
-                      <span className="event-sub-header">
-                        {event.end_datetime}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="form-list-container">
+            {allEventList.map((event,index) => (
+               <FormEventCard event={event} key={index}/>
             ))}
-          </>
+          </div>
         ) : (
           <div className="no-event-data">No Data Found</div>
         )}
