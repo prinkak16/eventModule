@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./form.module.scss";
 
-import { Autocomplete, Pagination, TextField } from "@mui/material";
+import { Autocomplete, Box, Pagination, Paper, TextField } from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
@@ -13,11 +13,13 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import { ApiClient } from "../../../services/RestServices/BaseRestServices";
 import FormEventCard from "./FormEventCard";
+// import { DefaultImage } from "../../../assests/png";
+import DefaultImage from "../../../assests/png/defaultimage.png";
 const FormComponent = () => {
   const imgDefault =
     "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
-    const nextBtn =
-      "https://storage.googleapis.com/public-saral/public_document/button.png";
+  const nextBtn =
+    "https://storage.googleapis.com/public-saral/public_document/button.png";
   const navigate = useNavigate();
   const [allEventList, setAllEventList] = useState([]);
   const [page, setPage] = useState(1);
@@ -71,7 +73,7 @@ const FormComponent = () => {
 
     console.log("data is ", data);
     // navigate(data?.data?.redirect_url);
-    window.location.href = data.data.redirect_url;  
+    window.location.href = data.data.redirect_url;
     // fetch("/api/event_submission/redirect_to_form?event_id=" + event_id)
     //   .then((res) => res.json())
     //   .then((data) => (window.location.href = data.data.redirect_url));
@@ -92,7 +94,7 @@ const FormComponent = () => {
   }, [eventName]);
 
   return (
-    <div className="home-main-container">
+    <Box className="form-main-container" component={Paper}>
       {loader ? (
         <Loader
           type="bubble-ping"
@@ -104,13 +106,13 @@ const FormComponent = () => {
       ) : (
         <></>
       )}
-      <div className="home-search-div">
-        <div className="event-header">
-          <h1>Events</h1>
-          <span className="sub-heading">List view of all the Events</span>
-        </div>
+      <Box className="form-event-header" component={Paper}>
+        <h2>Events</h2>
+      </Box>
+      <div className="form-event-search">
         <TextField
           className="search-input"
+          sx={{ margin: "30px", width: "80%" }}
           placeholder="Search by Event Name"
           variant="outlined"
           value={eventName}
@@ -125,11 +127,11 @@ const FormComponent = () => {
         />
       </div>
 
-      <div className="events-container">
+      <div className="form-events-container">
         {allEventList.length > 0 ? (
           <div className="form-list-container">
-            {allEventList.map((event,index) => (
-               <FormEventCard event={event} key={index}/>
+            {allEventList.map((event, index) => (
+              <FormEventCard event={event} key={index} />
             ))}
           </div>
         ) : (
@@ -145,7 +147,7 @@ const FormComponent = () => {
           shape="rounded"
         />
       </div>
-    </div>
+    </Box>
   );
 };
 
