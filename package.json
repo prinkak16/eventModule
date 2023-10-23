@@ -39,8 +39,6 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "esbuild-plugin-svgr": "^1.0.1",
-    "sass": "^1.58.3",
     "webpack-dev-server": "^3"
   },
   "scripts": {

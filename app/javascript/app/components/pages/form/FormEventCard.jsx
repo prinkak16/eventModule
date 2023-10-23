@@ -2,7 +2,7 @@ import React from "react";
 import "./form.module.scss";
 import { CalenderIcon, ClockIcon, LocationIcon } from "../../../assests/svg";
 import moment from "moment";
-import { DefaultImage } from "../../../assests/png";
+import { DefaultImage } from "../../../assests/png"
 import { useNavigate } from "react-router";
 
 const imgDefault =
@@ -27,6 +27,7 @@ const FormEventCard = ({ event }) => {
           className="form-photo"
           src={event.image_url ? event.image_url : imgDefault}
         />
+        <img src={DefaultImage}/>
       </div>
       <div className="form-list-sec">
         <div className="list-name">
