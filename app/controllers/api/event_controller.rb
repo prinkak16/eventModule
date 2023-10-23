@@ -189,7 +189,8 @@ class Api::EventController < Api::ApplicationController
   end
 
   def edit
-    event = Event.find_by(id: params[:id])
-    render json: { success: true, event: event, message: "success full" }, status: 200
+    event = Event.where(id: params[:id])
+    data = ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: '', current_user: current_user)
+    render json: { success: true, data: data, message: "success full" }, status: 200
   end
 end
