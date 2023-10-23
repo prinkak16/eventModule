@@ -48,7 +48,7 @@ function App() {
         <Route path="/" element={<HomeComponent />} />
         <Route path="/events" element={<HomeComponent />} />
         <Route path="/form" element={<FormComponent />} />
-        <Route path="/form/submission" element={<FormSubmission />} />
+        <Route path="/form/submission/:event_id" element={<FormSubmission />} />
 
         <Route path="/event/create_event" element={<CreateEvent />} />
         <Route path="/event/edit_event/:id" element={<EditEvent />} />

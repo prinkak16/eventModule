@@ -12,10 +12,10 @@ const nextBtn =
 
 const FormEventCard = ({ event }) => {
   const navigate = useNavigate();
-  const submissionHandler = (id) => {
+  const submissionHandler = (event_id) => {
     console.log("clicked");
     console.log("id");
-    navigate("/form/submission");
+    navigate(`/form/submission/${event_id}`);
   };
   return (
     <div
@@ -25,9 +25,8 @@ const FormEventCard = ({ event }) => {
       <div className="form-list-fir ">
         <img
           className="form-photo"
-          src={event.image_url ? event.image_url : imgDefault}
+          src={event.image_url ? event.image_url : DefaultImage}
         />
-        <img src={DefaultImage}/>
       </div>
       <div className="form-list-sec">
         <div className="list-name">
@@ -40,6 +39,7 @@ const FormEventCard = ({ event }) => {
             <h2 className="heading">{event.name}</h2>
           </div>
         </div>
+
         <div className="date-time-location-container">
           <div className="date-time-location-inner-container">
             <CalenderIcon className="svg-icon" />
@@ -66,6 +66,7 @@ const FormEventCard = ({ event }) => {
           </div>
         </div>
       </div>
+
       <div className="form-list-third">
         <div className={event.status.class_name}>
           <span>{event.status.name}</span>

@@ -145,7 +145,7 @@ export default function CreateEvent({ isEdit, editData }) {
       if (response.data.success) {
         setLoader(false);
         toast.success(response.data.message);
-        // window.location.href = response.data.event.create_form_url;
+        window.location.href = response.data.event.create_form_url;
         // navigateToHome();
       } else {
         setLoader(false);

@@ -106,7 +106,7 @@ const FormComponent = () => {
       ) : (
         <></>
       )}
-      <Box className="form-event-header" component={Paper}>
+      <Box className="form-event-header">
         <h2>Events</h2>
       </Box>
       <div className="form-event-search">
