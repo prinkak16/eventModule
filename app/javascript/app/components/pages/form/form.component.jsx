@@ -11,6 +11,7 @@ import Loader from "react-js-loader";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 
+
 import { ApiClient } from "../../../services/RestServices/BaseRestServices";
 import FormEventCard from "./FormEventCard";
 // import { DefaultImage } from "../../../assests/png";
@@ -29,6 +30,8 @@ const FormComponent = () => {
   const rowsPerPage = 10;
 
   async function getEventsList() {
+    setLoader(true)
+    
     const params = {
       search_query: eventName,
       limit: rowsPerPage,
@@ -42,7 +45,9 @@ const FormComponent = () => {
       if (data.success) {
         setAllEventList(data.data);
         setTotalCount(data?.total ?? data?.data?.length);
+        setLoader(false)
       } else {
+        setLoader(false)
         toast.error(`Please enter ${data.message}`, {
           position: "top-center",
           autoClose: 2000,
@@ -50,6 +55,7 @@ const FormComponent = () => {
         });
       }
     } catch (error) {
+      setLoader(false)
       toast.error("Failed to get event list", { autoClose: 2000 });
     }
   }

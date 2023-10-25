@@ -15,7 +15,7 @@ const FormEventCard = ({ event }) => {
   const submissionHandler = (event_id) => {
     console.log("clicked");
     console.log("id");
-    navigate(`/form/submission/${event_id}`);
+    navigate(`/form/submissions/${event_id}`);
   };
   return (
     <div

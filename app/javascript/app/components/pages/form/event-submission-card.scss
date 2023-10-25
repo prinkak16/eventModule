@@ -49,6 +49,12 @@
     justify-content: space-evenly;
     align-items: center;
 
+    .event-submission-card-icon-child{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
   }
 
 }

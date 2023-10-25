@@ -62,20 +62,20 @@ export default function CreateEvent({ isEdit, editData }) {
     if (isEdit) {
       (async () => {
         const { data } = await getEventById(id);
-        // if (data?.success) {
-        //   formFieldValue.event_id = data?.event?.id;
-        //   formFieldValue.event_title = data?.event?.name;
-        //   formFieldValue.img = data?.event?.image_url;
-        //   setImage(data?.event?.image_url);
-        //   formFieldValue.start_datetime = data?.event?.start_date;
-        //   formFieldValue.end_datetime = data?.event?.end_date;
-        //   formFieldValue.level_id = data?.event?.data_level_id;
-        //   formFieldValue.event_type = data?.event?.event_type;
-        //   formFieldValue.location_ids = data?.event?.state_ids?.map(
-        //     (obj) => obj.id
-        //   );
-        //   formFieldValue.state_obj = editData.state_ids ?? [];
-        // }
+         if (data?.success) {
+        formFieldValue.event_id = data?.data[0]?.id;
+        formFieldValue.event_title = data?.data[0]?.name;
+          formFieldValue.img = data?.data[0]?.image_url;
+          setImage(data?.data[0]?.image_url);
+          formFieldValue.start_datetime = data?.data[0]?.start_date;
+          formFieldValue.end_datetime = data?.data[0]?.end_date;
+           formFieldValue.level_id = data?.data[0]?.data_level_id;
+           formFieldValue.event_type = data?.data[0]?.event_type;
+          formFieldValue.location_ids = data?.data[0]?.state_ids?.map(
+          (obj) => obj.id
+          );
+          formFieldValue.state_obj = data?.data[0]?.state_ids ?? [];
+         }
         console.log("event by id", data);
       })();
     }
@@ -126,7 +126,7 @@ export default function CreateEvent({ isEdit, editData }) {
     // console.log("data of promise all", data);
   };
 
-  async function CreateEvents() {
+  async function CreateEvents(type,id) {
     setLoader(true);
     try {
       const formData = new FormData();
@@ -140,15 +140,20 @@ export default function CreateEvent({ isEdit, editData }) {
       formData.append("img", formFieldValue?.img);
       // const response = await ApiClient.post("/event/create", formData);
 
-      const response = await createEvent(formData);
+      const response = await createEvent(formData,{event_id:id});
 
       if (response.data.success) {
         setLoader(false);
-        toast.success(response.data.message);
+      if(type==='go_to_form'||type==='create') {
         window.location.href = response.data.event.create_form_url;
-        // navigateToHome();
+      }else{
+        navigateToHome();
+        toast.success(response.data.message);
+
+      }
       } else {
         setLoader(false);
+        
         toast.error(response.data.message);
       }
     } catch (error) {
@@ -190,7 +195,7 @@ export default function CreateEvent({ isEdit, editData }) {
     setImage("");
   };
 
-  const submit = () => {
+  const submit = (type,id) => {
     for (let i = 0; i < requiredField.length; i++) {
       const item = formFieldValue[requiredField[i]];
       if (!item) {
@@ -202,7 +207,7 @@ export default function CreateEvent({ isEdit, editData }) {
         return;
       }
     }
-    CreateEvents();
+    CreateEvents(type,id);
   };
 
   const fileInputRef = useRef(null);
@@ -331,10 +336,10 @@ export default function CreateEvent({ isEdit, editData }) {
             </h6>
             {Array.isArray(dataLevels) &&
               dataLevels.map((item, index) => (
-                <Chip
-                  clickable
+                <button
+                    className="level-button"
                   key={index}
-                  sx={{
+                  style={{
                     height: "40px",
                     width: "120px",
                     background:
@@ -342,13 +347,12 @@ export default function CreateEvent({ isEdit, editData }) {
                     color:
                       item?.id === formFieldValue?.level_id ? "white" : "black",
                   }}
-                  label={item?.name}
                   onClick={() =>
                     setFormFieldValue((prevData) => {
                       return { ...prevData, level_id: item?.id };
                     })
                   }
-                />
+                >{item?.name}  </button>
               ))}
           </div>
 
@@ -390,7 +394,7 @@ export default function CreateEvent({ isEdit, editData }) {
 
       <div className="submit-btn cursor-pointer">
         {!isEdit && (
-          <div className="next-btn" onClick={submit}>
+          <div className="next-btn" onClick={()=>submit('create')}>
             <h4>Next</h4>
             <img className="next-btn" src={nextBtn} />
           </div>
@@ -398,26 +402,25 @@ export default function CreateEvent({ isEdit, editData }) {
 
         {isEdit && (
           <>
-            <Chip
-              clickable
-              label="Save Event"
+            <button
+                className="save-button"
               variant="outlined"
-              sx={{ height: "40px", border: "1px solid black" }}
-              onClick={submit}
-            />
+              style={{ height: "40px", border: "1px solid black" }}
+              onClick={()=>submit('save',id)}
+            > Save Event  </button>
 
-            <Chip
-              className="edit-chip"
-              sx={{
+            <button
+              className="go-to-form-button"
+                style= {{
                 background: "black",
                 color: "white",
                 height: "40px",
                 width: "150px",
               }}
-              clickable
-              label="Go to form"
-              onClick={submit}
-            />
+              
+              onClick={()=>submit('go_to_form',id)}
+            >               Go to form
+            </button>
           </>
         )}
       </div>

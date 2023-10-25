@@ -14,15 +14,28 @@
   }
    */
 
-    .event-name-heading{
-      padding:28px 0;
-      text-align:center;
+    .event-name-heading-container{
       height: 80px;
       border-bottom: 1px solid #e9e3e3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 1px 1px #e9e3e3 ;
+
+      .back-button{
+       align-self: flex-start;
+       display:flex;
+       justify-content: center;
+       align-items: center;
+      }
+      .event-name-heading{
+          align-self: center;
+      }
 
     }
     .event-image{
       width: 100%;
+      height:320px;
     }
     .event-total-report{
       align-self: flex-start;
@@ -47,6 +60,7 @@
       justify-content: center;
       align-items: center;
       .report-event-button{
+        border:none;
         background: #2F2F2F;
         color:white;
         padding:10px 50px;
