@@ -139,8 +139,8 @@ class Api::EventController < Api::ApplicationController
   def event_user_list
     limit = params[:limit].present? ? params[:limit] : 10
     offset = params[:offset].present? ? params[:offset] : 0
-    query_conditions = {}
-    events = Event
+    date = DateTime.now
+    events = Event.where("end_date >= ?", date).where("start_date <= ?", date)
     events = events.joins(:event_locations).where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
     total = events.count
@@ -149,7 +149,7 @@ class Api::EventController < Api::ApplicationController
       data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user),
       message: ['Event list'],
       success: true,
-      total: total
+      total: total,
     }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
