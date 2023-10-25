@@ -1,0 +1,71 @@
+  .form-event-submission-container{
+  margin: auto;
+  overflow: auto;
+  width: 900px;
+
+  height: 100vh;
+  padding-bottom: 100px;
+  /**
+       .MuiTablePagination-root {
+    font-size: 20px;
+  }
+  .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar {
+    align-items: baseline;
+  }
+   */
+
+    .event-name-heading-container{
+      height: 80px;
+      border-bottom: 1px solid #e9e3e3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 1px 1px #e9e3e3 ;
+
+      .back-button{
+       align-self: flex-start;
+       display:flex;
+       justify-content: center;
+       align-items: center;
+      }
+      .event-name-heading{
+          align-self: center;
+      }
+
+    }
+    .event-image{
+      width: 100%;
+      height:320px;
+    }
+    .event-total-report{
+      align-self: flex-start;
+      font-family: Quicksand;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 14px;
+      letter-spacing: 0em;
+      color:#949494;
+    }
+    .form-event-submissions{
+      padding:28px;
+      display: flex;
+      flex-direction: column;
+      gap:16px;
+      justify-content: center;
+      align-items: center;
+    }
+    .report-button-container{
+      margin-top: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .report-event-button{
+        border:none;
+        background: #2F2F2F;
+        color:white;
+        padding:10px 50px;
+        border-radius: 10px;
+      }
+    }
+
+}

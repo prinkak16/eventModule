@@ -1,0 +1,60 @@
+.event-submission-card-container{
+  display: flex;
+  .event-submission-card-details{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #F7F7F7;
+    width: 630px;
+    height: 145px;
+    border-radius: 10px;
+    padding: 16px;
+    .report-time{
+      font-family: Quicksand;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 17px;
+      letter-spacing: 0em;
+      color: #A19D9D;
+
+    }
+    .event-name{
+      font-family: Quicksand;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 30px;
+      letter-spacing: 0em;
+
+    }
+    .event-location{
+      font-family: Quicksand;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 17px;
+      .event-location-header{
+        font-size: 14px;
+       
+        color:#AFAFAF;
+      }
+      .event-location-data{
+              color:#454444;
+     
+
+      }
+    }
+  }
+  .event-submission-card-icon{
+    width: 210px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    .event-submission-card-icon-child{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+}

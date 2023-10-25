@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./form.module.scss";
 
-import { Autocomplete, Pagination, TextField } from "@mui/material";
+import { Autocomplete, Box, Pagination, Paper, TextField } from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
@@ -11,10 +11,16 @@ import Loader from "react-js-loader";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 
+
 import { ApiClient } from "../../../services/RestServices/BaseRestServices";
+import FormEventCard from "./FormEventCard";
+// import { DefaultImage } from "../../../assests/png";
+import DefaultImage from "../../../assests/png/defaultimage.png";
 const FormComponent = () => {
   const imgDefault =
     "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
+  const nextBtn =
+    "https://storage.googleapis.com/public-saral/public_document/button.png";
   const navigate = useNavigate();
   const [allEventList, setAllEventList] = useState([]);
   const [page, setPage] = useState(1);
@@ -22,10 +28,10 @@ const FormComponent = () => {
   const [loader, setLoader] = useState(false);
   const [eventName, setEventName] = useState("");
   const rowsPerPage = 10;
-  const nextBtn =
-    "https://storage.googleapis.com/public-saral/public_document/button.png";
 
   async function getEventsList() {
+    setLoader(true)
+    
     const params = {
       search_query: eventName,
       limit: rowsPerPage,
@@ -39,7 +45,9 @@ const FormComponent = () => {
       if (data.success) {
         setAllEventList(data.data);
         setTotalCount(data?.total ?? data?.data?.length);
+        setLoader(false)
       } else {
+        setLoader(false)
         toast.error(`Please enter ${data.message}`, {
           position: "top-center",
           autoClose: 2000,
@@ -47,6 +55,7 @@ const FormComponent = () => {
         });
       }
     } catch (error) {
+      setLoader(false)
       toast.error("Failed to get event list", { autoClose: 2000 });
     }
   }
@@ -70,7 +79,7 @@ const FormComponent = () => {
 
     console.log("data is ", data);
     // navigate(data?.data?.redirect_url);
-    window.location.href = data.data.redirect_url;  
+    window.location.href = data.data.redirect_url;
     // fetch("/api/event_submission/redirect_to_form?event_id=" + event_id)
     //   .then((res) => res.json())
     //   .then((data) => (window.location.href = data.data.redirect_url));
@@ -91,7 +100,7 @@ const FormComponent = () => {
   }, [eventName]);
 
   return (
-    <div className="home-main-container">
+    <Box className="form-main-container" component={Paper}>
       {loader ? (
         <Loader
           type="bubble-ping"
@@ -103,13 +112,13 @@ const FormComponent = () => {
       ) : (
         <></>
       )}
-      <div className="home-search-div">
-        <div className="event-header">
-          <h1>Events</h1>
-          <span className="sub-heading">List view of all the Events</span>
-        </div>
+      <Box className="form-event-header">
+        <h2>Events</h2>
+      </Box>
+      <div className="form-event-search">
         <TextField
           className="search-input"
+          sx={{ margin: "30px", width: "80%" }}
           placeholder="Search by Event Name"
           variant="outlined"
           value={eventName}
@@ -124,61 +133,13 @@ const FormComponent = () => {
         />
       </div>
 
-      <div className="events-container">
+      <div className="form-events-container">
         {allEventList.length > 0 ? (
-          <>
-            {allEventList.map((event) => (
-              <div key={`${event.id}${event.name}`}>
-                <div
-                  className="event-list submit-btn cursor"
-                  onClick={() => tabClickHandler(event?.id)}
-                >
-                  <div className="event-list-fir ">
-                    <div>
-                      <img
-                        className="event-photo"
-                        src={event.image_url ? event.image_url : imgDefault}
-                      />
-                    </div>
-                    <div className="event-header-name">
-                      <h2 className="event-header-name-ellipsis">
-                        {event.name}
-                      </h2>
-                      <span className="event-sub-header">
-                        Level : {event.data_level}
-                      </span>
-                    </div>
-                    <div className={event.status.class_name}>
-                      <span>{event.status.name}</span>
-                    </div>
-                    <div></div>
-                  </div>
-                  <div className="event-list-sec">
-                    <div className="hr"></div>
-                    <div className="event-list-item">
-                      <h5>States</h5>
-
-                      <span className="event-sub-header">{event.states}</span>
-                    </div>
-                    <div className="hr"></div>
-                    <div className="event-list-item">
-                      <h5>Start</h5>
-                      <span className="event-sub-header">
-                        {event.start_datetime}
-                      </span>
-                    </div>
-                    <div className="hr"></div>
-                    <div className="event-list-item">
-                      <h5>End</h5>
-                      <span className="event-sub-header">
-                        {event.end_datetime}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="form-list-container">
+            {allEventList.map((event, index) => (
+              <FormEventCard event={event} key={index} />
             ))}
-          </>
+          </div>
         ) : (
           <div className="no-event-data">No Data Found</div>
         )}
@@ -192,7 +153,7 @@ const FormComponent = () => {
           shape="rounded"
         />
       </div>
-    </div>
+    </Box>
   );
 };
 
