@@ -28,6 +28,9 @@ Rails.application.routes.draw do
       get 'user/submissions/:event_id' => 'event_submission#user_submissions'
       get 'user/submit_event/:event_id/:submission_id' => 'event_submission#user_submit_event'
       get 'user/submit_event/:event_id' => 'event_submission#user_submit_event'
+      get 'user/destroy/submission/:submission_id' => 'event_submission#user_destroy_submission'
+
+
 
   end
   #noinspection RailsParamDefResolve
