@@ -128,19 +128,23 @@ export default function CreateEvent({ isEdit, editData }) {
 
   async function CreateEvents(type,id) {
     setLoader(true);
+    const formData = new FormData();
+    formData.append("start_datetime", formFieldValue?.start_datetime);
+    formData.append("event_id", formFieldValue?.event_id);
+    formData.append("event_title", formFieldValue?.event_title);
+    formData.append("end_datetime", formFieldValue?.end_datetime);
+    formData.append("level_id", formFieldValue?.level_id);
+    formData.append("location_ids", formFieldValue?.location_ids);
+    formData.append("event_type", formFieldValue?.event_type);
+    formData.append("img", formFieldValue?.img);
     try {
-      const formData = new FormData();
-      formData.append("start_datetime", formFieldValue?.start_datetime);
-      formData.append("event_id", formFieldValue?.event_id);
-      formData.append("event_title", formFieldValue?.event_title);
-      formData.append("end_datetime", formFieldValue?.end_datetime);
-      formData.append("level_id", formFieldValue?.level_id);
-      formData.append("location_ids", formFieldValue?.location_ids);
-      formData.append("event_type", formFieldValue?.event_type);
-      formData.append("img", formFieldValue?.img);
+
       // const response = await ApiClient.post("/event/create", formData);
 
-      const response = await createEvent(formData,{event_id:id});
+        const response = await createEvent(formData,{event_id:id});
+
+
+
 
       if (response.data.success) {
         setLoader(false);
@@ -322,6 +326,7 @@ export default function CreateEvent({ isEdit, editData }) {
                 />
                 <input
                   type="file"
+                  accept=".png, .jpg, .jpeg"
                   className="file-input"
                   onChange={handleImagesChange}
                   ref={fileInputRef}

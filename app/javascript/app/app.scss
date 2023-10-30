@@ -1,4 +1,23 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@500&family=Quicksand:wght@600&family=Roboto:wght@100;500&display=swap");
+
+/* styles.css */
+html {
+  font-size: 16px;
+}
+
+@media screen and (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+
 body {
   background: #fafafb;
   margin: 0;

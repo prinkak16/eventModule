@@ -17,9 +17,11 @@ import HeaderBar from "./components/shared/header/header";
 import Header from "./components/shared/header/header";
 import FormSubmission from "./components/pages/form/FormSubmission";
 import EditEvent from "./components/pages/events/edit-events/EditEvent";
+import {useNavigate} from "react-router";
 
 const paths = ["form"];
 function App() {
+  const navigate=useNavigate();
   const { pathname } = useLocation();
   console.log("pathname is", pathname);
 
@@ -38,6 +40,8 @@ function App() {
   useEffect(() => {
     toggleNavbar();
   }, [pathname]);
+
+ 
   return (  
     <>
       <ToastContainer />

@@ -1,19 +1,15 @@
-.hello {
-  font-size: 28px;
-  color: orange;
-  font-weight: bold;
-}
+
 body {
   background-color: rgba(0, 0, 0, 0.03);
   //color: rgba(0, 0, 0, 0.15);
 }
 
 .form-main-container {
-  margin: auto;
-  overflow: auto;
-  width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 900px;
 
-  height: 100vh;
+
   padding-bottom: 100px;
   .MuiTablePagination-root {
     font-size: 20px;
@@ -154,7 +150,7 @@ body {
 }
 
 .form-events-container {
-  padding: 0 30px;
+  padding: 0 20px;
 }
 
 .form-list-card {
@@ -239,9 +235,23 @@ body {
   justify-content: center;
   align-items: center;
   height: 80px;
-  box-shadow: 1px 1px #e9e3e3 ;
-  border-bottom: 1px solid #e9e3e3;
+  box-shadow:5px 2px 15px #e9e3e3 ;
+  .form-event-back-button{
+         margin-left:20px;
+           width:50px;
+         
+  }
+  .form-event-name{
+    flex-grow: 2  ;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    
+  }
 }
+
+
 .form-event-search {
   display: flex;
   justify-content: center;
@@ -283,7 +293,7 @@ body {
   flex-direction: column;
   gap:0.7rem;
   font-family: Quicksand;
-  font-size: 10px;
+  font-size:0.625rem;
   font-weight: 500;
   padding:1rem 0;
   line-height: 13px;
@@ -292,7 +302,7 @@ body {
 
   .heading {
     font-family: Quicksand;
-    font-size: 20px;
+    font-size: 1.25rem;
     font-weight: 600;
     line-height: 16px;
     letter-spacing: 0.13174602389335632px;
@@ -368,4 +378,24 @@ body {
 .pagination-page {
   margin: 0 1rem;
   font-weight: bold;
+}
+
+
+@media screen and (max-width: 450px) {
+  .form-main-container   {
+    margin-left:0 ;
+    margin-right: 0;
+    max-width: 450px;
+
+
+    padding-bottom: 40px;
+    .MuiTablePagination-root {
+      font-size: 1.25rem;
+    }
+    .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar {
+      align-items: baseline;
+    }
+  }
+  
+  
 }

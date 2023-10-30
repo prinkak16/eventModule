@@ -15,7 +15,6 @@ const EventSubmissionCard = ({data,event,setIsLoading,index}) => {
       const {data}=await ApiClient.get(`/user/submit_event/${event_id}/${submission_id}`);
       if(data.success){
         window.location.href=data?.data?.redirect_url;
-        setIsLoading(false)
 
       }
     }
@@ -33,7 +32,8 @@ const EventSubmissionCard = ({data,event,setIsLoading,index}) => {
 
   return(<div className="event-submission-card-container">
     <div className="event-submission-card-details">
-      <div className="report-time"> {index+1}  &nbsp;  Reported on ({ moment(data?.created_at).add(10, 'days').calendar()}) {moment(data?.created_at).format('LT')
+      <div className="report-time"> {index+1}  &nbsp;  Reported on ({ moment(data?.created_at).format('DD/MM/YYYY') 
+      }) {moment(data?.created_at).format('LT')
       }</div>
       <div className="event-name">{event?.name}</div>
       <div className="event-location">

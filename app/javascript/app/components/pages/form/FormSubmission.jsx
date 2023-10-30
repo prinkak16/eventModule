@@ -9,10 +9,17 @@ import EventSubmissionCard from "./EventSubmissionCard";
 import Loader from "react-js-loader";
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import {useNavigate} from "react-router";
+import EllipsesComponent from "../../../utils/EllipsesComponent";
+
 const FormSubmission = () => {
+    const navigate=useNavigate();
     const [eventDetails,setEventDetails]  =useState({})
     const [eventSubmissionsData,setEventsubmissionsData]=useState([]);
-    const [isLoading,setIsLoading]                         =useState(false)  ;
+    const [isLoading,setIsLoading]=useState(false)  ;
 
     const {event_id}=useParams();
 
@@ -49,34 +56,44 @@ const FormSubmission = () => {
             const {data}=await ApiClient.get(`user/submit_event/${event_id}`);
             console.log('data',data);
             if(data?.success){
-                setIsLoading(false)
                 window.location.href=data?.data?.redirect_url;
             }
-
         }
-           catch (e) {
-            setIsLoading(false)
-               console.log(error)
+        catch (e) {
+               console.log(e)
            }
         
     }
   return (
     <Box className="form-event-submission-container" component={Paper}>
-        {isLoading&&  <Loader
+        { isLoading ?  <Loader
             type="bubble-ping"
             bgColor={"#FFFFFF"}
             title="Loading.."
             color={"#FFFFFF"}
             size={100}
-        />}
-        {!isLoading&&   <>
+        />     :
+        <>
         <div className="event-name-heading-container">
             {/*     <div className="back-button">
                  <ArrowBackIcon/>
             </div>
            */ }
+            <EllipsesComponent/>
 
+            <div className="form-event-back-button" onClick={()=>navigate('/form')}>
+
+
+                <Tooltip>
+                    <IconButton>
+                        <ArrowBackIosIcon/>
+
+                    </IconButton>
+                </Tooltip>
+
+            </div>
             <h2 className="event-name-heading">{eventDetails?.name} </h2>
+
         </div>
         <img src={eventDetails?.image_url?eventDetails?.image_url:DefaultImage}  className="event-image"  />
          <div className="form-event-submissions">
@@ -89,7 +106,7 @@ const FormSubmission = () => {
 
         </div>
         </>
-}
+        }
     </Box>
   )
 }
