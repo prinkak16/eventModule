@@ -8,10 +8,14 @@ body {
   //color: rgba(0, 0, 0, 0.15);
 }
 
-.home-main-container {
-  padding: 0 8rem 10rem 8rem;
-  margin-top: 10rem;
-  .MuiTablePagination-root{
+.form-main-container {
+  margin: auto;
+  overflow: auto;
+  width: 900px;
+
+  height: 100vh;
+  padding-bottom: 100px;
+  .MuiTablePagination-root {
     font-size: 20px;
   }
   .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar {
@@ -19,6 +23,38 @@ body {
   }
 }
 
+.form-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.list-name {
+  display: flex;
+  gap: 10px;
+}
+.svg-icon {
+  width: 15px;
+  height: 20px;
+}
+.date-time-location-container {
+  flex-grow: 2;
+  display: flex;
+  gap: 15px;
+}
+.list-date {
+}
+.green-line {
+  background: #61be7a;
+  width: 2.63px;
+  height: 40.58px;
+
+  border-radius: 3.16px;
+}
+.level-event-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
 .home-search-div {
   display: flex;
   align-items: center;
@@ -40,6 +76,15 @@ body {
   border-radius: 8px;
   padding-left: 0.5rem;
   transition: none !important;
+  .css-1q6at85-MuiInputBase-root-MuiOutlinedInput-root {
+    font-family: Quicksand;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: 0em;
+    text-align: center;
+  }
+
 }
 .css-1q6at85-MuiInputBase-root-MuiOutlinedInput-root {
   height: 40px;
@@ -78,7 +123,7 @@ body {
 
 .filters-container {
   display: flex;
-  gap: 2rem ;
+  gap: 2rem;
   padding: 1rem;
   align-items: flex-end;
   margin-right: 24px;
@@ -108,18 +153,18 @@ body {
   border-radius: 100px;
 }
 
-.events-container {
+.form-events-container {
+  padding: 0 30px;
 }
 
-.event-list {
-  height: 7.5rem;
+.form-list-card {
+  height: 100px;
   width: 100%;
-  background: #ffffff;
-  margin-top: 1.5rem;
+  background: #f7f7f7;
   border-radius: 1rem;
   border: 1px solid lightgrey;
-  padding: 1rem 0rem 1rem 1rem;
   display: flex;
+  gap: 30px;
   position: relative;
   overflow: hidden;
 }
@@ -139,6 +184,17 @@ body {
   font-size: 12px;
 }
 
+.date-time-location-inner-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: Quicksand;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 13px;
+  letter-spacing: 0em;
+
+}
 .event-status-heading {
   display: block;
   text-align: center;
@@ -163,9 +219,8 @@ body {
   width: 7rem;
 }
 
-.event-photo {
-  width: 6.1rem;
-  height: 5.2rem;
+.form-photo {
+  width: 12rem;
 }
 
 .event-header-name {
@@ -177,6 +232,27 @@ body {
 .event-header-name-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.form-event-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  box-shadow: 1px 1px #e9e3e3 ;
+  border-bottom: 1px solid #e9e3e3;
+}
+.form-event-search {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Quicksand;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: 0em;
+  text-align: center;
+
 }
 
 .event-sub-header {
@@ -194,20 +270,37 @@ body {
   margin-bottom: auto;
 }
 
-.event-list-fir {
+.form-list-fir {
   display: flex;
-  width: 40%;
 }
 .visible-divs {
   transition: transform 0.7s;
 }
 
-
-
-.event-list-sec {
+.form-list-sec {
+  flex-grow: 2;
   display: flex;
-  justify-content: flex-end;
-  width: 60%;
+  flex-direction: column;
+  gap:0.7rem;
+  font-family: Quicksand;
+  font-size: 10px;
+  font-weight: 500;
+  padding:1rem 0;
+  line-height: 13px;
+  letter-spacing: 0em;
+  text-align: left;
+
+  .heading {
+    font-family: Quicksand;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.13174602389335632px;
+  }
+}
+.form-list-third {
+  padding:1rem 0;
+  margin-right: 15px;
 }
 
 .event-list-item {
@@ -261,6 +354,7 @@ body {
   align-items: baseline;
   justify-content: flex-end;
   margin-top: 1rem;
+  padding-right: 30px;
 }
 
 .pagination-arrow {
