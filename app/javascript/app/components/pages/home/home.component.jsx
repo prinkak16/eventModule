@@ -258,7 +258,7 @@ const HomeComponent = () => {
   useEffect(() => {
     let timer;
     timer = setTimeout(() => {
-      getEventsList();
+      setPage(1)
     }, 1000);
 
     return () => {

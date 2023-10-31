@@ -71,7 +71,9 @@ const FormSubmission = () => {
             const {data}    = await ApiClient.get(`user/destroy/submission/${id}`) ;
             console.log('data of delete is ',data);
             if(data?.success){
-                          setEventsubmissionsData(eventSubmissionsData?.filter((item)=>item?.id!==id)) ;
+                const filteredList= eventSubmissionsData?.filter((item)=>item?.id!==id);
+                console.log('filtered list',filteredList)
+                setEventsubmissionsData(filteredList) ;
             }
         }catch (e) {
             console.log(e);
