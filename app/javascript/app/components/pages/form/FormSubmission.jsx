@@ -64,6 +64,20 @@ const FormSubmission = () => {
            }
         
     }
+
+    const deleteEventHandler=async (id)=>{
+        console.log('submission id is ',id);
+        try{
+            const {data}    = await ApiClient.get(`user/destroy/submission/${id}`) ;
+            console.log('data of delete is ',data);
+            if(data?.success){
+                          setEventsubmissionsData(eventSubmissionsData?.filter((item)=>item?.id!==id)) ;
+            }
+        }catch (e) {
+            console.log(e);
+        }
+
+    }
   return (
     <Box className="form-event-submission-container" component={Paper}>
         { isLoading ?  <Loader
@@ -99,7 +113,7 @@ const FormSubmission = () => {
          <div className="form-event-submissions">
              {eventSubmissionsData?.length===0&&<h3>No Event is submitted yet</h3>}
              {eventSubmissionsData.length>0&&<div className="event-total-report">Total Reported : {eventSubmissionsData.length}</div>}
-             {eventSubmissionsData?.map((item,index)=><EventSubmissionCard index={index} data={item} key={index} event={eventDetails} setIsLoading={setIsLoading}/>)}
+             {eventSubmissionsData?.map((item,index)=><EventSubmissionCard index={index} data={item} key={index} event={eventDetails} setIsLoading={setIsLoading} deleteEventHandler={deleteEventHandler}/>)}
          </div>
         <div className="report-button-container">
             <button className="report-event-button" onClick={reportEventHandler}>Report Event</button>

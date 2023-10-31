@@ -143,19 +143,6 @@ const FormComponent = () => {
 
       
         <Box className="form-event-header">
-          
-          <div className="form-event-back-button" onClick={()=>navigate('/')}>
-
-
-            <Tooltip>
-              <IconButton>
-                <ArrowBackIosIcon/>
-
-              </IconButton>
-            </Tooltip>
-
-          </div>
-
           <h2 className="form-event-name">Events</h2>
         </Box>
       <div>

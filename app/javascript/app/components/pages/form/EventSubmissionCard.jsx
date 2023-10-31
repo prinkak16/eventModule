@@ -7,7 +7,7 @@ import {DeleteIcon, EditIcon} from "../../../assests/svg";
 import {IconButton, Tooltip} from "@mui/material";
 import EllipsesComponent from "../../../utils/EllipsesComponent";
 
-const EventSubmissionCard = ({data,event,setIsLoading,index}) => {
+const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler}) => {
 
   const eventEditHandler=async (event_id,submission_id) =>{
     setIsLoading(true)
@@ -25,23 +25,18 @@ const EventSubmissionCard = ({data,event,setIsLoading,index}) => {
 
 
   }
-  const deleteEventHandler=async (submission_id)=>{
-    console.log('submission id is ',submission_id);
-    try{
-         const {data}    = await ApiClient.get(`user/destroy/submission/${submission_id}`) ;
-         console.log('data of delete is ',data);
-    }catch (e) {
-                console.log(e);
-    }
 
-  }
 
   return(<div className="event-submission-card-container">
     <div className="event-submission-card-details">
       <div className="report-time"> {index+1}  &nbsp;  Reported on ({ moment(data?.created_at).format('DD/MM/YYYY') 
       }) {moment(data?.created_at).format('LT')
       }</div>
-      <div className="event-name">{event?.name}</div>
+      <div className="event-name">
+        <EllipsesComponent text=
+
+        {event?.name}  />
+      </div>
       <div className="event-location">
           <div className="event-location-header">Location</div>
         <Tooltip title={event?.states}>
