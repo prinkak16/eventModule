@@ -1,5 +1,6 @@
 class Api::EventSubmissionController < Api::ApplicationController
   include ApplicationHelper
+  require 'faraday'
 
   def redirect_to_form
     event = Event.find(params[:event_id])
@@ -19,6 +20,7 @@ class Api::EventSubmissionController < Api::ApplicationController
   rescue => e
     render json: { message: e.message }, status: 400
   end
+
   def user_submissions
     events = Event.where(id: params[:event_id])
     events = ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user)
@@ -55,4 +57,42 @@ class Api::EventSubmissionController < Api::ApplicationController
     render json: { message: e.message }, status: 400
   end
 
+  def user_destroy_submission
+    submission = EventSubmission.where(id: params[:submission_id]).first
+    event_meta = {
+      formId: submission.form_id,
+      submissionId: submission.submission_id,
+      eventId: submission.event_id,
+    }
+    token = JWT.encode(event_meta, ENV['JWT_SECRET_KEY'].presence || "thisisasamplesecret")
+    conn = Faraday.new(
+      url: ENV['FORM_BASE_URL'],
+      headers: {
+        'Authorization' => "Bearer #{ENV['AUTH_TOKEN_FOR_REDIRECTION']}",
+        'Form' => "Bearer #{token}",
+        'Content-Type' => 'application/json',
+        'Accept' => 'application/json'
+      }
+    )
+     response = conn.delete("api/submission/delete")
+    if response.status == 200
+      submission.destroy!
+    else
+      raise StandardError, 'Error Deleting Submission'
+    end
+   render json: { success: true, response: response, message: "successfully deleted" }, status: 200
+  rescue => e
+    render json: { message: e.message }, status: 400
+   end
 end
+
+
+
+
+
+
+
+
+
+
+
