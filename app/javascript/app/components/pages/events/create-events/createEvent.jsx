@@ -268,10 +268,11 @@ export default function CreateEvent({ isEdit, editData }) {
                 required={true}
                 label="Start date & Time *"
                 className="w-49"
+                minDate={dayjs(new Date())}
                 value={
                   formFieldValue.start_datetime
                     ? dayjs(formFieldValue.start_datetime)
-                    : null
+                    : dayjs(new Date())
                 }
                 onChange={(event) => {
                   setFormField(event, "start_datetime");
