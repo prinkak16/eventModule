@@ -19,7 +19,7 @@ const FormEventCard = ({ event }) => {
   };
   return (
     <div
-      className="form-list-card  cursor"
+      className="form-list-card"
       onClick={() => submissionHandler(event?.id)}
     >
       <div className="form-list-fir ">

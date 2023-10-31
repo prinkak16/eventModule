@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./form.module.scss";
 
-import { Autocomplete, Box, Pagination, Paper, TextField } from "@mui/material";
+import {Autocomplete, Box, Pagination, Paper, TextField} from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
@@ -10,12 +10,17 @@ import { faPen, faArchive, faEye } from "@fortawesome/free-solid-svg-icons";
 import Loader from "react-js-loader";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
+import {useRef} from "react";
+import FormEventMobileCard from "./mobile_view/FormEventMobileCard";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 import { ApiClient } from "../../../services/RestServices/BaseRestServices";
 import FormEventCard from "./FormEventCard";
 // import { DefaultImage } from "../../../assests/png";
-import DefaultImage from "../../../assests/png/defaultimage.png";
+import EllipsesComponent from "../../../utils/EllipsesComponent";
 const FormComponent = () => {
   const imgDefault =
     "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
@@ -28,6 +33,8 @@ const FormComponent = () => {
   const [loader, setLoader] = useState(false);
   const [eventName, setEventName] = useState("");
   const rowsPerPage = 10;
+  const myRef=useRef(null);
+  const [innerWidth,setInnerWidth]          =useState(window.innerWidth);
 
   async function getEventsList() {
     setLoader(true)
@@ -99,8 +106,29 @@ const FormComponent = () => {
     };
   }, [eventName]);
 
+
+
+  const handleResize = () => {
+    console.log('inner width is ',window.innerWidth)
+    console.log('window ' +
+        window.screen.width)
+    setInnerWidth(window.innerWidth)
+
+  };
+  useEffect(() => {
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+ /* useEffect(() => {
+    console.log('inner width is ',innerWidth)
+  }, [innerWidth]);*/
   return (
-    <Box className="form-main-container" component={Paper}>
+    <Box className="form-main-container" ref={myRef} component={innerWidth>450? Paper:""}>
       {loader ? (
         <Loader
           type="bubble-ping"
@@ -112,48 +140,59 @@ const FormComponent = () => {
       ) : (
         <></>
       )}
-      <Box className="form-event-header">
-        <h2>Events</h2>
-      </Box>
-      <div className="form-event-search">
-        <TextField
-          className="search-input"
-          sx={{ margin: "30px", width: "80%" }}
-          placeholder="Search by Event Name"
-          variant="outlined"
-          value={eventName}
-          onChange={(e) => setEventName(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </div>
 
-      <div className="form-events-container">
-        {allEventList.length > 0 ? (
-          <div className="form-list-container">
-            {allEventList.map((event, index) => (
-              <FormEventCard event={event} key={index} />
-            ))}
-          </div>
-        ) : (
-          <div className="no-event-data">No Data Found</div>
-        )}
+      
+        <Box className="form-event-header">
+          <h2 className="form-event-name">Events</h2>
+        </Box>
+      <div>
       </div>
-      <div className="pagination">
-        <Pagination
-          count={Math.ceil(totalCount / 10)}
-          page={page}
-          onChange={handlePageChange}
-          variant="outlined"
-          shape="rounded"
-        />
-      </div>
+        <div className="form-event-search">
+          <TextField
+              className="search-input"
+              sx={{ margin: "30px", width: "80%" }}
+              placeholder="Search"
+              variant="outlined"
+              value={eventName}
+              onChange={(e) => setEventName(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                ),
+              }}
+          />
+        </div>
+
+        <div className="form-events-container">
+          {allEventList.length > 0 ? (
+              <div className="form-list-container">
+                {allEventList.map((event, index) => {
+                      if (innerWidth > 450) {
+                        return <FormEventCard event={event} key={index}/>
+                      } else {
+                        return <FormEventMobileCard event={event} key={index}/>
+                      }
+                    }
+                )}
+              </div>
+          ) : (
+              <div className="no-event-data">No Data Found</div>
+          )}
+        </div>
+        <div className="pagination">
+          <Pagination
+              count={Math.ceil(totalCount / 10)}
+              page={page}
+              onChange={handlePageChange}
+              variant="outlined"
+              shape="rounded"
+          />
+        </div>
+
     </Box>
+
   );
 };
 
