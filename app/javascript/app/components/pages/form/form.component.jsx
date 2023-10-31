@@ -35,6 +35,7 @@ const FormComponent = () => {
   const rowsPerPage = 10;
   const myRef=useRef(null);
   const [innerWidth,setInnerWidth]          =useState(window.innerWidth);
+  const [isEventChanged,setIsEventChanged]=useState(false);
 
   async function getEventsList() {
     setLoader(true)
@@ -65,32 +66,16 @@ const FormComponent = () => {
       setLoader(false)
       toast.error("Failed to get event list", { autoClose: 2000 });
     }
+    setIsEventChanged(false)
+
   }
 
   useEffect(() => {
     getEventsList();
   }, [page]);
 
-  // const submit = async (url) => {
-  //   // window.location.href = url;
-  //   const data = await ApiClient.get("/event/redirect_to_form");
-  //   console.log("data is ", data);
-  // };
 
-  const tabClickHandler = async (event_id) => {
-    console.log("event id ", event_id);
-    console.log("submit api fetched");
-    const { data } = await ApiClient.get(
-      `event_submission/redirect_to_form?event_id=${event_id}`
-    );
-
-    console.log("data is ", data);
-    // navigate(data?.data?.redirect_url);
-    window.location.href = data.data.redirect_url;
-    // fetch("/api/event_submission/redirect_to_form?event_id=" + event_id)
-    //   .then((res) => res.json())
-    //   .then((data) => (window.location.href = data.data.redirect_url));
-  };
+ 
   const handlePageChange = (e, newPage) => {
     setPage(newPage);
   };
@@ -98,7 +83,13 @@ const FormComponent = () => {
   useEffect(() => {
     let timer;
     timer = setTimeout(() => {
-      getEventsList();
+      console.log('reached here')
+      if (page===1){
+        getEventsList()
+      }   else{
+        setPage(1)
+
+      }
     }, 1000);
 
     return () => {
@@ -109,9 +100,6 @@ const FormComponent = () => {
 
 
   const handleResize = () => {
-    console.log('inner width is ',window.innerWidth)
-    console.log('window ' +
-        window.screen.width)
     setInnerWidth(window.innerWidth)
 
   };
@@ -154,7 +142,9 @@ const FormComponent = () => {
               placeholder="Search"
               variant="outlined"
               value={eventName}
-              onChange={(e) => setEventName(e.target.value)}
+              onChange={(e) => {
+                setEventName(e.target.value);
+              }}
               InputProps={{
                 startAdornment: (
                     <InputAdornment position="start">
