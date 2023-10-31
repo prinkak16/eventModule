@@ -39,7 +39,13 @@ class EventSerializer < ActiveModel::Serializer
     object&.event_locations.joins(:state).select('saral_locatable_states.id as id, saral_locatable_states.name as name')
   end
   def create_form_url
-    data = { eventId: object.id, formId: object.event_form.form_id, eventName: object.name, eventStartDate: object.start_date, isFormCreator: true, eventEndDate: object.end_date, user: {name: instance_options[:current_user].name}, dataLevel: object.data_level&.name, eventStateIds: object.event_locations.pluck(:state_id)}
+    eventMeta = {
+      stateIds: object.event_locations.pluck(:state_id),
+      createRedirectionLink: ENV['ROOT_URL'] + 'event/edit_event/' + object.id.to_s,
+      createRedirectionName: object.name,
+      logo: object.get_image_url,
+    }
+    data = { eventId: object.id, formId: object.event_form.form_id, eventName: object.name, eventStartDate: object.start_date, isFormCreator: true, eventEndDate: object.end_date, user: {name: instance_options[:current_user].name}, dataLevel: object.data_level&.name, eventMeta:eventMeta}
     token = JWT.encode(data, ENV['JWT_SECRET_KEY'].present? ? ENV['JWT_SECRET_KEY'] : 'thisisasamplesecret')
     "#{ENV['FORM_CREATE_URL']}?authToken=#{ENV['AUTH_TOKEN_FOR_REDIRECTION']}&formToken=#{token}"
   end
