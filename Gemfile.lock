@@ -422,6 +422,7 @@ DEPENDENCIES
   cssbundling-rails
   debug
   dotenv
+  faraday (~> 2.7, >= 2.7.11)
   jbuilder
   jsbundling-rails
   jwt

@@ -5,10 +5,19 @@ import {LocationIcon}  from '../../../../assests/svg/index'
 import moment from "moment";
 import EllipsesComponent from "../../../../utils/EllipsesComponent";
 import Tooltip from "@mui/material/Tooltip";
+import {useNavigate} from "react-router";
+
 const FormEventMobileCard=({event,index})=>{
+    const navigate=useNavigate();   
+
+    const submissionHandler = (event_id) => {
+        console.log("clicked");
+        console.log("id");
+        navigate(`/form/submissions/${event_id}`);
+    };
 
     return(
-        <div className="form-event-mobile-card-container">
+        <div className="form-event-mobile-card-container" onClick={()=>submissionHandler(event?.id)}>
             <div className="background-image-container">
                 <img src={event?.image_url ? event?.image_url:DefaultImage} alt="loading..." className="background-image"/>
             </div>

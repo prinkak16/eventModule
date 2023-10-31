@@ -25,8 +25,14 @@ const EventSubmissionCard = ({data,event,setIsLoading,index}) => {
 
 
   }
-  const deleteEventHandler=async ()=>{
-    console.log('delte is called')
+  const deleteEventHandler=async (submission_id)=>{
+    console.log('submission id is ',submission_id);
+    try{
+         const {data}    = await ApiClient.get(`user/destroy/submission/${submission_id}`) ;
+         console.log('data of delete is ',data);
+    }catch (e) {
+                console.log(e);
+    }
 
   }
 
@@ -60,7 +66,7 @@ const EventSubmissionCard = ({data,event,setIsLoading,index}) => {
       </div>
 
               <div className="event-submission-card-icon-child">
-                <Tooltip onClick={()=>deleteEventHandler()}>
+                <Tooltip onClick={()=>deleteEventHandler(data?.id)}>
                   <IconButton>
                     <DeleteIcon/>
                   </IconButton>
