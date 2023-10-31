@@ -25,7 +25,7 @@ const FormEventMobileCard=({event,index})=>{
                       <Tooltip title={event?.states}>
 
                       <div className="states-name" style={{display:"flex",maxWidth:"45%"}}>
-                          <div>
+                          <div className={"location-icon-container"}>
                               <LocationIcon/>
 
                           </div>
@@ -46,7 +46,11 @@ const FormEventMobileCard=({event,index})=>{
 
                         </div>
                         <div className="form-event-date-container">
-                            <span className="data">{moment(event?.start_date).format("MMM Do YY")}</span>
+                            <span className="data">
+                                <EllipsesComponent text=
+                                {moment(event?.start_date).format("DD MMM YY")}
+                                                   />
+                            </span>
 
                             <span className="title">Date</span>
 
@@ -54,8 +58,10 @@ const FormEventMobileCard=({event,index})=>{
                         <div className="form-event-time-container">
 
 
+                               <span className="data">
+                                   <EllipsesComponent text={moment(event?.start_datetime,"YY-MM-DD hh:mm:ss A").format('h:mm a')} />
 
-                                <EllipsesComponent text={moment(event?.start_datetime,"YY-MM-DD hh:mm:ss A").format('h:mm a')} /> 
+                               </span>
 
 
 

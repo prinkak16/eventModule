@@ -164,7 +164,7 @@ const FormComponent = () => {
           <TextField
               className="search-input"
               sx={{ margin: "30px", width: "80%" }}
-              placeholder="Search by Event Name"
+              placeholder="Search"
               variant="outlined"
               value={eventName}
               onChange={(e) => setEventName(e.target.value)}

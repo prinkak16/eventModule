@@ -9,7 +9,6 @@ import {IconButton, Tooltip} from "@mui/material";
 const EventSubmissionCard = ({data,event,setIsLoading,index}) => {
 
   const eventEditHandler=async (event_id,submission_id) =>{
-    console.log('edit is called')
     setIsLoading(true)
     try{
       const {data}=await ApiClient.get(`/user/submit_event/${event_id}/${submission_id}`);
@@ -44,8 +43,8 @@ const EventSubmissionCard = ({data,event,setIsLoading,index}) => {
 
 
     </div>
-    <div className="event-submission-card-icon">
-      <div className="event-submission-card-icon-child">
+    <div className="event-submission-card-action-icon">
+      <div className="event-submission-card-action-icon-child">
         <Tooltip onClick={()=>eventEditHandler(data?.event_id,data?.submission_id)}>
           <IconButton>
             <EditIcon/>

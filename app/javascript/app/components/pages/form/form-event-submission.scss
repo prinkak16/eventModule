@@ -79,12 +79,12 @@
 }
 
 
-  @media screen and (max-width: 420px) {
+  @media screen and (max-width: 480px) {
     .form-event-submission-container{
       background-color: red;
       margin-left: auto;
       margin-right: auto;
-      width: 400px;
+      width: 100%;
 
 
       padding-bottom: 40px;
@@ -134,7 +134,7 @@
         color:#949494;
       }
       .form-event-submissions{
-        padding:28px;
+        padding:20px;
         display: flex;
         flex-direction: column;
         gap:16px;
@@ -142,16 +142,19 @@
         align-items: center;
       }
       .report-button-container{
-        margin-top: 40px;
         display: flex;
         justify-content: center;
         align-items: center;
+        width: 100%;
+        padding:20px;
+        margin-top: 0;
         .report-event-button{
           border:none;
           background: #2F2F2F;
           color:white;
-          padding:10px 50px;
+          max-height: 44px;
           border-radius: 10px;
+          width: 100%;
         }
       }
 

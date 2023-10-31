@@ -97,7 +97,7 @@ const FormSubmission = () => {
         </div>
         <img src={eventDetails?.image_url?eventDetails?.image_url:DefaultImage}  className="event-image"  />
          <div className="form-event-submissions">
-             {eventSubmissionsData?.length===0&&<h2>No Event is submitted yet</h2>}
+             {eventSubmissionsData?.length===0&&<h3>No Event is submitted yet</h3>}
              {eventSubmissionsData.length>0&&<div className="event-total-report">Total Reported : {eventSubmissionsData.length}</div>}
              {eventSubmissionsData?.map((item,index)=><EventSubmissionCard index={index} data={item} key={index} event={eventDetails} setIsLoading={setIsLoading}/>)}
          </div>
