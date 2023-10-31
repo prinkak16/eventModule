@@ -5,6 +5,7 @@ import {useParams} from "react-router";
 import moment from "moment";
 import {DeleteIcon, EditIcon} from "../../../assests/svg";
 import {IconButton, Tooltip} from "@mui/material";
+import EllipsesComponent from "../../../utils/EllipsesComponent";
 
 const EventSubmissionCard = ({data,event,setIsLoading,index}) => {
 
@@ -37,7 +38,12 @@ const EventSubmissionCard = ({data,event,setIsLoading,index}) => {
       <div className="event-name">{event?.name}</div>
       <div className="event-location">
           <div className="event-location-header">Location</div>
-        <div className="event-location-data">{event?.states}</div>
+        <Tooltip title={event?.states}>
+          <div className="event-location-data">
+            <EllipsesComponent    text=
+            {event?.states} /></div>
+
+        </Tooltip>
       </div>
 
 

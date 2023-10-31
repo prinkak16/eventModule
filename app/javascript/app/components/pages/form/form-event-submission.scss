@@ -14,22 +14,18 @@
 
 
     .event-name-heading-container{
+      position: relative;
       height: 80px;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow:5px 2px 15px #e9e3e3 ;
       .form-event-back-button{
-        margin-left:20px;
-        width:50px;
+        position: absolute;
+        left:0;
 
       }
-      .back-button{
-       align-self: flex-start;
-       display:flex;
-       justify-content: center;
-       align-items: center;
-      }
+
       .event-name-heading{
 
           flex-grow: 2  ;
@@ -98,17 +94,18 @@
        */
 
       .event-name-heading-container{
+        position: relative;
         height: 80px;
         display: flex;
         align-items: center;
         justify-content: center;
         box-shadow:5px 2px 15px #e9e3e3 ;
-        .back-button{
-          align-self: flex-start;
-          display:flex;
-          justify-content: center;
-          align-items: center;
+        .form-event-back-button{
+          position: absolute;
+          left:0;
+
         }
+        
         .event-name-heading{
 
           flex-grow: 2  ;
@@ -129,8 +126,7 @@
         font-family: Quicksand;
         font-size: 16px;
         font-weight: 600;
-        line-height: 14px;
-        letter-spacing: 0em;
+       
         color:#949494;
       }
       .form-event-submissions{

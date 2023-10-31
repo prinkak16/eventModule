@@ -237,9 +237,8 @@ body {
   height: 80px;
   box-shadow:5px 2px 15px #e9e3e3 ;
   .form-event-back-button{
-         margin-left:20px;
-           width:50px;
-         
+       position: absolute;
+      left:0;
   }
   .form-event-name{
     flex-grow: 2  ;
