@@ -80,6 +80,8 @@ const FormSubmission = () => {
         }
 
     }
+
+
   return (
     <Box className="form-event-submission-container" component={Paper}>
         { isLoading ?  <Loader
@@ -91,11 +93,7 @@ const FormSubmission = () => {
         />     :
         <>
         <div className="event-name-heading-container">
-            {/*     <div className="back-button">
-                 <ArrowBackIcon/>
-            </div>
-           */ }
-            <EllipsesComponent/>
+          
 
             <div className="form-event-back-button" onClick={()=>navigate('/form')}>
 

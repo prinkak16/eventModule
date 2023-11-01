@@ -231,11 +231,15 @@ body {
 }
 
 .form-event-header {
+  position: sticky;
+  top: 0;
   display: flex;
+  background: white;
   justify-content: center;
   align-items: center;
   height: 80px;
-  box-shadow:5px 2px 15px #e9e3e3 ;
+  box-shadow: 5px 2px 15px #e9e3e3;
+  z-index: 1000000;
   .form-event-back-button{
        position: absolute;
       left:0;

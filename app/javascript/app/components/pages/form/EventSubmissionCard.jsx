@@ -51,22 +51,22 @@ const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler})
 
     </div>
     <div className="event-submission-card-action-icon">
-      <div className="event-submission-card-action-icon-child">
-        <Tooltip onClick={()=>eventEditHandler(data?.event_id,data?.submission_id)}>
+      <div className="event-submission-card-action-icon-child" onClick={()=>
+          eventEditHandler(data?.event_id, data?.submission_id)
+      } >
           <IconButton>
             <EditIcon/>
           </IconButton>
-        </Tooltip>
-        <div>Edit</div>
+          <div>Edit</div>
+
       </div>
 
-              <div className="event-submission-card-icon-child">
-                <Tooltip onClick={()=>deleteEventHandler(data?.id)}>
+              <div className="event-submission-card-action-icon-child" onClick={()=>deleteEventHandler(data?.id)} >
                   <IconButton>
                     <DeleteIcon/>
                   </IconButton>
-                </Tooltip>
-                <div>Delete</div>
+                  <div>Delete</div>
+
               </div>
 
 
