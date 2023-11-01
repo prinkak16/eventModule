@@ -24,8 +24,31 @@ class Api::EventSubmissionController < Api::ApplicationController
   def user_submissions
     events = Event.where(id: params[:event_id])
     events = ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user)
-    submissions = EventSubmission.where(user_id: current_user.id, event_id: params[:event_id]).order(created_at: :desc)
-    render json: { success: true, data: { events: events, submissions: submissions }, message: "success full" }, status: 200
+    submissions = EventSubmission.where(user_id: current_user, event_id: params[:event_id]).order(created_at: :desc)
+    conn = Faraday.new(
+      url: ENV['FORM_BASE_URL'],
+      headers: {
+        'Authorization' => "Bearer #{ENV['AUTH_TOKEN_FOR_REDIRECTION']}",
+        'Content-Type' => 'application/json',
+        'Accept' => 'application/json'
+      }
+    )
+    response = conn.post("/api/submissionStatus") do |req|
+      req.body = { 'submissionId': submissions.pluck(:submission_id) }.to_json
+    end
+    raise StandardError, 'Error fetching response' if response.status != 200
+    response = JSON.parse(response.body)
+    submissions_data = response['data']
+    data = []
+    submissions.each do |submission|
+      res = submissions_data[submission.submission_id]
+      data << { reported_on: submission.created_at, images: res['images'],
+                status: res['status'], locations: res['locations'].pluck('locationName'),
+                event_id: submission.event_id, submission_id: submission.submission_id, id: submission.id }
+    end
+    render json: { success: true, data: { events: events, submissions: data }, message: "success full" }, status: 200
+  rescue => e
+    render json: { message: e.message }, status: 400
   end
 
   def user_submit_event
@@ -40,7 +63,7 @@ class Api::EventSubmissionController < Api::ApplicationController
       submission_id = SecureRandom.uuid
       submission = EventSubmission.where(user_id: current_user.id, event_id: event_id, form_id: event_form.form_id, submission_id: submission_id).first_or_create!
     end
-    raise StandardError 'Error finding submission' if submission.nil?
+    raise StandardError, 'Error finding submission' if submission.nil?
     event_meta = {
       stateIds: event.event_locations.pluck(:state_id),
       redirectionLink: ENV['ROOT_URL'] + 'form/submissions/' + event_id,
@@ -74,16 +97,16 @@ class Api::EventSubmissionController < Api::ApplicationController
         'Accept' => 'application/json'
       }
     )
-     response = conn.delete("api/submission/delete")
+    response = conn.delete("api/submission/delete")
     if response.status == 200
       submission.destroy!
     else
       raise StandardError, 'Error Deleting Submission'
     end
-   render json: { success: true, response: response, message: "successfully deleted" }, status: 200
+    render json: { success: true, response: response, message: "successfully deleted" }, status: 200
   rescue => e
     render json: { message: e.message }, status: 400
-   end
+  end
 end
 
 
