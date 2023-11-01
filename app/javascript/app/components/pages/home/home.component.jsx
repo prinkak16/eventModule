@@ -242,6 +242,8 @@ const HomeComponent = () => {
     );
   }
 
+  
+
   const handleChangePage = (event, newPage) => {
     console.log(newPage);
     setPage(newPage);
@@ -434,7 +436,7 @@ const HomeComponent = () => {
                       <span className="font1-2rem">Archive</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer">
+                    <div className="edit-bar-sub-div cursor-pointer" >
                       <FontAwesomeIcon
                         className="edit-bar-imgage"
                         size="2x"

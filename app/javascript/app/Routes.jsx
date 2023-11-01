@@ -8,6 +8,8 @@ import CreateEvent from "./components/pages/events/create-events/createEvent";
 import EditEvent from "./components/pages/events/edit-events/EditEvent";
 import {Navigate} from "react-router";
 
+import ViewEvents from "./components/pages/events/view-events/ViewEvents";
+
 const Router=()=>{
     return(
         <Routes >
@@ -18,6 +20,7 @@ const Router=()=>{
 
             <Route path="/event/create_event" element={<CreateEvent />} />
             <Route path="/event/edit_event/:id" element={<EditEvent />} />
+            <Route path="/event/view_event/:id"  element={<ViewEvents/>}/>
             <Route path="/*" element={<Navigate to="/" />} />
         </Routes>
     )

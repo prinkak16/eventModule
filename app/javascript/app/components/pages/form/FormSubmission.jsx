@@ -80,6 +80,8 @@ const FormSubmission = () => {
         }
 
     }
+
+
   return (
     <Box className="form-event-submission-container" component={Paper}>
         { isLoading ?  <Loader
@@ -91,11 +93,7 @@ const FormSubmission = () => {
         />     :
         <>
         <div className="event-name-heading-container">
-            {/*     <div className="back-button">
-                 <ArrowBackIcon/>
-            </div>
-           */ }
-            <EllipsesComponent/>
+          
 
             <div className="form-event-back-button" onClick={()=>navigate('/form')}>
 
@@ -111,7 +109,10 @@ const FormSubmission = () => {
             <h2 className="event-name-heading">{eventDetails?.name} </h2>
 
         </div>
-        <img src={eventDetails?.image_url?eventDetails?.image_url:DefaultImage}  className="event-image"  />
+            <div className="event-image-container">
+                <img src={eventDetails?.image_url?eventDetails?.image_url:DefaultImage}  className="event-image"  />
+
+            </div>
          <div className="form-event-submissions">
              {eventSubmissionsData?.length===0&&<h3>No Event is submitted yet</h3>}
              {eventSubmissionsData.length>0&&<div className="event-total-report">Total Reported : {eventSubmissionsData.length}</div>}

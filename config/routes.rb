@@ -22,16 +22,13 @@ Rails.application.routes.draw do
       get 'event/event_page' => 'event#event_page'
       get 'event/event_user_list' => 'event#event_user_list'
 
-      get 'event/login_user_detail' => 'event#login_user_detail'
+      get 'event/user' => 'event#login_user_detail'
       get 'event_submission/redirect_to_form' => 'event_submission#redirect_to_form'
       get 'event/edit/:id', to: 'event#edit', as: 'edit_event'
       get 'user/submissions/:event_id' => 'event_submission#user_submissions'
       get 'user/submit_event/:event_id/:submission_id' => 'event_submission#user_submit_event'
       get 'user/submit_event/:event_id' => 'event_submission#user_submit_event'
       get 'user/destroy/submission/:submission_id' => 'event_submission#user_destroy_submission'
-
-
-
   end
   #noinspection RailsParamDefResolve
   match '*path', to: 'home#index', via: :all, constraints: lambda { |req|
