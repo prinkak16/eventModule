@@ -38,8 +38,8 @@ const FormEventCard = ({ event }) => {
             </div>
 
             <h2 className="heading">
-              <EllipsesComponent text=
-              {event.name} /></h2>
+
+              {event.name} </h2>
           </div>
         </div>
 

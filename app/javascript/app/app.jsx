@@ -41,7 +41,11 @@ function App() {
     <>
       <ToastContainer />
       {showNavbar && <HeaderBar />}
-       <Router />
+      <div className="main-content-container">
+        <Router />
+
+
+      </div>
     </>
   );
 }

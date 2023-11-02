@@ -246,7 +246,7 @@ export default function CreateEvent({ isEdit, editData }) {
       ) : (
         <></>
       )}
-      <div className="mt-5 container-adjust">
+      <div className="container-adjust">
         <div className="event-path">
           <MyBreadcrumbs />
         </div>

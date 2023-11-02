@@ -18,6 +18,9 @@ import { faPen, faArchive, faEye } from "@fortawesome/free-solid-svg-icons";
 import Loader from "react-js-loader";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
+import {ApiClient} from "../../../services/RestServices/BaseRestServices";
+import IconButton from "@mui/material/IconButton";
+
 
 const HomeComponent = () => {
   const imgDefault =
@@ -192,6 +195,7 @@ const HomeComponent = () => {
   };
 
   async function getEventsList() {
+    console.log('called get ')
     const params = `search_query=${eventName}&start_date=${
       filtersFieldValue.date
     }&level_id=${filtersFieldValue.level_id}&state_id=${
@@ -199,24 +203,20 @@ const HomeComponent = () => {
     }&event_status=${
       filtersFieldValue.event_status_id
     }&limit=${itemsPerPage}&offset=${itemsPerPage * (page - 1)}`;
-    let levels = await fetch(`api/event/event_list?` + params, {
-      method: "GET",
+    let {data} = await ApiClient.get(`/event/event_list?` + params, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
         Authorization: "",
       },
     });
-    const res = await levels.json();
-    if (res.success) {
-      setEventsList(res.data);
-      setAllEventList(res.data);
-      setTotalCount(res?.total ?? res?.data?.length);
+    if (data?.success) {
+      setEventsList(data?.data);
+      setAllEventList(data?.data);
+      setTotalCount(data?.total ?? data?.data?.length);
     } else {
-      toast.error(`Please enter ${res.message}`, {
-        position: "top-center",
+      toast.error(`Please enter ${data.message}`, {
         autoClose: 2000,
-        theme: "colored",
       });
     }
   }
@@ -242,6 +242,12 @@ const HomeComponent = () => {
     );
   }
 
+
+  const archieveHandler=async (event_id)=>{
+    const {data}=await  ApiClient.get(`event/archive/${event_id}`)
+    console.log('data of achieve ',data);
+    
+  }
   
 
   const handleChangePage = (event, newPage) => {
@@ -260,7 +266,12 @@ const HomeComponent = () => {
   useEffect(() => {
     let timer;
     timer = setTimeout(() => {
-      setPage(1)
+      if(page===1){
+         getEventsList();
+      } else{
+        setPage(1)
+
+      }
     }, 1000);
 
     return () => {
@@ -417,32 +428,38 @@ const HomeComponent = () => {
                       className="edit-bar-sub-div cursor-pointer"
                       onClick={() => EditEvent(event, event?.id)}
                     >
+                      <IconButton>
                       <FontAwesomeIcon
                         className="edit-bar-imgage"
                         size="2x"
                         style={{ color: "blue" }}
                         icon={faPen}
                       />
+                      </IconButton>
                       <span className="font1-2rem">Edit</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer">
+                    <div className="edit-bar-sub-div cursor-pointer" onClick={()=>archieveHandler(event?.id)}>
+                      <IconButton>
                       <FontAwesomeIcon
                         className="edit-bar-imgage"
                         size="2x"
                         style={{ color: "orange" }}
                         icon={faArchive}
                       />
+                      </IconButton>
                       <span className="font1-2rem">Archive</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer" >
+                    <div className="edit-bar-sub-div cursor-pointer"  onClick={()=>navigate(`/event/view_event/${event?.id}`)}>
+                      <IconButton>
                       <FontAwesomeIcon
                         className="edit-bar-imgage"
                         size="2x"
                         style={{ color: "lightgreen" }}
                         icon={faEye}
                       />
+                      </IconButton>
                       <span className="font1-2rem">View</span>
                     </div>
                   </div>
