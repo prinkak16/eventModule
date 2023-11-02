@@ -9,13 +9,27 @@
     height: 145px;
     border-radius: 10px;
     padding: 16px;
-    .report-time{
-      font-family: Quicksand;
-      font-size: 14px;
-      font-weight: 400;
-     
-      color: #A19D9D;
+    .report-time-verified-icon-container {
+      display: flex;
+      justify-content: space-between;
+      .report-time {
+        font-family: Quicksand;
+        font-size: 14px;
+        font-weight: 400;
 
+        color: #A19D9D;
+
+      }
+      .verified-icon-container{
+        width: 31.67px;
+        height: 31.64px;
+
+
+        .verified-icon{
+          width: 31.67px;
+          height: 31.64px;
+        }
+      }
     }
     .event-name{
       font-family: Quicksand;
@@ -24,19 +38,47 @@
 
 
     }
-    .event-location{
-      font-family: Quicksand;
-      font-size: 16px;
-      font-weight: 500;
-      .event-location-header{
-        font-size: 14px;
-       
-        color:#AFAFAF;
-      }
-      .event-location-data{
-              color:#454444;
-     
+    .event-location-image-group-container {
+      display: flex;
+      justify-content: space-between;
+      .event-location {
+        width:50%;
 
+        font-family: Quicksand;
+        font-size: 16px;
+        font-weight: 500;
+
+        .event-location-header {
+          font-size: 14px;
+
+          color: #AFAFAF;
+        }
+
+        .event-location-data {
+          color: #454444;
+
+
+        }
+      }
+
+      .submission-image-group-container {
+        display: flex;
+
+        .submission-image-container {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          margin:0 3px;
+          border: 1px solid #cfcdcd;
+
+          .submission-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+
+
+          }
+        }
       }
     }
   }
@@ -91,22 +133,47 @@
 
 
       }
-      .event-location{
-        font-family: Quicksand;
-        font-size: 13px;
-        font-weight: 500;
-       
-        .event-location-header{
-          font-size: 14px;
+      .event-location-image-group-container {
+        display: flex;
 
-          color:#AFAFAF;
+        .event-location {
+          width:50%;
+          font-family: Quicksand;
+          font-size: 13px;
+          font-weight: 500;
+
+          .event-location-header {
+            font-weight: 500;
+            font-size: 12px;
+
+            color: #AFAFAF;
+          }
+
+          .event-location-data {
+            color: #454444;
+
+
+          }
         }
-        .event-location-data{
-          color:#454444;
 
+        .submission-image-group-container {
+          display: flex;
 
+          .submission-image-container {
+            width: 25.67px;
+            height: 25.64px;
+            border-radius: 50%;
+            margin: 0 3px;
+
+            .submission-image {
+              width: 25.67px;
+              height: 25.64px;
+              border-radius: 50%;
+            }
+          }
         }
       }
+
       border-bottom:1px dotted #E8E6E6;
 
     }
