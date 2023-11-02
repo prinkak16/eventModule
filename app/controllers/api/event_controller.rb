@@ -140,7 +140,7 @@ class Api::EventController < Api::ApplicationController
     limit = params[:limit].present? ? params[:limit] : 10
     offset = params[:offset].present? ? params[:offset] : 0
     date = DateTime.now
-    events = Event.where("end_date >= ?", date).where("start_date <= ?", date)
+    events = Event.where("end_date >= ?", date).where("start_date <= ?", date).where(published: true)
     events = events.joins(:event_locations).where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
     total = events.count
