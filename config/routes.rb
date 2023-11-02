@@ -29,6 +29,8 @@ Rails.application.routes.draw do
       get 'user/submit_event/:event_id/:submission_id' => 'event_submission#user_submit_event'
       get 'user/submit_event/:event_id' => 'event_submission#user_submit_event'
       get 'user/destroy/submission/:submission_id' => 'event_submission#user_destroy_submission'
+      get 'event/archive/:id', to: 'event#event_archive'
+
   end
   #noinspection RailsParamDefResolve
   match '*path', to: 'home#index', via: :all, constraints: lambda { |req|
