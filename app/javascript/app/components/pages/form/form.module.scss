@@ -160,7 +160,7 @@ body {
   border-radius: 1rem;
   border: 1px solid lightgrey;
   display: flex;
-  gap: 30px;
+  gap: 1.5rem;
   position: relative;
   overflow: hidden;
 }
@@ -312,6 +312,9 @@ body {
   line-height: 13px;
   letter-spacing: 0em;
   text-align: left;
+  max-width: 60%;
+  min-width: 60%;
+
 
   .heading {
     font-family: Quicksand;
