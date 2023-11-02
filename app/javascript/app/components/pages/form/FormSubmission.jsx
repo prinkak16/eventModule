@@ -83,7 +83,7 @@ const FormSubmission = () => {
             color={"#FFFFFF"}
             size={100}
         /> : <>
-            <div className="event-name-heading-container">
+           {/* <div className="event-name-heading-container">
 
 
                 <div className="form-event-back-button" onClick={() => navigate('/form')}>
@@ -97,9 +97,8 @@ const FormSubmission = () => {
                     </Tooltip>
 
                 </div>
-                <h2 className="event-name-heading">{eventDetails?.name} </h2>
 
-            </div>
+            </div>*/}
             <div className="event-image-container">
                 <img src={eventDetails?.image_url ? eventDetails?.image_url : DefaultImage}
                      className="event-image"/>

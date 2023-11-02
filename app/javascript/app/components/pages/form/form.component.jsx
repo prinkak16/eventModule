@@ -130,9 +130,7 @@ const FormComponent = () => {
       )}
 
       
-        <Box className="form-event-header">
-          <h2 className="form-event-name">Events</h2>
-        </Box>
+        
       <div>
       </div>
         <div className="form-event-search">

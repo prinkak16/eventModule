@@ -92,7 +92,7 @@ const HomeComponent = () => {
 
   const addEvent = () => {
     navigate({
-      pathname: "/event/create_event",
+      pathname: "/events/create_event",
     });
   };
 
@@ -232,7 +232,7 @@ const HomeComponent = () => {
   function EditEvent(data, id) {
     navigate(
       {
-        pathname: `/event/edit_event/${id}`,
+        pathname: `/events/edit_event/${id}`,
       },
       {
         state: {
@@ -245,6 +245,10 @@ const HomeComponent = () => {
 
   const archieveHandler=async (event_id)=>{
     const {data}=await  ApiClient.get(`event/archive/${event_id}`)
+    if(data?.success){
+      setAllEventList(allEventList?.filter((event)=>event?.id!==event_id)) ;
+    }
+
     console.log('data of achieve ',data);
     
   }
@@ -451,7 +455,7 @@ const HomeComponent = () => {
                       <span className="font1-2rem">Archive</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer"  onClick={()=>navigate(`/event/view_event/${event?.id}`)}>
+                    <div className="edit-bar-sub-div cursor-pointer"  onClick={()=>navigate(`/events/view_event/${event?.id}`)}>
                       <IconButton>
                       <FontAwesomeIcon
                         className="edit-bar-imgage"
