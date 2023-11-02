@@ -193,4 +193,12 @@ class Api::EventController < Api::ApplicationController
     data = ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: '', current_user: current_user)
     render json: { success: true, data: data, message: "success full" }, status: 200
   end
+  def event_archive
+    data = Event.find_by_id(params[:id])
+    raise StandardError, 'Error Deleting Submission' if data.blank?
+    data.destroy!
+    render json: { success: true, data:data, message: "successfully deleted" }, status: 200
+  rescue => e
+    render json: { message: e.message }, status: 400
+  end
 end
