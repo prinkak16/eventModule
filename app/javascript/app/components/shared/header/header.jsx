@@ -5,6 +5,8 @@ import {Link, redirect, useNavigate} from "react-router-dom";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import {useLocation} from "react-router"; // Import your CSS file
     import {EventState} from "../../../EventContext";
+import Paper from '@mui/material/Paper';
+
 
 const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName = 'Ram Avtar' }) => {
     const bjpLogo = 'https://storage.googleapis.com/public-saral/public_document/BJP-logo.png';
@@ -62,12 +64,13 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
                     </>
                 )}
             </Toolbar>  :
-                <div className="header-form-bg">
-                    <h2 className="event-name-heading">{eventName} </h2>
-
-                </div>
+                /*<div className="header-form-bg">
+                    <h2 className="event-name-heading">{eventName??"Events"} </h2>
+                </div>*/
+                <Toolbar component={Paper} sx={{width:"100%"}}>
+                    <h2 className="event-name-heading">{eventName??"Events"} </h2>
+                </Toolbar>
             }
-
         </div>
 
     );

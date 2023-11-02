@@ -12,13 +12,10 @@ const nextBtn =
   "https://storage.googleapis.com/public-saral/public_document/button.png";
 
 const FormEventCard = ({ event }) => {
-  const {setEventName}=EventState();
 
   const navigate = useNavigate();
   const submissionHandler = (event_id) => {
-    console.log("clicked");
-    console.log("id");
-    setEventName(event?.name);
+    
     navigate(`/form/submissions/${event_id}`);
   };
   return (

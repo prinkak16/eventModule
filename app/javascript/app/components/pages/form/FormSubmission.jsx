@@ -9,6 +9,7 @@ import Loader from "react-js-loader";
 import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import {EventState} from "../../../EventContext";
 
 const FormSubmission = () => {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ const FormSubmission = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const {event_id} = useParams();
+    const {setEventName}=EventState();
 
     useEffect(() => {
         (async () => {
@@ -27,6 +29,9 @@ const FormSubmission = () => {
                     setEventDetails(data?.data?.events[0] ?? {})
                     setEventsubmissionsData(data?.data?.submissions)
                     setIsLoading(false)
+                    if(data?.data?.events?.length>0) {
+                        setEventName(data?.data?.events[0]?.name);
+                    }
 
                 }
             } catch (error) {

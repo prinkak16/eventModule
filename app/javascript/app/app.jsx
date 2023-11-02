@@ -38,14 +38,11 @@ function App() {
 
  
   return (  
-    <>
-      <ToastContainer />
+    <div className="outer-form-div">
        <HeaderBar />
-      
         <Router />
-
-
-    </>
+      <ToastContainer />
+    </div>
   );
 }
 
