@@ -228,9 +228,26 @@ export default function CreateEvent({ isEdit, editData }) {
     });
   };
 
-  // useEffect(() => {
-  //   console.log("form value s", formFieldValue);
-  // }, [formFieldValue]);
+   useEffect(() => {
+    console.log("form value s", formFieldValue);
+  }, [formFieldValue]);
+
+  const isNextButtonDisabled=()=>{
+    for(let key in formFieldValue){
+      if(key==='location_ids'||key==='state_obj'){
+        if(formFieldValue[key].length===0) {
+          return true;
+        }
+      }  else{
+        if(formFieldValue[key]==="")  {
+          return true;
+        }
+        
+      }
+    }
+    return false;
+
+  }
 
   return (
     <div className="create-event-container">
@@ -256,7 +273,7 @@ export default function CreateEvent({ isEdit, editData }) {
           <TextField
             id="outlined-basic"
             onChange={(event) => setFormField(event, "event_title")}
-            label="Event title"
+            label="Event title*"
             variant="outlined"
             className="w-100"
             value={formFieldValue.event_title}
@@ -265,7 +282,7 @@ export default function CreateEvent({ isEdit, editData }) {
             <div className="d-flex justify-content-between">
               <DateTimePicker
                 required={true}
-                label="Start date & Time *"
+                label="Start date & Time*"
                 className="w-49"
                 minDate={dayjs(new Date())}
                 value={
@@ -283,7 +300,7 @@ export default function CreateEvent({ isEdit, editData }) {
                 }}
               />
               <DateTimePicker
-                label="End date & Time"
+                label="End date & Time*"
                 className="w-49"
                 value={
                   formFieldValue.end_datetime
@@ -369,7 +386,7 @@ export default function CreateEvent({ isEdit, editData }) {
             getOptionLabel={(option) => option.name || ""}
             onChange={handleStateChange}
             renderInput={(params) => (
-              <TextField {...params} label={`Select State`} />
+              <TextField {...params} label={`Select State*`} />
             )}
           />
 
@@ -399,10 +416,10 @@ export default function CreateEvent({ isEdit, editData }) {
 
       <div className="submit-btn cursor-pointer">
         {!isEdit && (
-          <div className="next-btn" onClick={()=>submit('create')}>
+          <button  disabled={isNextButtonDisabled()} className="next-btn" onClick={()=>submit('create')} >
             <h4>Next</h4>
-            <img className="next-btn" src={nextBtn} />
-          </div>
+            <img className="next-btn" src={nextBtn}  />
+          </button>
         )}
 
         {isEdit && (
