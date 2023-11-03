@@ -13,4 +13,5 @@ test:
   url: <%= (ENV["DATABASE_URL"] || "") + "_test" %>
 
 production:
+  <<: *default
   url: <%= ENV["DATABASE_URL"] || "" %>
