@@ -39,7 +39,7 @@ export default function CreateEvent({ isEdit, editData }) {
   const navigate = useNavigate();
   const [dataLevels, setDataLevels] = useState([]);
   const [countryStates, setCountryStates] = useState([]);
-  const [image, setImage] = useState();
+  const [image, setImage] = useState(null);
   const [startDate, setStartDate] = useState();
 
   const [loader, setLoader] = useState(false);
@@ -181,6 +181,7 @@ export default function CreateEvent({ isEdit, editData }) {
   }
 
   const handleImagesChange = (e) => {
+    setImage(null);
     const file = e.target.files[0];
     formFieldValue.img = file;
     let reader = new FileReader();
@@ -204,9 +205,7 @@ export default function CreateEvent({ isEdit, editData }) {
       const item = formFieldValue[requiredField[i]];
       if (!item) {
         toast.error(`Please enter ${requiredField[i]}`, {
-          position: "top-center",
-          autoClose: false,
-          theme: "colored",
+          autoClose: 2000,
         });
         return;
       }
@@ -272,7 +271,7 @@ export default function CreateEvent({ isEdit, editData }) {
                 value={
                   formFieldValue.start_datetime
                     ? dayjs(formFieldValue.start_datetime)
-                    : dayjs(new Date())
+                    : null
                 }
                 onChange={(event) => {
                   setFormField(event, "start_datetime");
