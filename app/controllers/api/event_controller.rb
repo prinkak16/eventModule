@@ -201,4 +201,9 @@ class Api::EventController < Api::ApplicationController
   rescue => e
     render json: { message: e.message }, status: 400
   end
+
+  def event_publish
+    data = Event.where(id: params[:id])
+    render json: { success: true, data: data, message: "success full" }, status: 200
+  end
 end
