@@ -18,9 +18,9 @@ const FormSubmission = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const {event_id} = useParams();
-    const {setEventName}=EventState();
+    const {setEventName,setIsSubmissionPage}=EventState();
 
-    useEffect(() => {
+    useEffect(() => {                                     
         (async () => {
             setIsLoading(true)
             try {
@@ -46,9 +46,10 @@ const FormSubmission = () => {
     useEffect(() => {
         console.log('events are ', eventDetails)
     }, [eventDetails]);
-    const editEventSubmissionHandler = () => {
 
-    }
+    useEffect(() => {
+        setIsSubmissionPage(true);
+    }, []);
     const reportEventHandler = async () => {
         setIsLoading(true)
         try {

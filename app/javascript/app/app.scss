@@ -56,3 +56,11 @@ a {
   margin-right: auto;
   margin-left: auto;
 }
+
+@media screen and (max-width: 800px) {
+  .outer-form-div{
+    max-width: 56rem;
+    margin-right: 0;
+    margin-left: 0;
+  }
+}

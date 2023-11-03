@@ -15,8 +15,8 @@ const Router=()=>{
         <Routes >
             <Route path="/" element={<RedirectionComponent />} />
             <Route path="/events" element={<HomeComponent />} />
-            <Route path="/form" element={<FormComponent />} />
-            <Route path="/form/submissions/:event_id" element={<FormSubmission />} />
+            <Route path="/forms" element={<FormComponent />} />
+            <Route path="/forms/submissions/:event_id" element={<FormSubmission />} />
 
             <Route path="/events/create_event" element={<CreateEvent />} />
             <Route path="/events/edit_event/:id" element={<EditEvent />} />

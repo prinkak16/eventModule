@@ -38,7 +38,7 @@ function App() {
 
  
   return (  
-    <div className="outer-form-div">
+    <div className={!showNavbar?"outer-form-div":""}>
        <HeaderBar />
         <Router />
       <ToastContainer />

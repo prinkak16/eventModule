@@ -6,9 +6,10 @@ import {createContext, useContext, useState} from "react";
 const Event= createContext();
 
 const EventContext=({children})=>{
-    const [eventName,setEventName]=useState("");
+    const [eventName,setEventName]=useState(null);
+    const [isSubmissionPage,setIsSubmissionPage]=useState(false);
     return(
-        <Event.Provider value={{eventName,setEventName}}>
+        <Event.Provider value={{eventName,setEventName,isSubmissionPage,setIsSubmissionPage}}>
             {children}
         </Event.Provider>
     )

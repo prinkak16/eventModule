@@ -5,18 +5,17 @@ import moment from "moment";
 import { DefaultImage } from "../../../assests/png"
 import { useNavigate } from "react-router";
 import EllipsesComponent from "../../../utils/EllipsesComponent";
-import {EventState} from "../../../EventContext";
 const imgDefault =
   "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
 const nextBtn =
   "https://storage.googleapis.com/public-saral/public_document/button.png";
 
+
 const FormEventCard = ({ event }) => {
 
   const navigate = useNavigate();
   const submissionHandler = (event_id) => {
-    
-    navigate(`/form/submissions/${event_id}`);
+    navigate(`/forms/submissions/${event_id}`);
   };
   return (
     <div

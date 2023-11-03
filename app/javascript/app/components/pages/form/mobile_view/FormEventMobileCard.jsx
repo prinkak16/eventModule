@@ -8,12 +8,11 @@ import Tooltip from "@mui/material/Tooltip";
 import {useNavigate} from "react-router";
 
 const FormEventMobileCard=({event,index})=>{
-    const navigate=useNavigate();   
+
+    const navigate=useNavigate();
 
     const submissionHandler = (event_id) => {
-        console.log("clicked");
-        console.log("id");
-        navigate(`/form/submissions/${event_id}`);
+        navigate(`/forms/submissions/${event_id}`);
     };
 
     return(

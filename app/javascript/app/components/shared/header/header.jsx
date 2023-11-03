@@ -5,7 +5,10 @@ import {Link, redirect, useNavigate} from "react-router-dom";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import {useLocation} from "react-router"; // Import your CSS file
     import {EventState} from "../../../EventContext";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Paper from '@mui/material/Paper';
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
 
 
 const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName = 'Ram Avtar' }) => {
@@ -13,7 +16,8 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
     const [userDetails, setUserDetails] = useState(null)
     const navigate = useNavigate()
     const {pathname}=useLocation();
-    const {eventName}=EventState();
+    const {eventName,setEventName,isSubmissionPage,setIsSubmissionPage}=EventState();
+    console.log('issubmission  page ',isSubmissionPage)
     console.log('event name in header from context',eventName)
     useEffect(() => {
         getUserDetail()
@@ -35,8 +39,11 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
             setUserDetails(data?.data);
         }
     }
+
+
+
     return (
-        <div className="navbar-container">
+        <>
             {(pathname.includes('events')||pathname.includes('event'))?
             <Toolbar className="header-bg" id="header" >
 
@@ -64,14 +71,19 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
                     </>
                 )}
             </Toolbar>  :
-                /*<div className="header-form-bg">
-                    <h2 className="event-name-heading">{eventName??"Events"} </h2>
-                </div>*/
-                <Toolbar component={Paper} sx={{width:"100%"}}>
+               
+                <Toolbar className="header-form-bg">
+                    <Tooltip className="header-form-back-button" onClick={()=> navigate('/forms')}>
+                        {isSubmissionPage &&
+                        <IconButton>
+                            <ArrowBackIosIcon />
+                        </IconButton>
+                        }
+                    </Tooltip>
                     <h2 className="event-name-heading">{eventName??"Events"} </h2>
                 </Toolbar>
             }
-        </div>
+        </>
 
     );
 };
