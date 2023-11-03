@@ -10,15 +10,20 @@ import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import {EventState} from "../../../EventContext";
+import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
+
 
 const FormSubmission = () => {
     const navigate = useNavigate();
-    const [eventDetails, setEventDetails] = useState({})
+    const [eventDetails, setEventDetails] = useState({});
     const [eventSubmissionsData, setEventsubmissionsData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const {event_id} = useParams();
     const {setEventName,setIsSubmissionPage}=EventState();
+    const [showConfirmationModal,setShowConfirmationModal]=useState(false);
+    const [eventDeleteId,setEventDeleteId]=useState(-1);
+    const [confirmationStatus,setConfirmationStatus]=useState(false);
 
     useEffect(() => {                                     
         (async () => {
@@ -64,15 +69,16 @@ const FormSubmission = () => {
 
     }
 
-    const deleteEventHandler = async (id) => {
-        console.log('submission id is ', id);
+    const deleteEventHandler = async () => {
+        console.log('submission id is ', eventDeleteId);
         try {
-            const {data} = await ApiClient.get(`user/destroy/submission/${id}`);
+            const {data} = await ApiClient.get(`user/destroy/submission/${eventDeleteId}`);
             console.log('data of delete is ', data);
             if (data?.success) {
-                const filteredList = eventSubmissionsData?.filter((item) => item?.id !== id);
+                const filteredList = eventSubmissionsData?.filter((item) => item?.id !== eventDeleteId  );
                 console.log('filtered list', filteredList)
                 setEventsubmissionsData(filteredList);
+                setConfirmationStatus(false);
             }
         } catch (e) {
             console.log(e);
@@ -80,8 +86,15 @@ const FormSubmission = () => {
 
     }
 
+    useEffect(() => {
+          if(confirmationStatus){
+              deleteEventHandler();
+          }
+    }, [confirmationStatus]);
 
-    return (<Box className="form-event-submission-container" component={Paper}>
+
+    return (<Box className="form-event-submission-container" >
+         <ConfirmationModal message="Are you sure want to delete ?"  showConfirmationModal={showConfirmationModal} setShowConfirmationModal={setShowConfirmationModal}  setConfirmationStatus={setConfirmationStatus} />
         {isLoading ? <Loader
             type="bubble-ping"
             bgColor={"#FFFFFF"}
@@ -115,10 +128,13 @@ const FormSubmission = () => {
                 {eventSubmissionsData.length > 0 &&
                     <div className="event-total-report">Total Reported : {eventSubmissionsData.length}</div>}
                 {eventSubmissionsData?.map((item, index) => <EventSubmissionCard index={index} data={item}
+                                                                                 setShowConfirmationModal={setShowConfirmationModal}
                                                                                  key={index}
                                                                                  event={eventDetails}
                                                                                  setIsLoading={setIsLoading}
-                                                                                 deleteEventHandler={deleteEventHandler}/>)}
+                                                                                 setEventDeleteId={setEventDeleteId}
+
+                                                                                />)}
             </div>
             <div className="report-button-container">
                 <button className="report-event-button" onClick={reportEventHandler}>Report Event</button>

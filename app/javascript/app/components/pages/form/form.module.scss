@@ -7,6 +7,8 @@ body {
 .form-main-container {
 
   width: 100%;
+  background: white;
+  border-radius: 0 0 15px 15px;
 
 
   padding-bottom: 100px;
@@ -238,7 +240,7 @@ body {
   align-items: center;
   height: 80px;
   box-shadow: 5px 2px 15px #e9e3e3;
-  z-index: 1000000;
+  z-index: 55;
   .form-event-back-button{
        position: absolute;
       left:0;
@@ -268,10 +270,10 @@ body {
     border-radius: 10px;
   }
   .search-input .css-i4bv87-MuiSvgIcon-root {
-    z-index:1000;
+    z-index:55;
   }
   .search-input .css-1o9s3wi-MuiInputBase-input-MuiOutlinedInput-input   {
-    z-index:10000;
+    z-index:55;
   }
 
 
@@ -400,7 +402,8 @@ body {
 @media screen and (max-width: 450px) {
   .form-main-container   {
    width: 100%;
-
+    background: white;
+    border-radius: 0 0 15px 15px;
 
     padding-bottom: 40px;
     .MuiTablePagination-root {

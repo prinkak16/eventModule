@@ -66,7 +66,7 @@ class Api::EventSubmissionController < Api::ApplicationController
     raise StandardError, 'Error finding submission' if submission.nil?
     event_meta = {
       stateIds: event.event_locations.pluck(:state_id),
-      redirectionLink: ENV['ROOT_URL'] + 'form/submissions/' + event_id,
+      redirectionLink: ENV['ROOT_URL'] + 'forms/submissions/' + event_id,
       logo: event.get_image_url
     }
     data = { eventId: event.id, formId: event_form.form_id, submissionId: submission.submission_id,

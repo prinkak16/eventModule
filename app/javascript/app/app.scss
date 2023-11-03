@@ -55,6 +55,7 @@ a {
   max-width: 56rem;
   margin-right: auto;
   margin-left: auto;
+  background: #f6f8fa;
 }
 
 @media screen and (max-width: 800px) {
@@ -62,5 +63,6 @@ a {
     max-width: 56rem;
     margin-right: 0;
     margin-left: 0;
+    background: #f6f8fa;
   }
 }

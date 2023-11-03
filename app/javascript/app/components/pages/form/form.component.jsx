@@ -121,7 +121,7 @@ const FormComponent = () => {
     console.log('inner width is ',innerWidth)
   }, [innerWidth]);*/
   return (
-    <Box className="form-main-container" ref={myRef} component={innerWidth>450? Paper:""}>
+    <Box className="form-main-container" ref={myRef} >
       {loader ? (
         <Loader
           type="bubble-ping"

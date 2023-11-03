@@ -11,8 +11,8 @@ export default function MyBreadcrumbs() {
   
   const breadcrumbsNames = {
     events: "Events",
-    create_event: "Create Event",
-    edit_event: "Edit Event",
+    create: "Create Event",
+    edit: "Edit Event",
   };
 
   return (

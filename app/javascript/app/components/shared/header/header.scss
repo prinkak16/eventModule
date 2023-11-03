@@ -11,7 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 2;
+  z-index: 100;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
 }
 .header-bg {
@@ -23,7 +23,7 @@
   height: 80px;
   top: 0;
   width: 100%;
-  z-index: 10000000000;
+  z-index: 100;
 }
 .header-form-bg {
   width: 100% ;
@@ -31,9 +31,12 @@
   display: flex !important;
   background-color: white !important;
   height: 80px;
-  z-index: 10000000000;
+  z-index: 100;
   align-items: center;
   justify-content: center;
+  position: sticky !important;
+  top:0;
+
   .header-form-back-button{
     position: absolute;
     left:10px;

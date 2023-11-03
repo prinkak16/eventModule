@@ -20,26 +20,9 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import IconButton from "@mui/material/IconButton";
-
+import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
 
 const HomeComponent = () => {
-  const imgDefault =
-    "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
-  const navigate = useNavigate();
-  const [eventsList, setEventsList] = useState([]);
-  const [allEventList, setAllEventList] = useState([]);
-
-  const [loader, setLoader] = useState(false);
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 10;
-  const [totalCount, setTotalCount] = useState(0);
-  const [clearFilter, setClearFilter] = useState(false);
-  const [eventName, setEventName] = useState("");
-
-  useEffect(() => {
-    console.log("event name is", eventName);
-  }, [eventName]);
-
   const demoData = [
     {
       id: 1,
@@ -54,6 +37,19 @@ const HomeComponent = () => {
       name: "Upcoming",
     },
   ];
+  const imgDefault =
+    "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
+  const navigate = useNavigate();
+  const [eventsList, setEventsList] = useState([]);
+  const [allEventList, setAllEventList] = useState([]);
+
+  const [loader, setLoader] = useState(false);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
+  const [totalCount, setTotalCount] = useState(0);
+  const [clearFilter, setClearFilter] = useState(false);
+  const [eventName, setEventName] = useState("");
+
   const filterList = ["Level", "State", "Event Status"];
   const [filtersFieldData, setFiltersFieldData] = useState({
     levels: [],
@@ -66,6 +62,12 @@ const HomeComponent = () => {
     state_id: "",
     event_status_id: "",
   });
+  const [showConfirmationModal,setShowConfirmationModal]=useState(false);
+  const [confirmationStatus,setConfirmationStatus]=useState(false);
+  const [eventDeleteId,setEventDeleteId]=useState(-1);
+
+
+
 
   async function getApisValue(filerType, apiPath) {
     setLoader(true);
@@ -92,7 +94,7 @@ const HomeComponent = () => {
 
   const addEvent = () => {
     navigate({
-      pathname: "/events/create_event",
+      pathname: "/events/create",
     });
   };
 
@@ -121,6 +123,8 @@ const HomeComponent = () => {
       return filtersFieldValue[`${transformedFilter}_id`];
     }
   };
+
+
 
   const filterData = (searchTerm) => {
     let text = searchTerm.target.value;
@@ -166,6 +170,12 @@ const HomeComponent = () => {
   useEffect(() => {
     callApis();
   }, []);
+
+  useEffect(() => {
+    if(confirmationStatus){
+      archieveHandler();
+    }
+  }, [confirmationStatus]);
 
   const setFieldvalue = (filterFieldType, value) => {
     let transformedType = convertSnackCase(filterFieldType);
@@ -229,28 +239,19 @@ const HomeComponent = () => {
     getEventsList();
   };
 
-  function EditEvent(data, id) {
-    navigate(
-      {
-        pathname: `/events/edit_event/${id}`,
-      },
-      {
-        state: {
-          event: data,
-        },
-      }
-    );
+  function EditEvent( id) {
+    navigate(`/events/edit/${id}`)  ;
   }
 
 
-  const archieveHandler=async (event_id)=>{
-    const {data}=await  ApiClient.get(`event/archive/${event_id}`)
+  const archieveHandler=async ()=>{
+    const {data}=await  ApiClient.get(`event/archive/${eventDeleteId}`)
     if(data?.success){
-      setAllEventList(allEventList?.filter((event)=>event?.id!==event_id)) ;
+      setAllEventList(allEventList?.filter((event)=>event?.id!==eventDeleteId)) ;
+      setConfirmationStatus(false);
     }
 
-    console.log('data of achieve ',data);
-    
+
   }
   
 
@@ -284,6 +285,7 @@ const HomeComponent = () => {
   }, [eventName]);
   return (
     <div className="home-main-container">
+      <ConfirmationModal message="Are you sure want to archive ?" showConfirmationModal={showConfirmationModal} setShowConfirmationModal={setShowConfirmationModal} setConfirmationStatus={setConfirmationStatus}/>
       {loader ? (
         <Loader
           type="bubble-ping"
@@ -430,7 +432,7 @@ const HomeComponent = () => {
                   <div className="edit-bar">
                     <div
                       className="edit-bar-sub-div cursor-pointer"
-                      onClick={() => EditEvent(event, event?.id)}
+                      onClick={() => EditEvent(event?.id)}
                     >
                       <IconButton>
                       <FontAwesomeIcon
@@ -443,7 +445,10 @@ const HomeComponent = () => {
                       <span className="font1-2rem">Edit</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer" onClick={()=>archieveHandler(event?.id)}>
+                    <div className="edit-bar-sub-div cursor-pointer" onClick={()=> {
+                      setEventDeleteId(event?.id)
+                      setShowConfirmationModal(true)
+                    }}>
                       <IconButton>
                       <FontAwesomeIcon
                         className="edit-bar-imgage"
@@ -455,7 +460,7 @@ const HomeComponent = () => {
                       <span className="font1-2rem">Archive</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer"  onClick={()=>navigate(`/events/view_event/${event?.id}`)}>
+                    <div className="edit-bar-sub-div cursor-pointer"  onClick={()=>navigate(`/events/view/${event?.id}`)}>
                       <IconButton>
                       <FontAwesomeIcon
                         className="edit-bar-imgage"

@@ -43,7 +43,7 @@ class EventSerializer < ActiveModel::Serializer
   def create_form_url
     event_meta = {
       stateIds: object.event_locations.pluck(:state_id),
-      createRedirectionLink: ENV['ROOT_URL'] + 'event/edit_event/' + object.id.to_s,
+      createRedirectionLink: ENV['ROOT_URL'] + 'events/edit/' + object.id.to_s,
       createRedirectionName: object.name,
       logo: object.get_image_url,
     }

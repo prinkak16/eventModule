@@ -8,6 +8,8 @@ const Event= createContext();
 const EventContext=({children})=>{
     const [eventName,setEventName]=useState(null);
     const [isSubmissionPage,setIsSubmissionPage]=useState(false);
+    const [eventDeleteId,setEventDeleteId]=useState(-1);
+
     return(
         <Event.Provider value={{eventName,setEventName,isSubmissionPage,setIsSubmissionPage}}>
             {children}
