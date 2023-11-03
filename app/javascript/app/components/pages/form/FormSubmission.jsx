@@ -78,8 +78,9 @@ const FormSubmission = () => {
                 const filteredList = eventSubmissionsData?.filter((item) => item?.id !== eventDeleteId  );
                 console.log('filtered list', filteredList)
                 setEventsubmissionsData(filteredList);
-                setConfirmationStatus(false);
             }
+            setConfirmationStatus(false);
+
         } catch (e) {
             console.log(e);
         }

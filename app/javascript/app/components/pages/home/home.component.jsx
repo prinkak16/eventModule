@@ -248,8 +248,9 @@ const HomeComponent = () => {
     const {data}=await  ApiClient.get(`event/archive/${eventDeleteId}`)
     if(data?.success){
       setAllEventList(allEventList?.filter((event)=>event?.id!==eventDeleteId)) ;
-      setConfirmationStatus(false);
     }
+    setConfirmationStatus(false);
+
 
 
   }
