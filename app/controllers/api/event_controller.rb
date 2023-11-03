@@ -212,7 +212,8 @@ class Api::EventController < Api::ApplicationController
   end
 
   def event_publish
-    data = Event.where(id: params[:id])
-    render json: { success: true, data: data, message: "success full" }, status: 200
+    event = Event.find_by(id: params[:id])
+    event.update(published: true)
+    render json: { success: true, data: event, message: "success full" }, status: 200
   end
 end
