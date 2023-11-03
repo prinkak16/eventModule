@@ -38,11 +38,11 @@ function App() {
 
  
   return (  
-    <>
+    <div className={!showNavbar?"outer-form-div":""}>
+       <HeaderBar />
+        <Router />
       <ToastContainer />
-      {showNavbar && <HeaderBar />}
-       <Router />
-    </>
+    </div>
   );
 }
 

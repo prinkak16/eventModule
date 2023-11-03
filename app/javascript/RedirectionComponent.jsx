@@ -10,7 +10,7 @@ const RedirectionComponent=()=>{
 
 
     useEffect(() => {
-        navigate('/form')
+        navigate('/forms')
     }, []);
         return(
             <div>

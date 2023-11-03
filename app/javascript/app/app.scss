@@ -50,3 +50,19 @@ a {
   font-size: 1rem;
   cursor: pointer;
 }
+
+.outer-form-div{
+  max-width: 56rem;
+  margin-right: auto;
+  margin-left: auto;
+  background: #f6f8fa;
+}
+
+@media screen and (max-width: 800px) {
+  .outer-form-div{
+    max-width: 56rem;
+    margin-right: 0;
+    margin-left: 0;
+    background: #f6f8fa;
+  }
+}

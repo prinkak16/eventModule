@@ -19,6 +19,7 @@ import Tooltip from '@mui/material/Tooltip';
 
 import { ApiClient } from "../../../services/RestServices/BaseRestServices";
 import FormEventCard from "./FormEventCard";
+import {EventState} from "../../../EventContext";
 // import { DefaultImage } from "../../../assests/png";
 import EllipsesComponent from "../../../utils/EllipsesComponent";
 const FormComponent = () => {
@@ -31,17 +32,18 @@ const FormComponent = () => {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(1);
   const [loader, setLoader] = useState(false);
-  const [eventName, setEventName] = useState("");
+  const [searchEventName, setSearchEventName] = useState("");
   const rowsPerPage = 10;
   const myRef=useRef(null);
   const [innerWidth,setInnerWidth]          =useState(window.innerWidth);
   const [isEventChanged,setIsEventChanged]=useState(false);
+   const {setIsSubmissionPage,setEventName}=EventState();
 
   async function getEventsList() {
     setLoader(true)
     
     const params = {
-      search_query: eventName,
+      search_query: searchEventName,
       limit: rowsPerPage,
       offset: rowsPerPage * (page - 1),
     };
@@ -74,7 +76,10 @@ const FormComponent = () => {
     getEventsList();
   }, [page]);
 
-
+  useEffect(() => {
+    setEventName(null);
+    setIsSubmissionPage(false);
+  }, []);
  
   const handlePageChange = (e, newPage) => {
     setPage(newPage);
@@ -95,7 +100,7 @@ const FormComponent = () => {
     return () => {
       clearTimeout(timer);
     };
-  }, [eventName]);
+  }, [searchEventName]);
 
 
 
@@ -116,7 +121,7 @@ const FormComponent = () => {
     console.log('inner width is ',innerWidth)
   }, [innerWidth]);*/
   return (
-    <Box className="form-main-container" ref={myRef} component={innerWidth>450? Paper:""}>
+    <Box className="form-main-container" ref={myRef} >
       {loader ? (
         <Loader
           type="bubble-ping"
@@ -130,9 +135,7 @@ const FormComponent = () => {
       )}
 
       
-        <Box className="form-event-header">
-          <h2 className="form-event-name">Events</h2>
-        </Box>
+        
       <div>
       </div>
         <div className="form-event-search">
@@ -141,9 +144,9 @@ const FormComponent = () => {
               sx={{ margin: "30px", width: "80%" }}
               placeholder="Search"
               variant="outlined"
-              value={eventName}
+              value={searchEventName}
               onChange={(e) => {
-                setEventName(e.target.value);
+                setSearchEventName(e.target.value);
               }}
               InputProps={{
                 startAdornment: (

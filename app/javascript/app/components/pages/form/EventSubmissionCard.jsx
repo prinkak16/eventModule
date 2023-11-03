@@ -8,7 +8,7 @@ import {IconButton, Tooltip} from "@mui/material";
 import EllipsesComponent from "../../../utils/EllipsesComponent";
 import {Verified} from "@mui/icons-material";
 
-const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler}) => {
+const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler,setShowConfirmationModal,setEventDeleteId}) => {
 
   const eventEditHandler=async (event_id,submission_id) =>{
     setIsLoading(true)
@@ -77,7 +77,10 @@ const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler})
 
       </div>
 
-              <div className="event-submission-card-action-icon-child" onClick={()=>deleteEventHandler(data?.id)} >
+              <div className="event-submission-card-action-icon-child" onClick={()=> {
+                  setEventDeleteId(data?.id)
+                  setShowConfirmationModal(true)
+              }} >
                   <IconButton>
                     <DeleteIcon/>
                   </IconButton>

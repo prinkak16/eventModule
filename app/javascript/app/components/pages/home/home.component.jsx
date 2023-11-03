@@ -18,25 +18,11 @@ import { faPen, faArchive, faEye } from "@fortawesome/free-solid-svg-icons";
 import Loader from "react-js-loader";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
+import {ApiClient} from "../../../services/RestServices/BaseRestServices";
+import IconButton from "@mui/material/IconButton";
+import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
 
 const HomeComponent = () => {
-  const imgDefault =
-    "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
-  const navigate = useNavigate();
-  const [eventsList, setEventsList] = useState([]);
-  const [allEventList, setAllEventList] = useState([]);
-
-  const [loader, setLoader] = useState(false);
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 10;
-  const [totalCount, setTotalCount] = useState(0);
-  const [clearFilter, setClearFilter] = useState(false);
-  const [eventName, setEventName] = useState("");
-
-  useEffect(() => {
-    console.log("event name is", eventName);
-  }, [eventName]);
-
   const demoData = [
     {
       id: 1,
@@ -51,6 +37,19 @@ const HomeComponent = () => {
       name: "Upcoming",
     },
   ];
+  const imgDefault =
+    "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
+  const navigate = useNavigate();
+  const [eventsList, setEventsList] = useState([]);
+  const [allEventList, setAllEventList] = useState([]);
+
+  const [loader, setLoader] = useState(false);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
+  const [totalCount, setTotalCount] = useState(0);
+  const [clearFilter, setClearFilter] = useState(false);
+  const [eventName, setEventName] = useState("");
+
   const filterList = ["Level", "State", "Event Status"];
   const [filtersFieldData, setFiltersFieldData] = useState({
     levels: [],
@@ -63,6 +62,12 @@ const HomeComponent = () => {
     state_id: "",
     event_status_id: "",
   });
+  const [showConfirmationModal,setShowConfirmationModal]=useState(false);
+  const [confirmationStatus,setConfirmationStatus]=useState(false);
+  const [eventDeleteId,setEventDeleteId]=useState(-1);
+
+
+
 
   async function getApisValue(filerType, apiPath) {
     setLoader(true);
@@ -89,7 +94,7 @@ const HomeComponent = () => {
 
   const addEvent = () => {
     navigate({
-      pathname: "/event/create_event",
+      pathname: "/events/create",
     });
   };
 
@@ -118,6 +123,8 @@ const HomeComponent = () => {
       return filtersFieldValue[`${transformedFilter}_id`];
     }
   };
+
+
 
   const filterData = (searchTerm) => {
     let text = searchTerm.target.value;
@@ -164,6 +171,12 @@ const HomeComponent = () => {
     callApis();
   }, []);
 
+  useEffect(() => {
+    if(confirmationStatus){
+      archieveHandler();
+    }
+  }, [confirmationStatus]);
+
   const setFieldvalue = (filterFieldType, value) => {
     let transformedType = convertSnackCase(filterFieldType);
     setFiltersFieldValue((prevState) => ({
@@ -192,6 +205,7 @@ const HomeComponent = () => {
   };
 
   async function getEventsList() {
+    console.log('called get ')
     const params = `search_query=${eventName}&start_date=${
       filtersFieldValue.date
     }&level_id=${filtersFieldValue.level_id}&state_id=${
@@ -199,24 +213,20 @@ const HomeComponent = () => {
     }&event_status=${
       filtersFieldValue.event_status_id
     }&limit=${itemsPerPage}&offset=${itemsPerPage * (page - 1)}`;
-    let levels = await fetch(`api/event/event_list?` + params, {
-      method: "GET",
+    let {data} = await ApiClient.get(`/event/event_list?` + params, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
         Authorization: "",
       },
     });
-    const res = await levels.json();
-    if (res.success) {
-      setEventsList(res.data);
-      setAllEventList(res.data);
-      setTotalCount(res?.total ?? res?.data?.length);
+    if (data?.success) {
+      setEventsList(data?.data);
+      setAllEventList(data?.data);
+      setTotalCount(data?.total ?? data?.data?.length);
     } else {
-      toast.error(`Please enter ${res.message}`, {
-        position: "top-center",
+      toast.error(`Please enter ${data.message}`, {
         autoClose: 2000,
-        theme: "colored",
       });
     }
   }
@@ -229,19 +239,21 @@ const HomeComponent = () => {
     getEventsList();
   };
 
-  function EditEvent(data, id) {
-    navigate(
-      {
-        pathname: `/event/edit_event/${id}`,
-      },
-      {
-        state: {
-          event: data,
-        },
-      }
-    );
+  function EditEvent( id) {
+    navigate(`/events/edit/${id}`)  ;
   }
 
+
+  const archieveHandler=async ()=>{
+    const {data}=await  ApiClient.get(`event/archive/${eventDeleteId}`)
+    if(data?.success){
+      setAllEventList(allEventList?.filter((event)=>event?.id!==eventDeleteId)) ;
+    }
+    setConfirmationStatus(false);
+
+
+
+  }
   
 
   const handleChangePage = (event, newPage) => {
@@ -260,7 +272,12 @@ const HomeComponent = () => {
   useEffect(() => {
     let timer;
     timer = setTimeout(() => {
-      setPage(1)
+      if(page===1){
+         getEventsList();
+      } else{
+        setPage(1)
+
+      }
     }, 1000);
 
     return () => {
@@ -269,6 +286,7 @@ const HomeComponent = () => {
   }, [eventName]);
   return (
     <div className="home-main-container">
+      <ConfirmationModal message="Are you sure want to archive ?" showConfirmationModal={showConfirmationModal} setShowConfirmationModal={setShowConfirmationModal} setConfirmationStatus={setConfirmationStatus}/>
       {loader ? (
         <Loader
           type="bubble-ping"
@@ -415,34 +433,43 @@ const HomeComponent = () => {
                   <div className="edit-bar">
                     <div
                       className="edit-bar-sub-div cursor-pointer"
-                      onClick={() => EditEvent(event, event?.id)}
+                      onClick={() => EditEvent(event?.id)}
                     >
+                      <IconButton>
                       <FontAwesomeIcon
                         className="edit-bar-imgage"
                         size="2x"
                         style={{ color: "blue" }}
                         icon={faPen}
                       />
+                      </IconButton>
                       <span className="font1-2rem">Edit</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer">
+                    <div className="edit-bar-sub-div cursor-pointer" onClick={()=> {
+                      setEventDeleteId(event?.id)
+                      setShowConfirmationModal(true)
+                    }}>
+                      <IconButton>
                       <FontAwesomeIcon
                         className="edit-bar-imgage"
                         size="2x"
                         style={{ color: "orange" }}
                         icon={faArchive}
                       />
+                      </IconButton>
                       <span className="font1-2rem">Archive</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer" >
+                    <div className="edit-bar-sub-div cursor-pointer"  onClick={()=>navigate(`/events/view/${event?.id}`)}>
+                      <IconButton>
                       <FontAwesomeIcon
                         className="edit-bar-imgage"
                         size="2x"
                         style={{ color: "lightgreen" }}
                         icon={faEye}
                       />
+                      </IconButton>
                       <span className="font1-2rem">View</span>
                     </div>
                   </div>

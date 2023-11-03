@@ -3,6 +3,8 @@
 }
 
 .create-event-container {
+  margin-top: 8rem !important;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -116,7 +118,6 @@
   width: 100%;
 }
 .container-adjust {
-  margin-top: 8rem !important;
   width: 90%;
   border-radius: 15px;
   display: flex;

@@ -4,18 +4,18 @@ import { CalenderIcon, ClockIcon, LocationIcon } from "../../../assests/svg";
 import moment from "moment";
 import { DefaultImage } from "../../../assests/png"
 import { useNavigate } from "react-router";
-
+import EllipsesComponent from "../../../utils/EllipsesComponent";
 const imgDefault =
   "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
 const nextBtn =
   "https://storage.googleapis.com/public-saral/public_document/button.png";
 
+
 const FormEventCard = ({ event }) => {
+
   const navigate = useNavigate();
   const submissionHandler = (event_id) => {
-    console.log("clicked");
-    console.log("id");
-    navigate(`/form/submissions/${event_id}`);
+    navigate(`/forms/submissions/${event_id}`);
   };
   return (
     <div
@@ -36,7 +36,10 @@ const FormEventCard = ({ event }) => {
               <span style={{ color: " #66666699" }}>Level : </span>
               <span style={{ color: "#FF9559" }}>{event.data_level}</span>
             </div>
-            <h2 className="heading">{event.name}</h2>
+
+            <h2 className="heading">
+
+              {event.name} </h2>
           </div>
         </div>
 
