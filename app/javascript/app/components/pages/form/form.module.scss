@@ -112,18 +112,20 @@ body {
 }
 
 .filters-container-main {
+  width: 20%;
   background: #ffffff;
-  margin-top: 2rem;
+ 
   border-radius: 1rem;
-  padding: 2rem 1rem;
+  position: sticky;
+  right:0;
+ 
 }
 
 .filters-container {
   display: flex;
-  gap: 2rem;
-  padding: 1rem;
-  align-items: flex-end;
-  margin-right: 24px;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding: 1.5rem;
 }
 
 .dynamic-filters {
@@ -409,20 +411,3 @@ body {
 }
 
 
-@media screen and (max-width: 450px) {
-  .form-main-container   {
-   width: 100%;
-    background: white;
-    border-radius: 0 0 15px 15px;
-
-    padding-bottom: 40px;
-    .MuiTablePagination-root {
-      font-size: 1.25rem;
-    }
-    .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar {
-      align-items: baseline;
-    }
-  }
-  
-  
-}
