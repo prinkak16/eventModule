@@ -209,16 +209,26 @@ body {
     padding: 1.7rem 0rem;
 }
 .event-list:hover .visible-divs {
-  transform: translateX(-20%);
+  transform: translateX(-30%);
 }
 
 .event-list:hover .edit-bar{
-display: flex;
+   display: flex;
+  animation: fadeIn 1s forwards;
+  opacity: 0;
+
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    display: flex;
+  }
+}
 }
 .event-list-sec {
   display: flex;
-  justify-content: flex-end;
-  width: 60%;
+  justify-content: space-around;
+  width: 50%;
 }
 
 .event-list-item {
@@ -231,7 +241,8 @@ display: flex;
 }
 
 .edit-bar-imgage {
-  width: 4rem;
+  width: 3rem;
+  height:3rem;
   border-radius: 2rem;
 }
 

@@ -73,6 +73,7 @@ const FormComponent = () => {
   }
 
   useEffect(() => {
+    console.log('first page was called')
     getEventsList();
   }, [page]);
 
@@ -90,6 +91,7 @@ const FormComponent = () => {
     timer = setTimeout(() => {
       console.log('reached here')
       if (page===1){
+        console.log('it is called for the first time ')
         getEventsList()
       }   else{
         setPage(1)

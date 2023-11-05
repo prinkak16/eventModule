@@ -21,6 +21,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import IconButton from "@mui/material/IconButton";
 import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
+import ArchiveIcon from '@mui/icons-material/Archive';
+import EditIcon from '@mui/icons-material/Edit';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 
 const HomeComponent = () => {
   const demoData = [
@@ -417,7 +420,7 @@ const HomeComponent = () => {
                     <div className="hr"></div>
                     <div className="event-list-item">
                       <h5>Start</h5>
-                      <span className="event-sub-header">
+                      <span className="event-sub-header any-ellipsis">
                         {event.start_datetime}
                       </span>
                     </div>
@@ -436,12 +439,7 @@ const HomeComponent = () => {
                       onClick={() => EditEvent(event?.id)}
                     >
                       <IconButton>
-                      <FontAwesomeIcon
-                        className="edit-bar-imgage"
-                        size="2x"
-                        style={{ color: "blue" }}
-                        icon={faPen}
-                      />
+                     <EditIcon className="event-list-icon" sx={{color:"#3193FF"}}/>
                       </IconButton>
                       <span className="font1-2rem">Edit</span>
                     </div>
@@ -451,24 +449,15 @@ const HomeComponent = () => {
                       setShowConfirmationModal(true)
                     }}>
                       <IconButton>
-                      <FontAwesomeIcon
-                        className="edit-bar-imgage"
-                        size="2x"
-                        style={{ color: "orange" }}
-                        icon={faArchive}
-                      />
+                        <ArchiveIcon className="event-list-icon" sx={{color:"orange"}}/>
+                        
                       </IconButton>
                       <span className="font1-2rem">Archive</span>
                     </div>
 
                     <div className="edit-bar-sub-div cursor-pointer"  onClick={()=>navigate(`/events/view/${event?.id}`)}>
                       <IconButton>
-                      <FontAwesomeIcon
-                        className="edit-bar-imgage"
-                        size="2x"
-                        style={{ color: "lightgreen" }}
-                        icon={faEye}
-                      />
+                      <RemoveRedEyeIcon className="event-list-icon" sx={{color:"#60D669"}}/>
                       </IconButton>
                       <span className="font1-2rem">View</span>
                     </div>

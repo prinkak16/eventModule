@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_01_095739) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_02_121929) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -110,6 +110,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_01_095739) do
     t.datetime "end_date"
     t.bigint "created_by_id", null: false
     t.datetime "deleted_at"
+    t.boolean "published", default: false
     t.index ["created_by_id"], name: "index_events_on_created_by_id"
     t.index ["data_level_id"], name: "index_events_on_data_level_id"
     t.index ["deleted_at"], name: "index_events_on_deleted_at"

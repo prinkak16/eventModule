@@ -12,6 +12,7 @@ import ViewEvents from "./components/pages/events/view-events/ViewEvents";
 
 const Router=()=>{
     return(
+        
         <Routes >
             <Route path="/" element={<RedirectionComponent />} />
             <Route path="/events" element={<HomeComponent />} />

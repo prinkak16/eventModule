@@ -26,20 +26,18 @@ import {
 } from "../../../../services/CommonServices/commonServices";
 import { ApiClient } from "../../../../services/RestServices/BaseRestServices";
 import { getEventById } from "../../../../services/RestServices/Modules/EventServices/EventsServices";
+import {UploadIcon, CrossIcon, NextIcon} from '../../../../assests/svg/index'
 
 export default function CreateEvent({ isEdit, editData }) {
   const { id } = useParams();
 
-  const imgDefault =
-    "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
   const imgCross =
     "https://storage.googleapis.com/public-saral/public_document/icon.jpg";
-  const nextBtn =
-    "https://storage.googleapis.com/public-saral/public_document/button.png";
+
   const navigate = useNavigate();
   const [dataLevels, setDataLevels] = useState([]);
   const [countryStates, setCountryStates] = useState([]);
-  const [image, setImage] = useState();
+  const [image, setImage] = useState(null);
   const [startDate, setStartDate] = useState();
 
   const [loader, setLoader] = useState(false);
@@ -52,7 +50,6 @@ export default function CreateEvent({ isEdit, editData }) {
     location_ids: [],
     event_type: "",
     img: "",
-    event_id: "",
     state_obj: [],
   });
 
@@ -130,7 +127,6 @@ export default function CreateEvent({ isEdit, editData }) {
     setLoader(true);
     const formData = new FormData();
     formData.append("start_datetime", formFieldValue?.start_datetime);
-    formData.append("event_id", formFieldValue?.event_id);
     formData.append("event_title", formFieldValue?.event_title);
     formData.append("end_datetime", formFieldValue?.end_datetime);
     formData.append("level_id", formFieldValue?.level_id);
@@ -138,44 +134,42 @@ export default function CreateEvent({ isEdit, editData }) {
     formData.append("event_type", formFieldValue?.event_type);
     formData.append("img", formFieldValue?.img);
     try {
-
-      // const response = await ApiClient.post("/event/create", formData);
-
         const response = await createEvent(formData,{event_id:id});
-
-
-
-
       if (response.data.success) {
-        setLoader(false);
       if(type==='go_to_form'||type==='create') {
         window.location.href = response.data.event.create_form_url;
       }else{
-        navigateToHome();
-        toast.success(response.data.message);
+        setLoader(false);
 
+        toast.success(response.data.message);
+        navigate('/events')
       }
       } else {
         setLoader(false);
-        
+
         toast.error(response.data.message);
       }
+
     } catch (error) {
       setLoader(false);
+
       toast.error(error);
+
     }
+
   }
 
   function setFormField(event, field) {
     if (field === "start_datetime" || field === "end_datetime") {
-      formFieldValue[field] = event.$d;
-      setEndDateCal(event.$d);
-    } else {
-      formFieldValue[field] = event.target.value;
-      const newValue = event.target.value;
       setFormFieldValue((prevFormValues) => ({
         ...prevFormValues,
-        [field]: newValue,
+        [field]: event?.$d,
+      }));
+    } else {
+      const {value} = event.target;
+      setFormFieldValue((prevFormValues) => ({
+        ...prevFormValues,
+        [field]: value,
       }));
     }
   }
@@ -195,7 +189,9 @@ export default function CreateEvent({ isEdit, editData }) {
   };
 
   const removeImage = () => {
-    formFieldValue.img = "";
+    setFormFieldValue((prevData)=> {
+      return {...prevData, img: ""}
+    })
     setImage("");
   };
 
@@ -204,9 +200,7 @@ export default function CreateEvent({ isEdit, editData }) {
       const item = formFieldValue[requiredField[i]];
       if (!item) {
         toast.error(`Please enter ${requiredField[i]}`, {
-          position: "top-center",
-          autoClose: false,
-          theme: "colored",
+          autoClose: 2000,
         });
         return;
       }
@@ -219,19 +213,34 @@ export default function CreateEvent({ isEdit, editData }) {
   const handleImageUploadClick = () => {
     // Trigger the input[type="file"] element when the image is clicked
     if (fileInputRef.current) {
+      fileInputRef.current.value=''
       fileInputRef.current.click();
     }
   };
 
-  const navigateToHome = () => {
-    navigate({
-      pathname: "/",
-    });
-  };
+  
 
-  // useEffect(() => {
-  //   console.log("form value s", formFieldValue);
-  // }, [formFieldValue]);
+   useEffect(() => {
+    console.log("form value s", formFieldValue);
+  }, [formFieldValue]);
+
+  const isNextButtonDisabled=()=>{
+    for(let key in formFieldValue){
+      if(key==='location_ids'||key==='state_obj'){
+        if(formFieldValue[key].length===0) {
+          return true;
+        }
+      }  else{
+
+        if(formFieldValue[key]===""||!(/\S/.test(formFieldValue[key])))  {
+          return true;
+        }
+        
+      }
+    }
+    return false;
+
+  }
 
   return (
     <div className="create-event-container">
@@ -253,26 +262,27 @@ export default function CreateEvent({ isEdit, editData }) {
         <h3 className="font-weight-300">
           {isEdit ? "Edit the Event" : "Create an Event"}
         </h3>
-        <Box component={Paper} className="event-create-form-bg">
+        <Box  className="event-create-form-bg">
           <TextField
-            id="outlined-basic"
+            id="event_title"
             onChange={(event) => setFormField(event, "event_title")}
-            label="Event title"
+            label="Event title*"
             variant="outlined"
             className="w-100"
+            placeholder="Enter Event Title"
             value={formFieldValue.event_title}
           />
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <div className="d-flex justify-content-between">
               <DateTimePicker
                 required={true}
-                label="Start date & Time *"
+                label="Start date & Time*"
                 className="w-49"
-                minDate={dayjs(new Date())}
+                minDateTime={dayjs(new Date())}
                 value={
                   formFieldValue.start_datetime
                     ? dayjs(formFieldValue.start_datetime)
-                    : dayjs(new Date())
+                    : null
                 }
                 onChange={(event) => {
                   setFormField(event, "start_datetime");
@@ -284,14 +294,15 @@ export default function CreateEvent({ isEdit, editData }) {
                 }}
               />
               <DateTimePicker
-                label="End date & Time"
+                  disabled={formFieldValue?.start_datetime===""}
+                label="End date & Time*"
                 className="w-49"
                 value={
                   formFieldValue.end_datetime
                     ? dayjs(formFieldValue.end_datetime)
                     : null
                 }
-                minDateTime={startDate}
+                minDateTime={dayjs(formFieldValue?.start_datetime)}
                 onChange={(event) => {
                   if (
                     formFieldValue.start_datetime &&
@@ -306,25 +317,23 @@ export default function CreateEvent({ isEdit, editData }) {
             </div>
           </LocalizationProvider>
           <div>
-            <p>Upload Image/ Banner:</p>
+            <p>Upload Image/ Banner*:</p>
             <div>
               <div className="image-container">
-                {image ? (
-                  <img
-                    onClick={removeImage}
-                    className="close-icon-img"
-                    src={imgCross}
-                    alt="cross-icon"
-                  />
-                ) : (
-                  <></>
-                )}
-                <img
-                  src={image ? image : imgDefault}
-                  alt="upload image"
-                  className="preview-image"
-                  onClick={handleImageUploadClick}
-                />
+                {image &&<CrossIcon  onClick={removeImage}
+                                className="close-icon-img"
+                                src={imgCross}
+                                alt="cross-icon"/>}
+
+                {image?
+                <img src={image}  alt="upload image"
+                     className="uploaded-image"
+                     onClick={handleImageUploadClick}  />  :
+                <UploadIcon
+                    alt="upload image"
+                    className="uploaded-image"
+                    onClick={handleImageUploadClick}
+                />  }
                 <input
                   type="file"
                   accept=".png, .jpg, .jpeg"
@@ -345,6 +354,7 @@ export default function CreateEvent({ isEdit, editData }) {
                 <button
                     className="level-button"
                   key={index}
+                    disabled={isEdit}
                   style={{
                     height: "40px",
                     width: "120px",
@@ -370,7 +380,7 @@ export default function CreateEvent({ isEdit, editData }) {
             getOptionLabel={(option) => option.name || ""}
             onChange={handleStateChange}
             renderInput={(params) => (
-              <TextField {...params} label={`Select State`} />
+              <TextField {...params} label={`Select State*`} />
             )}
           />
 
@@ -378,6 +388,7 @@ export default function CreateEvent({ isEdit, editData }) {
             <h6>Reporting Target*</h6>
 
             <RadioGroup
+               className="custom-radio-group"
               row
               value={formFieldValue?.event_type}
               aria-labelledby="demo-row-radio-buttons-group-label"
@@ -400,15 +411,16 @@ export default function CreateEvent({ isEdit, editData }) {
 
       <div className="submit-btn cursor-pointer">
         {!isEdit && (
-          <div className="next-btn" onClick={()=>submit('create')}>
+          <button  disabled={isNextButtonDisabled()} className="next-btn" onClick={()=>submit('create')} >
             <h4>Next</h4>
-            <img className="next-btn" src={nextBtn} />
-          </div>
+            <button disabled={isNextButtonDisabled()}  className="next-button-container"><NextIcon className="next-button-icon" /> </button>
+          </button>
         )}
 
         {isEdit && (
           <>
             <button
+                disabled={isNextButtonDisabled()}
                 className="save-button"
               variant="outlined"
               style={{ height: "40px", border: "1px solid black" }}
@@ -416,7 +428,8 @@ export default function CreateEvent({ isEdit, editData }) {
             > Save Event  </button>
 
             <button
-              className="go-to-form-button"
+                disabled={isNextButtonDisabled()}
+                className="go-to-form-button"
                 style= {{
                 background: "black",
                 color: "white",
