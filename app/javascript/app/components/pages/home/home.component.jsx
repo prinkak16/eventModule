@@ -417,7 +417,7 @@ const HomeComponent = () => {
                     <div className="hr"></div>
                     <div className="event-list-item">
                       <h5>Start</h5>
-                      <span className="event-sub-header">
+                      <span className="event-sub-header any-ellipsis">
                         {event.start_datetime}
                       </span>
                     </div>

@@ -41,7 +41,12 @@ function App() {
     <div className={!showNavbar?"outer-form-div":""}>
        <HeaderBar />
         <Router />
-      <ToastContainer />
+      <ToastContainer theme="colored"
+                      hideProgressBar={true}
+                      autoClose={3000}
+
+
+      />
     </div>
   );
 }
