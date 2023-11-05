@@ -11,7 +11,7 @@ const ViewEvents=()=>{
     }, []);
     return(
         <div className="view-event-container">
-            view events
+            <h1>Coming soon</h1>
         </div>
     )
 }
