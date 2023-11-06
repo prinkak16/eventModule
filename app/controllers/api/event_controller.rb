@@ -120,8 +120,16 @@ class Api::EventController < Api::ApplicationController
     offset = params[:offset].present? ? params[:offset] : 0
     query_conditions[:start_date] = get_date_diff(params[:start_date].to_datetime) if params[:start_date].present?
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
-    query_conditions[:status_aasm_state] = params[:event_status] if params[:event_status].present?
+    event_status = params[:event_status]
     events = Event.where(query_conditions)
+    date = DateTime.now
+    if event_status == "Upcoming"
+      events = events.where("start_date >= ?", date)
+    elsif event_status == "Expired"
+      events = events.where("end_date <= ?", date)
+    elsif event_status == "Active"
+      events = events.where("start_date <= ?", date).where("end_date >= ?", date)
+    end
     events = events.joins(:event_locations).where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
     total = events.count
@@ -193,17 +201,19 @@ class Api::EventController < Api::ApplicationController
     data = ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: '', current_user: current_user)
     render json: { success: true, data: data, message: "success full" }, status: 200
   end
+
   def event_archive
     data = Event.find_by_id(params[:id])
     raise StandardError, 'Error Deleting Submission' if data.blank?
     data.destroy!
-    render json: { success: true, data:data, message: "successfully deleted" }, status: 200
+    render json: { success: true, data: data, message: "successfully Archive" }, status: 200
   rescue => e
     render json: { message: e.message }, status: 400
   end
 
   def event_publish
-    data = Event.where(id: params[:id])
-    render json: { success: true, data: data, message: "success full" }, status: 200
+    event = Event.find_by(id: params[:id])
+    event.update(published: true)
+    render json: { success: true, data: event, message: "successful" }, status: 200
   end
 end
