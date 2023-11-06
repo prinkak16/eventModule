@@ -12,10 +12,11 @@ const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler,s
 
   const eventEditHandler=async (event_id,submission_id) =>{
     setIsLoading(true)
-    try{
+    try{    
       const {data}=await ApiClient.get(`/user/submit_event/${event_id}/${submission_id}`);
       if(data.success){
-        window.location.href=data?.data?.redirect_url;
+          setIsLoading(false);
+          window.location.href=data?.data?.redirect_url;
 
       }
     }
@@ -23,6 +24,7 @@ const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler,s
       setIsLoading(false)
          console.log(error)
     }
+    setIsLoading(false);
 
 
   }

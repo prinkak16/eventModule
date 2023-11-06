@@ -77,11 +77,20 @@ export default function CreateEvent({ isEdit, editData }) {
           );
           formFieldValue.state_obj = data?.data[0]?.state_ids ?? [];
          }
-        console.log("event by id", data);
       })();
     }
     getAllData();
+
+    return ()=>{
+      console.log('cleanup   up function is called')
+      setLoader(false)
+    }
+
   }, []);
+
+  useEffect(() => {
+         console.log('value of laoder is changed ');
+  }, [loader]);
 
   const handleLevelChange = (event, value) => {
     setFormFieldValue((prevFormValues) => ({
@@ -155,11 +164,12 @@ export default function CreateEvent({ isEdit, editData }) {
       }
 
     } catch (error) {
-      setLoader(false);
 
       toast.error(error);
 
     }
+
+    setLoader(false);
 
   }
 
@@ -231,22 +241,25 @@ export default function CreateEvent({ isEdit, editData }) {
 
 
   useEffect(() => {
-    if(publishedParamValue==="true"){
-      (async ()=>{
-            setLoader(true);
-            try {
-              const {data}=await ApiClient.get(`event/publish/${id}`);
-              if(data?.success){
-                navigate(`/events/edit/${id}`);
-              }
-            } catch (e){
-              toast.error(e.message);
+    if(isEdit){
+      if(publishedParamValue==="true"){
+        (async ()=>{
+          setLoader(true);
+          try {
+            const {data}=await ApiClient.get(`event/publish/${id}`);
+            if(data?.success){
+              navigate(`/events/edit/${id}`);
             }
-           setLoader(false);
-      })();
-    }else{
-      navigate(`/events/edit/${id}`);
+          } catch (e){
+            toast.error(e.message);
+          }
+          setLoader(false);
+        })();
+      }else{
+        navigate(`/events/edit/${id}`);
+      }
     }
+
   }, []);
   const isNextButtonDisabled=()=>{
     for(let key in formFieldValue){
