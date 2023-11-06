@@ -44,7 +44,13 @@ const FormSubmission = () => {
                 console.log(error)
             }
 
+            setIsLoading(false);
+
         })();
+
+        return ()=>{
+            setIsLoading(false)
+        }
 
     }, []);
 
