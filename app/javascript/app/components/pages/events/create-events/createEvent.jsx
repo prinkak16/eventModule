@@ -255,7 +255,7 @@ export default function CreateEvent({ isEdit, editData }) {
           }
           setLoader(false);
         })();
-      }else{
+      }else if(publishedParamValue==="false"){
         navigate(`/events/edit/${id}`);
       }
     }
