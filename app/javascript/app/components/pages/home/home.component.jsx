@@ -24,9 +24,12 @@ import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal"
 import ArchiveIcon from '@mui/icons-material/Archive';
 import EditIcon from '@mui/icons-material/Edit';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import {DesktopDatePicker} from "@mui/x-date-pickers";
+import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import moment from "moment";
 
 const HomeComponent = () => {
-  const demoData = [
+  const eventStatusArray = [
     {
       id: 1,
       name: "Active",
@@ -55,15 +58,15 @@ const HomeComponent = () => {
 
   const filterList = ["Level", "State", "Event Status"];
   const [filtersFieldData, setFiltersFieldData] = useState({
-    levels: [],
-    states: [],
-    event_status: demoData,
+    levels: [{id:"",name:""}],
+    states: [{id:"",name:""}],
+    event_status: eventStatusArray,
   });
   const [filtersFieldValue, setFiltersFieldValue] = useState({
     date: "",
-    level_id: "",
-    state_id: "",
-    event_status_id: "",
+    level_id: {name:"",id:"",level_class:""},
+    state_id: {name:"",id:""},
+    event_status_id: {name:"",id:""},
   });
   const [showConfirmationModal,setShowConfirmationModal]=useState(false);
   const [confirmationStatus,setConfirmationStatus]=useState(false);
@@ -189,7 +192,8 @@ const HomeComponent = () => {
   };
 
   const setDate = (date) => {
-    setFiltersFieldValue({ ...filtersFieldValue, date });
+    console.log('date is ',date);
+    setFiltersFieldValue({ ...filtersFieldValue, date:date?.$d });
   };
 
   const clearFiltersValue = () => {
@@ -199,9 +203,9 @@ const HomeComponent = () => {
     }
     setFiltersFieldValue({
       date: "",
-      level_id: "",
-      state_id: "",
-      event_status_id: "",
+      level_id: {id:"",name:""},
+      state_id:  {id:"",name:""},
+      event_status_id:  {id:"",name:""},
     });
     setEventName("");
     setClearFilter(!clearFilter);
@@ -209,12 +213,13 @@ const HomeComponent = () => {
 
   async function getEventsList() {
     console.log('called get ')
-    const params = `search_query=${eventName}&start_date=${
-      filtersFieldValue.date
-    }&level_id=${filtersFieldValue.level_id}&state_id=${
-      filtersFieldValue.state_id
+    const params = `search_query=${eventName}&start_date=${filtersFieldValue?.date!==null&&filtersFieldValue?.date!==undefined&&filtersFieldValue?.date!==""?
+        moment(filtersFieldValue.date).format('DD/MM/YYYY'):""
+   
+    }&level_id=${filtersFieldValue.level_id?.id??""}&state_id=${
+      filtersFieldValue.state_id?.id??""
     }&event_status=${
-      filtersFieldValue.event_status_id
+      filtersFieldValue.event_status_id?.name??""
     }&limit=${itemsPerPage}&offset=${itemsPerPage * (page - 1)}`;
     let {data} = await ApiClient.get(`/event/event_list?` + params, {
       headers: {
@@ -287,6 +292,18 @@ const HomeComponent = () => {
       clearTimeout(timer);
     };
   }, [eventName]);
+
+  useEffect(() => {
+    console.log('filters data',filtersFieldValue
+    )
+  }, [filtersFieldValue]);
+
+  const handleAutoComplete=(event,newValue,name)=>{
+    console.log('new value is ',newValue);
+    setFiltersFieldValue((prevData)=>({...prevData,[name]:newValue}));
+    
+    
+  }
   return (
     <div className="home-main-container">
       <ConfirmationModal message="Are you sure want to archive ?" showConfirmationModal={showConfirmationModal} setShowConfirmationModal={setShowConfirmationModal} setConfirmationStatus={setConfirmationStatus}/>
@@ -301,6 +318,7 @@ const HomeComponent = () => {
       ) : (
         <></>
       )}
+      <div  className="header-and-list-container">
       <div className="home-search-div">
         <div className="event-header">
           <h1>Events</h1>
@@ -328,62 +346,7 @@ const HomeComponent = () => {
           </div>
         </button>
       </div>
-
-      <div className="filters-container-main">
-        <div className="filters-container">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Start Date"
-              onChange={setDate}
-              value={
-                filtersFieldValue.date ? dayjs(filtersFieldValue.date) : null
-              }
-              slotProps={{
-                textField: {
-                  readOnly: true,
-                },
-              }}
-            />
-          </LocalizationProvider>
-          {filterList &&
-            filterList.map((filter, index) => (
-              <div className="dynamic-filters" key={index}>
-                <Autocomplete
-                  key={`${filter}${index}`}
-                  className="w-100"
-                  value={
-                    getOptions(filter).find(
-                      (value) => value.id === parseInt(fieldValue(filter))
-                    ) || null
-                  }
-                  options={getOptions(filter)}
-                  getOptionLabel={(option) => option.name || ""}
-                  onChange={handleFilterChange(filter, index)}
-                  renderInput={(params) => (
-                    <TextField {...params} label={`Select ${filter}`} />
-                  )}
-                />
-              </div>
-            ))}
-        </div>
-        <div className="filters-buttons">
-          <button
-            onClick={clearFiltersValue}
-            className="btn btn-light clear-btn"
-            disabled={disableClearFilterButton()}
-          >
-            Clear
-          </button>
-          <button
-            onClick={getFilterEvents}
-            className="btn btn-primary apply-btn"
-          >
-            Apply
-          </button>
-        </div>
-      </div>
-
-      <div className="events-container">
+        <div className="events-container">
         {allEventList.length > 0 ? (
           <>
             {allEventList.map((event) => (
@@ -469,16 +432,108 @@ const HomeComponent = () => {
         ) : (
           <div className="no-event-data">No Data Found</div>
         )}
+          <div className="pagination">
+            <Pagination
+                count={Math.ceil(totalCount / 10)}
+                page={page}
+                onChange={handleChangePage}
+                variant="outlined"
+                shape="rounded"
+            />
+          </div>
       </div>
-      <div className="pagination">
-        <Pagination
-          count={Math.ceil(totalCount / 10)}
-          page={page}
-          onChange={handleChangePage}
-          variant="outlined"
-          shape="rounded"
-        />
+
+        
       </div>
+
+      <div className="filters-container-main">
+        <div className="filters-container">
+          <h4>Filters</h4>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+                label="Start Date"
+                onChange={setDate}
+                value={
+                  filtersFieldValue.date ? dayjs(filtersFieldValue.date) : null
+                }
+                slotProps={{
+                  textField: {
+                    readOnly: true,
+                  },
+                }}
+            />
+          </LocalizationProvider>
+
+
+          {/*  {filterList &&
+            filterList.map((filter, index) => (
+              <div className="dynamic-filters" key={index}>
+                <Autocomplete
+                  key={`${filter}${index}`}
+                  className="w-100"
+                  value={
+                    getOptions(filter).find(
+                      (value) => value.id === parseInt(fieldValue(filter))
+                    ) || null
+                  }
+                  options={getOptions(filter)}
+                  getOptionLabel={(option) => option.name || ""}
+                  onChange={handleFilterChange(filter, index)}
+                  renderInput={(params) => (
+                    <TextField {...params} label={`Select ${filter}`} />
+                  )}
+                />
+              </div>
+            ))}*/}
+
+          <Autocomplete
+             fullWidth
+
+
+              options={filtersFieldData["levels"]}
+              getOptionLabel={(option) => option?.name}
+              value={filtersFieldValue?.level_id}
+              onChange={(e,newVal)=>handleAutoComplete(e,newVal,"level_id")}
+              renderInput={(params) => <TextField {...params} label="Select Level" variant="outlined" />}
+          />
+
+          <Autocomplete
+              fullWidth
+
+              options={filtersFieldData["states"]}
+              getOptionLabel={(option) => option?.name}
+              value={filtersFieldValue?.state_id}
+              onChange={(e,newVal)=>handleAutoComplete(e,newVal,"state_id")}
+              renderInput={(params) => <TextField {...params} label="Select States" variant="outlined" />}
+          />
+          <Autocomplete
+             fullWidth
+
+              options={filtersFieldData["event_status"]}
+              getOptionLabel={(option) => option?.name}
+              value={filtersFieldValue?.event_status_id}
+              onChange={(e,newVal)=>handleAutoComplete(e,newVal,"event_status_id")}
+              renderInput={(params) => <TextField {...params} label="Select Event Status" variant="outlined" />}
+          />
+          <div className="filters-buttons">
+            <button
+                onClick={clearFiltersValue}
+                className="clear-button"
+                disabled={disableClearFilterButton()}
+            >
+              Clear
+            </button>
+            <button
+                onClick={getFilterEvents}
+                className="apply-button"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+        </div>
+
+
     </div>
   );
 };
