@@ -26,6 +26,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import {DesktopDatePicker} from "@mui/x-date-pickers";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import moment from "moment";
 
 const HomeComponent = () => {
   const eventStatusArray = [
@@ -191,7 +192,8 @@ const HomeComponent = () => {
   };
 
   const setDate = (date) => {
-    setFiltersFieldValue({ ...filtersFieldValue, date });
+    console.log('date is ',date);
+    setFiltersFieldValue({ ...filtersFieldValue, date:date?.$d });
   };
 
   const clearFiltersValue = () => {
@@ -211,8 +213,9 @@ const HomeComponent = () => {
 
   async function getEventsList() {
     console.log('called get ')
-    const params = `search_query=${eventName}&start_date=${
-      filtersFieldValue.date
+    const params = `search_query=${eventName}&start_date=${filtersFieldValue?.date!==null&&filtersFieldValue?.date!==undefined&&filtersFieldValue?.date!==""?
+        moment(filtersFieldValue.date).format('DD/MM/YYYY'):""
+   
     }&level_id=${filtersFieldValue.level_id?.id??""}&state_id=${
       filtersFieldValue.state_id?.id??""
     }&event_status=${
@@ -238,7 +241,7 @@ const HomeComponent = () => {
 
   useEffect(() => {
     getEventsList();
-  }, [page, clearFilter,filtersFieldValue]);
+  }, [page, clearFilter]);
 
   const getFilterEvents = () => {
     getEventsList();

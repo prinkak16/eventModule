@@ -30,6 +30,10 @@ import {UploadIcon, CrossIcon, NextIcon} from '../../../../assests/svg/index'
 
 export default function CreateEvent({ isEdit, editData }) {
   const { id } = useParams();
+  const urlParams = new URLSearchParams(window.location.search);
+  const publishedParamValue = urlParams.get('published');
+  console.log('published param value',publishedParamValue)
+
 
   const imgCross =
     "https://storage.googleapis.com/public-saral/public_document/icon.jpg";
@@ -174,6 +178,7 @@ export default function CreateEvent({ isEdit, editData }) {
     }
   }
 
+
   const handleImagesChange = (e) => {
     const file = e.target.files[0];
     formFieldValue.img = file;
@@ -224,6 +229,25 @@ export default function CreateEvent({ isEdit, editData }) {
     console.log("form value s", formFieldValue);
   }, [formFieldValue]);
 
+
+  useEffect(() => {
+    if(publishedParamValue==="true"){
+      (async ()=>{
+            setLoader(true);
+            try {
+              const {data}=await ApiClient.get(`event/publish/${id}`);
+              if(data?.success){
+                navigate(`/events/edit/${id}`);
+              }
+            } catch (e){
+              toast.error(e.message);
+            }
+           setLoader(false);
+      })();
+    }else{
+      navigate(`/events/edit/${id}`);
+    }
+  }, []);
   const isNextButtonDisabled=()=>{
     for(let key in formFieldValue){
       if(key==='location_ids'||key==='state_obj'){
