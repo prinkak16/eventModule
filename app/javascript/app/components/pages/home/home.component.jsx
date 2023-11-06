@@ -512,17 +512,17 @@ const HomeComponent = () => {
               renderInput={(params) => <TextField {...params} label="Select Event Status" variant="outlined" />}
           />
         </div>
-        <div className="filters-buttons">
+        <div className="filtxers-buttons">
           <button
               onClick={clearFiltersValue}
-              className="btn btn-light clear-btn"
+              className="clear-button"
               disabled={disableClearFilterButton()}
           >
             Clear
           </button>
           <button
               onClick={getFilterEvents}
-              className="btn btn-primary apply-btn"
+              className="apply-button"
           >
             Apply
           </button>
