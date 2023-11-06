@@ -315,7 +315,7 @@ const HomeComponent = () => {
       ) : (
         <></>
       )}
-      <div style={{width:"75%"}}>
+      <div  className="header-and-list-container">
       <div className="home-search-div">
         <div className="event-header">
           <h1>Events</h1>
@@ -429,16 +429,17 @@ const HomeComponent = () => {
         ) : (
           <div className="no-event-data">No Data Found</div>
         )}
+          <div className="pagination">
+            <Pagination
+                count={Math.ceil(totalCount / 10)}
+                page={page}
+                onChange={handleChangePage}
+                variant="outlined"
+                shape="rounded"
+            />
+          </div>
       </div>
-      <div className="pagination">
-        <Pagination
-          count={Math.ceil(totalCount / 10)}
-          page={page}
-          onChange={handleChangePage}
-          variant="outlined"
-          shape="rounded"
-        />
-      </div>
+
         
       </div>
 
@@ -511,23 +512,24 @@ const HomeComponent = () => {
               onChange={(e,newVal)=>handleAutoComplete(e,newVal,"event_status_id")}
               renderInput={(params) => <TextField {...params} label="Select Event Status" variant="outlined" />}
           />
+          <div className="filters-buttons">
+            <button
+                onClick={clearFiltersValue}
+                className="clear-button"
+                disabled={disableClearFilterButton()}
+            >
+              Clear
+            </button>
+            <button
+                onClick={getFilterEvents}
+                className="apply-button"
+            >
+              Apply
+            </button>
+          </div>
         </div>
-        <div className="filtxers-buttons">
-          <button
-              onClick={clearFiltersValue}
-              className="clear-button"
-              disabled={disableClearFilterButton()}
-          >
-            Clear
-          </button>
-          <button
-              onClick={getFilterEvents}
-              className="apply-button"
-          >
-            Apply
-          </button>
         </div>
-      </div>
+
 
     </div>
   );

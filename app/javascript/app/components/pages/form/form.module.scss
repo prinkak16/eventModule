@@ -96,20 +96,7 @@ body {
   color: rgba(40, 38, 34, 0.3);
 }
 
-.dynamic-form-submit-button {
-  display: flex !important;
-  width: 172px;
-  height: 40px;
-  border-radius: 100px !important;
-  text-transform: capitalize !important;
-  justify-content: center !important;
-  background: #ff9559 !important;
-  font-weight: 600;
-  color: #ffffff;
-  border: none;
-  align-items: center;
-  gap: 8px !important;
-}
+
 
 .filters-container-main {
   width: 20%;
@@ -124,7 +111,7 @@ body {
 .filters-container {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 1.5rem;
   padding: 1.5rem;
 }
 
@@ -135,9 +122,9 @@ body {
 
 .filters-buttons {
   display: flex;
-  justify-content: flex-end;
-  gap: 3rem;
-  margin-right: 40px;
+  gap:0.5rem;
+  justify-content: space-between;
+  align-items: center;
   .clear-button{
     width:119px;
     height:32px;
