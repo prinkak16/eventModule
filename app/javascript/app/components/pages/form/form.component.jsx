@@ -32,7 +32,7 @@ const FormComponent = () => {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(1);
   const [loader, setLoader] = useState(false);
-  const [searchEventName, setSearchEventName] = useState("");
+  const [searchEventName, setSearchEventName] = useState(null);
   const rowsPerPage = 10;
   const myRef=useRef(null);
   const [innerWidth,setInnerWidth]          =useState(window.innerWidth);
@@ -43,7 +43,7 @@ const FormComponent = () => {
     setLoader(true)
     
     const params = {
-      search_query: searchEventName,
+      search_query: searchEventName??"",
       limit: rowsPerPage,
       offset: rowsPerPage * (page - 1),
     };
@@ -90,12 +90,13 @@ const FormComponent = () => {
     let timer;
     timer = setTimeout(() => {
       console.log('reached here')
-      if (page===1){
-        console.log('it is called for the first time ')
-        getEventsList()
-      }   else{
-        setPage(1)
-
+      if(searchEventName!==null) {
+        if (page === 1) {
+          console.log('it is called for the first time ')
+          getEventsList()
+        } else {
+          setPage(1)
+        }
       }
     }, 1000);
 
