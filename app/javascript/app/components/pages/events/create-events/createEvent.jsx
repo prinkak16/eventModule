@@ -27,7 +27,7 @@ import {
 import { ApiClient } from "../../../../services/RestServices/BaseRestServices";
 import { getEventById } from "../../../../services/RestServices/Modules/EventServices/EventsServices";
 import {UploadIcon, CrossIcon, NextIcon} from '../../../../assests/svg/index'
-
+import ImageCroper from "../../../shared/image-croper/ImageCroper";
 export default function CreateEvent({ isEdit, editData }) {
   const { id } = useParams();
   const urlParams = new URLSearchParams(window.location.search);
@@ -353,9 +353,10 @@ export default function CreateEvent({ isEdit, editData }) {
               />
             </div>
           </LocalizationProvider>
-          <div>
-            <p>Upload Image/ Banner*:</p>
-            <div>
+          <div style={{display:"flex"}}>
+
+            {/*<div>
+              <p>Upload Image/ Banner*:</p>
               <div className="image-container">
                 {image &&<CrossIcon  onClick={removeImage}
                                 className="close-icon-img"
@@ -379,10 +380,11 @@ export default function CreateEvent({ isEdit, editData }) {
                   ref={fileInputRef}
                 />
               </div>
-            </div>
+            </div>*/}
+             <ImageCroper handleImages={()=>{}} Initial_images={[]} isEditable={true} isCard={false}/>
           </div>
 
-          <div className="levels">
+          <div className="levels">                                   [
             <h6 style={{ display: "flex", alignItems: "center" }}>
               Event Level:
             </h6>

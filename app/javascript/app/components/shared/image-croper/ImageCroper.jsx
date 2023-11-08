@@ -1,13 +1,12 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import UploadIcon from '../../assets/upload-icon.svg';
-import CloseIcon from '../../assets/close-icon.svg';
-import './add-post-images.styles.scss';
+import {UploadIcon,CrossIcon} from '../../../assests/svg/index'
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import ImageViewer from "react-simple-image-viewer";
-
-const ImageCropper = ({handleImages, Initial_images, isEditable, isCard}) => {
-    const [imagesArray, setImagesArray] = useState(Initial_images)
+import './image-cropper.scss'
+const ImageCropper = ({handleImages, Initial_images, isEditable=true
+                          , isCard}) => {
+    const [imagesArray, setImagesArray] = useState([])
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isViewerOpen, setIsViewerOpen] = useState(false);
     const [imageToBeCropped, setImageToBeCropped] = useState(null);
@@ -64,15 +63,15 @@ const ImageCropper = ({handleImages, Initial_images, isEditable, isCard}) => {
             const widthFactor = canvasData.naturalWidth / canvasData.width;
             const heightFactor = canvasData.naturalHeight / canvasData.height;
             const cropData = `${cropBoxData.width * widthFactor}x${cropBoxData.height * heightFactor}+${(cropBoxData.left - cropBoxData.minLeft) * widthFactor}+${(cropBoxData.top - cropBoxData.minTop) * heightFactor}`
-            console.log(cropBoxData);
-            console.log(canvasData);
-            setImagesArray([...imagesArray, {
+            console.log('cropBoxData',cropBoxData);
+            console.log('canvasdata',  canvasData);
+            setImagesArray([ {
                 file: file,
                 un_cropped_file: pickedImage.current,
                 aspect_ratio: aspectRatio,
                 crop_data: cropData
             }])
-            console.log(cropData);
+            console.log('cropped data',cropData);
             setImageToBeCropped(null)
             // pickedImage.current = null
         }
@@ -89,27 +88,41 @@ const ImageCropper = ({handleImages, Initial_images, isEditable, isCard}) => {
         }
     }, [imagesArray])
 
-    return (<>
-        <span className='add-post-upload-text'>Upload Images :</span>
+    return (
         <div style={{display: "flex", flexDirection: "row"}}>
             <div className='add-post-images-content'>
                 {
                     (imagesArray && isEditable) ?
-                        imagesArray.map((image, id) => {
-                            return (<div key={id} className="add-post-images-preview">
-                                <CloseIcon onClick={() => handleImagesClose(id)}/>
+                        imagesArray.map((image, index) => {
+                            return (<div key={index} className="add-post-images-preview" style={{
+                                position: "relative",
+                                width: "103px",
+                                height: "117.54px",
+                                border:" 1px solid #79747E",
+                                borderRadius: "3.26513px",
+                                cursor: "pointer"}} >
+                                <CrossIcon onClick={() => handleImagesClose(index)} sx={{    position: "absolute",
+                                    right: 0,
+                                    padding: "4px"}}/>
                                 <img
                                     src={URL.createObjectURL(image.file)}
                                     style={{objectFit: "contain"}}
-                                    alt="preview-image"/>
+                                    alt="preview-image"
+                                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+
+                                />
+
+
                             </div>)
                         }) :
                         imagesArray.map((image, index) => {
                             return (<div key={index} className="add-post-images-preview">
                                 <img
-                                    src={image}
+                                    src={URL.createObjectURL(image.file)}
                                     alt="preview-image"
                                     onClick={() => openImageViewer(index)}/>
+                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+
                             </div>)
                         })}
 
@@ -122,20 +135,13 @@ const ImageCropper = ({handleImages, Initial_images, isEditable, isCard}) => {
                         onClose={closeImageViewer}
                     />)}
 
-                {isCard === true ?
-                    isEditable && (imagesArray.length < 1) && <label htmlFor="image-input">
-                        <div className='add-post-images-upload'>
-                            <UploadIcon/>
-                            <span>Upload Images</span>
+                {isEditable &&(imagesArray.length < 1)&&<label htmlFor="image-input">
+                        <div className='add-post-image-upload'>
+                            <UploadIcon />
+                            
                         </div>
                     </label>
-                    :
-                    isEditable && (imagesArray.length < 4) && <label htmlFor="image-input">
-                        <div className='add-post-images-upload'>
-                            <UploadIcon/>
-                            <span>Upload Images</span>
-                        </div>
-                    </label>
+
                 }
 
 
@@ -146,7 +152,8 @@ const ImageCropper = ({handleImages, Initial_images, isEditable, isCard}) => {
                 <div className={"cropperContainer"}>
                     <Cropper
                         src={imageToBeCropped}
-                        style={{flex: 1, minHeight: "400px",}}
+                        style={{flex: 1,     width: "784px",
+                            height: "694px"}}
                         aspectRatio={aspectRatio.width / aspectRatio.height}
                         guides={false}
                         autoCrop={true}
@@ -194,29 +201,16 @@ const ImageCropper = ({handleImages, Initial_images, isEditable, isCard}) => {
                             </>
                         }
 
-                        <div style={{flex: 1}}/>
                         <button type="button" className={"button btn-crop-image"} onClick={getCropData}>
                             Crop Image
                         </button>
                     </div>
                 </div>}
         </div>
-    </>);
+    );
 };
 
-export default <ImageCropper></ImageCropper>;
-
-
-
-
-
-
-
-
-
-
-
-
+export default ImageCropper;
 
 
 
