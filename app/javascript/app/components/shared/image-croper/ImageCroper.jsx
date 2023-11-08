@@ -2,11 +2,10 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {UploadIcon,CrossIcon} from '../../../assests/svg/index'
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import ImageViewer from "react-simple-image-viewer";
 import './image-cropper.scss'
-const ImageCropper = ({handleImages, Initial_images, isEditable=true
-                          , isCard}) => {
-    const [imagesArray, setImagesArray] = useState([])
+const ImageCropper = ({handleImage,Initial_images, isEditable=true
+                          , isCard=false}) => {
+    const [finalImageFile, setFinalImageFile] = useState([])
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isViewerOpen, setIsViewerOpen] = useState(false);
     const [imageToBeCropped, setImageToBeCropped] = useState(null);
@@ -45,15 +44,15 @@ const ImageCropper = ({handleImages, Initial_images, isEditable=true
     }
 
     const changeAspectRatio = (width, height) => {
-        if (imagesArray.length > 0) {
+        if (finalImageFile.length > 0) {
             return alert("All Images need to be of same Aspect Ratio");
         }
         setAspectRatio({width: width, height: height})
         cropper.current.setAspectRatio(width / height);
     }
     const handleImagesClose = (imageIndex) => {
-        const updatedImages = imagesArray.filter((image, idx) => idx !== imageIndex);
-        setImagesArray(updatedImages);
+        const updatedImages = finalImageFile.filter((image, idx) => idx !== imageIndex);
+        setFinalImageFile(updatedImages);
     }
     const getCropData = async () => {
         if (typeof cropper.current !== "undefined") {
@@ -65,7 +64,7 @@ const ImageCropper = ({handleImages, Initial_images, isEditable=true
             const cropData = `${cropBoxData.width * widthFactor}x${cropBoxData.height * heightFactor}+${(cropBoxData.left - cropBoxData.minLeft) * widthFactor}+${(cropBoxData.top - cropBoxData.minTop) * heightFactor}`
             console.log('cropBoxData',cropBoxData);
             console.log('canvasdata',  canvasData);
-            setImagesArray([ {
+            setFinalImageFile   ([ {
                 file: file,
                 un_cropped_file: pickedImage.current,
                 aspect_ratio: aspectRatio,
@@ -84,70 +83,51 @@ const ImageCropper = ({handleImages, Initial_images, isEditable=true
 
     useEffect(() => {
         if (isEditable) {
-            handleImages(imagesArray)
+            handleImage(finalImageFile)
         }
-    }, [imagesArray])
+    }, [finalImageFile])
 
     return (
-        <div style={{display: "flex", flexDirection: "row"}}>
-            <div className='add-post-images-content'>
+        <div className={"image-cropper-container"}>
+            <div>
                 {
-                    (imagesArray && isEditable) ?
-                        imagesArray.map((image, index) => {
-                            return (<div key={index} className="add-post-images-preview" style={{
-                                position: "relative",
-                                width: "103px",
-                                height: "117.54px",
-                                border:" 1px solid #79747E",
-                                borderRadius: "3.26513px",
-                                cursor: "pointer"}} >
-                                <CrossIcon onClick={() => handleImagesClose(index)} sx={{    position: "absolute",
-                                    right: 0,
-                                    padding: "4px"}}/>
+                    (finalImageFile && isEditable) ?
+                        finalImageFile.map((image, index) => {
+                            return (<div key={index} className="add-post-images-preview">
+                                <CrossIcon onClick={() => handleImagesClose(index)} className="cross-icon"/>
                                 <img
                                     src={URL.createObjectURL(image.file)}
                                     style={{objectFit: "contain"}}
                                     alt="preview-image"
-                                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-
+                                    className={"view-image"}
                                 />
-
-
                             </div>)
                         }) :
-                        imagesArray.map((image, index) => {
+                        finalImageFile.map((image, index) => {
                             return (<div key={index} className="add-post-images-preview">
                                 <img
                                     src={URL.createObjectURL(image.file)}
                                     alt="preview-image"
                                     onClick={() => openImageViewer(index)}/>
-                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                className={"view-image"}
 
                             </div>)
                         })}
 
-                {isViewerOpen && (
-                    <ImageViewer
-                        src={imagesArray}
-                        currentIndex={currentImageIndex}
-                        disableScroll={false}
-                        closeOnClickOutside={true}
-                        onClose={closeImageViewer}
-                    />)}
 
-                {isEditable &&(imagesArray.length < 1)&&<label htmlFor="image-input">
-                        <div className='add-post-image-upload'>
-                            <UploadIcon />
-                            
-                        </div>
-                    </label>
+
+                {isEditable &&(finalImageFile.length < 1)&&<label htmlFor="image-input">
+                    <div className='add-post-image-upload'>
+                        <UploadIcon className={"icon-style"} />
+                    </div>
+                </label>
 
                 }
 
 
                 <input type='file' accept='image/*' onChange={handleImagesChange}
-                       id='image-input' style={{display: 'none'}}/>
-            </div>
+                       id='image-input' style={{display: 'none'}}/></div>
+
             {imageToBeCropped &&
                 <div className={"cropperContainer"}>
                     <Cropper

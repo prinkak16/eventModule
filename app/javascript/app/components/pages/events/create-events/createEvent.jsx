@@ -110,6 +110,11 @@ export default function CreateEvent({ isEdit, editData }) {
     }));
   };
 
+  const handleImage=(finalImageAfterCropping)=>{
+    console.log('handle image is called');
+    setFormFieldValue((prevData)=>({...prevData,img:finalImageAfterCropping}))
+    
+  }
   const getAllData = async () => {
     console.log("get all data is called");
     try {
@@ -353,38 +358,12 @@ export default function CreateEvent({ isEdit, editData }) {
               />
             </div>
           </LocalizationProvider>
-          <div style={{display:"flex"}}>
-
-            {/*<div>
-              <p>Upload Image/ Banner*:</p>
-              <div className="image-container">
-                {image &&<CrossIcon  onClick={removeImage}
-                                className="close-icon-img"
-                                src={imgCross}
-                                alt="cross-icon"/>}
-
-                {image?
-                <img src={image}  alt="upload image"
-                     className="uploaded-image"
-                     onClick={handleImageUploadClick}  />  :
-                <UploadIcon
-                    alt="upload image"
-                    className="uploaded-image"
-                    onClick={handleImageUploadClick}
-                />  }
-                <input
-                  type="file"
-                  accept=".png, .jpg, .jpeg"
-                  className="file-input"
-                  onChange={handleImagesChange}
-                  ref={fileInputRef}
-                />
-              </div>
-            </div>*/}
-             <ImageCroper handleImages={()=>{}} Initial_images={[]} isEditable={true} isCard={false}/>
+          <div>
+          <p>Upload Image/ Banner*:</p>
+             <ImageCroper handleImage={handleImage}/>
           </div>
 
-          <div className="levels">                                   [
+          <div className="levels">
             <h6 style={{ display: "flex", alignItems: "center" }}>
               Event Level:
             </h6>
