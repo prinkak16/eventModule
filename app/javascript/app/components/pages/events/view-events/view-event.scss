@@ -1,5 +1,15 @@
 .view-event-container{
   margin-top: 8rem !important;
+  margin-left: 20px;
 
   display: flex;
+  justify-content: space-between;
+
+  .iframe-container{
+    width: 48%;
+    height: 85vh;
+    margin-bottom: 50px;
+  }
+  
 }
+
