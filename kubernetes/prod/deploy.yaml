@@ -77,11 +77,11 @@ spec:
       securityContext: { }
       terminationGracePeriodSeconds: 30
       nodeSelector:
-        cloud.google.com/gke-nodepool: staging
+        cloud.google.com/gke-nodepool: prod
       tolerations:
         - key: "app"
           operator: "Equal"
-          value: "staging"
+          value: "prod"
           effect: "NoSchedule"
 
 ---
