@@ -3,8 +3,8 @@ import "./createEvent.scss";
 import {
   Autocomplete,
   Box,
-  Chip,
-  FormControlLabel,
+  Chip, FormControl,
+  FormControlLabel, InputLabel,
   Paper,
   Radio,
   RadioGroup,
@@ -304,20 +304,31 @@ export default function CreateEvent({ isEdit, editData }) {
           {isEdit ? "Edit the Event" : "Create an Event"}
         </h3>
         <Box  className="event-create-form-bg">
+          
           <TextField
             id="event_title"
             onChange={(event) => setFormField(event, "event_title")}
-            label="Event title*"
             variant="outlined"
             className="w-100"
             placeholder="Enter Event Title"
             value={formFieldValue.event_title}
+            label={
+              <span>
+            Event Title{' '}
+                <span style={{ color: 'red' }}>*</span>
+          </span>
+            }
           />
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <div className="d-flex justify-content-between">
               <DateTimePicker
                 required={true}
-                label="Start date & Time*"
+                label={
+                  <span>
+           Start date & Time{' '}
+                    <span style={{ color: 'red' }}>*</span>
+          </span>
+                }
                 className="w-49"
                 minDateTime={dayjs(new Date())}
                 value={
@@ -336,7 +347,12 @@ export default function CreateEvent({ isEdit, editData }) {
               />
               <DateTimePicker
                   disabled={formFieldValue?.start_datetime===""}
-                label="End date & Time*"
+                  label={
+                    <span>
+            End data & Time{' '}
+                      <span style={{ color: 'red' }}>*</span>
+          </span>
+                  }
                 className="w-49"
                 value={
                   formFieldValue.end_datetime
@@ -358,7 +374,7 @@ export default function CreateEvent({ isEdit, editData }) {
             </div>
           </LocalizationProvider>
           <div>
-          <p>Upload Image/ Banner*:</p>
+          <p>Upload Image/ Banner{' '}<span style={{color:"red"}}>*</span> :</p>
              <ImageCroper handleImage={handleImage}/>
           </div>
 
@@ -397,18 +413,22 @@ export default function CreateEvent({ isEdit, editData }) {
             getOptionLabel={(option) => option.name || ""}
             onChange={handleStateChange}
             renderInput={(params) => (
-              <TextField {...params} label={`Select State*`} />
+              <TextField {...params} label={
+                <span>
+            Select States{' '}
+                  <span style={{ color: 'red' }}>*</span>
+          </span>
+              } />
             )}
           />
 
           <div className="mt-2">
-            <h6>Reporting Target*</h6>
+            <h6>Reporting Target{' '} <span style={{color:"red"}}>*</span> </h6>
 
             <RadioGroup
                className="custom-radio-group"
               row
               value={formFieldValue?.event_type}
-              aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
               onChange={(event) =>
                 setFormFieldValue((prevData) => {
@@ -420,6 +440,7 @@ export default function CreateEvent({ isEdit, editData }) {
                 value="open_event"
                 control={<Radio />}
                 label="Open event"
+                
               />
             </RadioGroup>
           </div>
@@ -463,3 +484,4 @@ export default function CreateEvent({ isEdit, editData }) {
     </div>
   );
 }
+
