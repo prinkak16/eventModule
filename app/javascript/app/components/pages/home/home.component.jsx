@@ -245,7 +245,11 @@ const HomeComponent = () => {
   }, [page, clearFilter]);
 
   const getFilterEvents = () => {
-    getEventsList();
+    if(page===1){
+      getEventsList();
+    }else{
+        setPage(1)
+    }
   };
 
   function EditEvent( id) {
