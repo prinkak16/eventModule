@@ -111,7 +111,6 @@ export default function CreateEvent({ isEdit, editData }) {
   };
 
   const handleImage=(finalImageAfterCropping)=>{
-    console.log('handle image is called');
     setFormFieldValue((prevData)=>({...prevData,img:finalImageAfterCropping}))
     
   }
