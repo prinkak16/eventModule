@@ -29,10 +29,10 @@ import { getEventById } from "../../../../services/RestServices/Modules/EventSer
 import {UploadIcon, CrossIcon, NextIcon} from '../../../../assests/svg/index'
 import ImageCroper from "../../../shared/image-croper/ImageCroper";
 export default function CreateEvent({ isEdit, editData }) {
+  console.log('isEdit in create ',isEdit)
   const { id } = useParams();
   const urlParams = new URLSearchParams(window.location.search);
   const publishedParamValue = urlParams.get('published');
-  console.log('published param value',publishedParamValue)
 
 
   const imgCross =
@@ -63,34 +63,35 @@ export default function CreateEvent({ isEdit, editData }) {
     if (isEdit) {
       (async () => {
         const { data } = await getEventById(id);
+        console.log('data by id ',data)
          if (data?.success) {
-        formFieldValue.event_id = data?.data[0]?.id;
-        formFieldValue.event_title = data?.data[0]?.name;
-          formFieldValue.img = data?.data[0]?.image_url;
-          setImage(data?.data[0]?.image_url);
-          formFieldValue.start_datetime = data?.data[0]?.start_date;
-          formFieldValue.end_datetime = data?.data[0]?.end_date;
-           formFieldValue.level_id = data?.data[0]?.data_level_id;
-           formFieldValue.event_type = data?.data[0]?.event_type;
-          formFieldValue.location_ids = data?.data[0]?.state_ids?.map(
-          (obj) => obj.id
-          );
-          formFieldValue.state_obj = data?.data[0]?.state_ids ?? [];
+           setImage(data?.data[0]?.image_url),
+
+               setFormFieldValue((prevData)=>({
+                 ...prevData,
+                 event_id: data?.data[0]?.id,
+                 event_title: data?.data[0]?.name,
+                 img : data?.data[0]?.image_url,
+                 start_datetime : data?.data[0]?.start_date,
+                 end_datetime : data?.data[0]?.end_date,
+                 level_id : data?.data[0]?.data_level_id,
+                 event_type : data?.data[0]?.event_type,
+                 location_ids : data?.data[0]?.state_ids?.map(
+                     (obj) => obj.id
+                 ),
+                 state_obj : data?.data[0]?.state_ids ?? []
+               }) )
          }
       })();
     }
     getAllData();
 
     return ()=>{
-      console.log('cleanup   up function is called')
       setLoader(false)
     }
 
   }, []);
 
-  useEffect(() => {
-         console.log('value of laoder is changed ');
-  }, [loader]);
 
   const handleLevelChange = (event, value) => {
     setFormFieldValue((prevFormValues) => ({
@@ -115,14 +116,12 @@ export default function CreateEvent({ isEdit, editData }) {
     
   }
   const getAllData = async () => {
-    console.log("get all data is called");
     try {
       const { data } = await getStates();
       if (data?.success) {
         setCountryStates(data?.data ?? []);
       }
 
-      console.log("response by all states", data);
     } catch (error) {
       console.log("error is ", error);
     }
@@ -132,7 +131,6 @@ export default function CreateEvent({ isEdit, editData }) {
       if (dataLevelResponse?.data?.success) {
         setDataLevels(dataLevelResponse?.data?.data);
       }
-      console.log("data levels ", dataLevelResponse);
     } catch (error) {
       console.log("error is ", error);
     }

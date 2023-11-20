@@ -73,7 +73,6 @@ const FormComponent = () => {
   }
 
   useEffect(() => {
-    console.log('first page was called')
     getEventsList();
   }, [page]);
 
@@ -89,10 +88,8 @@ const FormComponent = () => {
   useEffect(() => {
     let timer;
     timer = setTimeout(() => {
-      console.log('reached here')
       if(searchEventName!==null) {
         if (page === 1) {
-          console.log('it is called for the first time ')
           getEventsList()
         } else {
           setPage(1)

@@ -18,13 +18,11 @@ const paths = ["form"];
 function App() {
   const navigate=useNavigate();
   const { pathname } = useLocation();
-  console.log("pathname is", pathname);
 
   const [showNavbar, setShowNavbar] = useState(true);
 
   const toggleNavbar = () => {
     const isValid = paths.some((item) => pathname.includes(item));
-    console.log("isvalid is ", isValid);
     if (isValid) {
       setShowNavbar(false);
     } else {
