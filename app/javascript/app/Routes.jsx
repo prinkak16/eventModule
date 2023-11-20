@@ -14,8 +14,8 @@ const Router=()=>{
     return(
         
         <Routes >
-            <Route path="/" element={<Navigate to="/forms" replace={true} />} />
-            <Route path="/events" element={<HomeComponent />} />
+            <Route path="/" element={<Navigate  to="/forms" replace={true} />} />
+            <Route path="/events" element={ <HomeComponent />} />
             <Route path="/forms" element={<FormComponent />} />
             <Route path="/forms/submissions/:event_id" element={<FormSubmission />} />
 
