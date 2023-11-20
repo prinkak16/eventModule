@@ -13,6 +13,7 @@ export default function MyBreadcrumbs() {
     events: "Events",
     create: "Create Event",
     edit: "Edit Event",
+    view: "View Event "
   };
 
   return (

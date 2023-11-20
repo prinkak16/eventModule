@@ -73,7 +73,7 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
             </Toolbar>  :
                
                 <Toolbar className="header-form-bg">
-                    <Tooltip className="header-form-back-button" onClick={()=> navigate('/forms')}>
+                    <Tooltip className="header-form-back-button" onClick={()=> navigate(-1)}>
                         {isSubmissionPage &&
                         <IconButton>
                             <ArrowBackIosIcon />

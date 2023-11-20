@@ -27,7 +27,7 @@ import {
 import { ApiClient } from "../../../../services/RestServices/BaseRestServices";
 import { getEventById } from "../../../../services/RestServices/Modules/EventServices/EventsServices";
 import {UploadIcon, CrossIcon, NextIcon} from '../../../../assests/svg/index'
-
+import ImageCroper from "../../../shared/image-croper/ImageCroper";
 export default function CreateEvent({ isEdit, editData }) {
   const { id } = useParams();
   const urlParams = new URLSearchParams(window.location.search);
@@ -110,6 +110,10 @@ export default function CreateEvent({ isEdit, editData }) {
     }));
   };
 
+  const handleImage=(finalImageAfterCropping)=>{
+    setFormFieldValue((prevData)=>({...prevData,img:finalImageAfterCropping}))
+    
+  }
   const getAllData = async () => {
     console.log("get all data is called");
     try {
@@ -255,7 +259,7 @@ export default function CreateEvent({ isEdit, editData }) {
           }
           setLoader(false);
         })();
-      }else{
+      }else if(publishedParamValue==="false"){
         navigate(`/events/edit/${id}`);
       }
     }
@@ -354,32 +358,8 @@ export default function CreateEvent({ isEdit, editData }) {
             </div>
           </LocalizationProvider>
           <div>
-            <p>Upload Image/ Banner*:</p>
-            <div>
-              <div className="image-container">
-                {image &&<CrossIcon  onClick={removeImage}
-                                className="close-icon-img"
-                                src={imgCross}
-                                alt="cross-icon"/>}
-
-                {image?
-                <img src={image}  alt="upload image"
-                     className="uploaded-image"
-                     onClick={handleImageUploadClick}  />  :
-                <UploadIcon
-                    alt="upload image"
-                    className="uploaded-image"
-                    onClick={handleImageUploadClick}
-                />  }
-                <input
-                  type="file"
-                  accept=".png, .jpg, .jpeg"
-                  className="file-input"
-                  onChange={handleImagesChange}
-                  ref={fileInputRef}
-                />
-              </div>
-            </div>
+          <p>Upload Image/ Banner*:</p>
+             <ImageCroper handleImage={handleImage}/>
           </div>
 
           <div className="levels">

@@ -4,6 +4,8 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
+
 import {
   Autocomplete,
   Pagination,
@@ -24,7 +26,6 @@ import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal"
 import ArchiveIcon from '@mui/icons-material/Archive';
 import EditIcon from '@mui/icons-material/Edit';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import {DesktopDatePicker} from "@mui/x-date-pickers";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import moment from "moment";
 
@@ -54,7 +55,7 @@ const HomeComponent = () => {
   const itemsPerPage = 10;
   const [totalCount, setTotalCount] = useState(0);
   const [clearFilter, setClearFilter] = useState(false);
-  const [eventName, setEventName] = useState("");
+  const [eventName, setEventName] = useState(null);
 
   const filterList = ["Level", "State", "Event Status"];
   const [filtersFieldData, setFiltersFieldData] = useState({
@@ -213,7 +214,7 @@ const HomeComponent = () => {
 
   async function getEventsList() {
     console.log('called get ')
-    const params = `search_query=${eventName}&start_date=${filtersFieldValue?.date!==null&&filtersFieldValue?.date!==undefined&&filtersFieldValue?.date!==""?
+    const params = `search_query=${eventName??""}&start_date=${filtersFieldValue?.date!==null&&filtersFieldValue?.date!==undefined&&filtersFieldValue?.date!==""?
         moment(filtersFieldValue.date).format('DD/MM/YYYY'):""
    
     }&level_id=${filtersFieldValue.level_id?.id??""}&state_id=${
@@ -244,7 +245,11 @@ const HomeComponent = () => {
   }, [page, clearFilter]);
 
   const getFilterEvents = () => {
-    getEventsList();
+    if(page===1){
+      getEventsList();
+    }else{
+        setPage(1)
+    }
   };
 
   function EditEvent( id) {
@@ -280,11 +285,13 @@ const HomeComponent = () => {
   useEffect(() => {
     let timer;
     timer = setTimeout(() => {
-      if(page===1){
-         getEventsList();
-      } else{
-        setPage(1)
+      if(eventName!==null) {
+        if (page === 1) {
+          getEventsList();
+        } else {
+          setPage(1)
 
+        }
       }
     }, 1000);
 
@@ -463,6 +470,7 @@ const HomeComponent = () => {
                 }}
             />
           </LocalizationProvider>
+
 
 
           {/*  {filterList &&

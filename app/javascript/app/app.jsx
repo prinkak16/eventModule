@@ -28,7 +28,7 @@ function App() {
     if (isValid) {
       setShowNavbar(false);
     } else {
-      setShowNavbar(true);
+      setShowNavbar(true);                                                            
     }
   };
 
@@ -44,8 +44,7 @@ function App() {
       <ToastContainer theme="colored"
                       hideProgressBar={true}
                       autoClose={3000}
-
-
+                      
       />
     </div>
   );

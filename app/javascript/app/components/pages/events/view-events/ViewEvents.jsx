@@ -1,18 +1,201 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useEffect} from "react";
 import {useParams} from "react-router";
 import './view-event.scss'
+import {ApiClient} from "../../../../services/RestServices/BaseRestServices";
+import MyBreadcrumbs from "../../../shared/breadcrumbs/Breadcrumbs";
+import {Autocomplete, Box, FormControlLabel, Radio, RadioGroup, TextField} from "@mui/material";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
+import dayjs from "dayjs";
+import ImageCroper from "../../../shared/image-croper/ImageCroper";
+import {getDataLevels, getStates} from "../../../../services/CommonServices/commonServices";
 
-const ViewEvents=()=>{
-    const params=useParams();
-    console.log('params is ',params)
+const ViewEvents=({isEdit=true})=>{
+    const {id}=useParams();
+    const [iframeUrl,setIframeUrl]=useState("")
+    const [formFieldValue, setFormFieldValue] = useState({
+        event_title: "",
+        start_datetime: "",
+        end_datetime: "",
+        level_id: 1,
+        location_ids: [],
+        event_type: "",
+        img: "",
+        state_obj: [],
+    });
+    const [dataLevels, setDataLevels] = useState([]);
+    const [countryStates, setCountryStates] = useState([]);
+
+
+    const getAllData = async () => {
+        console.log("get all data is called");
+        try {
+            const { data } = await getStates();
+            if (data?.success) {
+                setCountryStates(data?.data ?? []);
+            }
+
+            console.log("response by all states", data);
+        } catch (error) {
+            console.log("error is ", error);
+        }
+
+        try {
+            const dataLevelResponse = await getDataLevels();
+            if (dataLevelResponse?.data?.success) {
+                setDataLevels(dataLevelResponse?.data?.data);
+            }
+            console.log("data levels ", dataLevelResponse);
+        } catch (error) {
+            console.log("error is ", error);
+        }
+        // const data = await Promise.allSettled([getStates(), getDataLevels()]);
+        // console.log("data of promise all", data);
+    };
+
     useEffect(() => {
-        console.log('reached in view page ')
+        (async ()=>{
+            const {data}= await ApiClient.get(`/event/edit/${id}`) ;
+         
+            if (data?.success) {
+                setIframeUrl(data?.data[0]?.create_form_url);
+
+                formFieldValue.event_id = data?.data[0]?.id;
+                formFieldValue.event_title = data?.data[0]?.name;
+                formFieldValue.img = data?.data[0]?.image_url;
+                setImage(data?.data[0]?.image_url);
+                formFieldValue.start_datetime = data?.data[0]?.start_date;
+                formFieldValue.end_datetime = data?.data[0]?.end_date;
+                formFieldValue.level_id = data?.data[0]?.data_level_id;
+                formFieldValue.event_type = data?.data[0]?.event_type;
+                formFieldValue.location_ids = data?.data[0]?.state_ids?.map(
+                    (obj) => obj.id
+                );
+                formFieldValue.state_obj = data?.data[0]?.state_ids ?? [];
+            }   
+            
+
+        })();
+
+        getAllData()
     }, []);
     return(
         <div className="view-event-container">
-            <h1>Coming soon</h1>    
+            <div className="container-adjust" style={{width:"48%"}}>
+                <div className="event-path">
+                    <MyBreadcrumbs />
+                </div>
+
+                <Box  className="event-create-form-bg" style={{background:"#f6f8fa"}}>
+                    <TextField
+                        disabled
+                        id="event_title"
+                        label="Event title*"
+                        variant="outlined"
+                        className="w-100"
+                        placeholder="Enter Event Title"
+                        value={formFieldValue.event_title}
+                    />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <div className="d-flex justify-content-between">
+                            <DateTimePicker
+                                required={true}
+                                label="Start date & Time*"
+                                className="w-49"
+                                minDateTime={dayjs(new Date())}
+                                value={
+                                    formFieldValue.start_datetime
+                                        ? dayjs(formFieldValue.start_datetime)
+                                        : null
+                                }
+
+                            />
+                            <DateTimePicker
+                                
+                                disabled
+                                label="End date & Time*"
+                                className="w-49"
+                                value={
+                                    formFieldValue.end_datetime
+                                        ? dayjs(formFieldValue.end_datetime)
+                                        : null
+                                }
+                                minDateTime={dayjs(formFieldValue?.start_datetime)}
+
+                            />
+                        </div>
+                    </LocalizationProvider>
+                    <div>
+                        <p>Upload Image/ Banner*:</p>
+                        <ImageCroper handleImage={()=>{}}/>
+                    </div>
+
+                    <div className="levels">
+                        <h6 style={{ display: "flex", alignItems: "center" }}>
+                            Event Level:
+                        </h6>
+                        {Array.isArray(dataLevels) &&
+                            dataLevels.map((item, index) => (
+                                <button
+                                    
+                                    className="level-button"
+                                    key={index}
+                                    disabled={true}
+                                    style={{
+                                        height: "40px",
+                                        width: "120px",
+                                        background:
+                                            item?.id === formFieldValue?.level_id ? "#163560" : "",
+                                        color:
+                                            item?.id === formFieldValue?.level_id ? "white" : "black",
+                                    }}
+
+                                >{item?.name}  </button>
+                            ))}
+                    </div>
+
+                    <Autocomplete
+                        disabled
+                        className="w-100"
+                        multiple
+                        value={formFieldValue?.state_obj}
+                        options={countryStates}
+                        getOptionLabel={(option) => option.name || ""}
+                        renderInput={(params) => (
+                            <TextField {...params} label={`Select State*`} />
+                        )}
+                    />
+
+                    <div className="mt-2">
+                        <h6>Reporting Target*</h6>
+
+                        <RadioGroup
+
+                            className="custom-radio-group"
+                            row
+                            value={formFieldValue?.event_type}
+                            aria-labelledby="demo-row-radio-buttons-group-label"
+                            name="row-radio-buttons-group"
+
+                        >
+                            <FormControlLabel
+                                value="open_event"
+                                control={<Radio />}
+                                label="Open event"
+                            />
+                        </RadioGroup>
+                    </div>
+                </Box>
+            </div>
+
+            <div className={"iframe-container"}>
+                <iframe src={`${iframeUrl}&np=1`} height="100%" width="100%" title="Iframe Example"></iframe>
+
+            </div>
         </div>
+
     )
 }
 
