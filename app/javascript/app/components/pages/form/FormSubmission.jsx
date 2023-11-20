@@ -76,13 +76,10 @@ const FormSubmission = () => {
     }
 
     const deleteEventHandler = async () => {
-        console.log('submission id is ', eventDeleteId);
         try {
             const {data} = await ApiClient.get(`user/destroy/submission/${eventDeleteId}`);
-            console.log('data of delete is ', data);
             if (data?.success) {
                 const filteredList = eventSubmissionsData?.filter((item) => item?.id !== eventDeleteId  );
-                console.log('filtered list', filteredList)
                 setEventsubmissionsData(filteredList);
             }
             setConfirmationStatus(false);

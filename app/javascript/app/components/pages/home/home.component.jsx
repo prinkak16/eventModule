@@ -300,10 +300,7 @@ const HomeComponent = () => {
     };
   }, [eventName]);
 
-  useEffect(() => {
-    console.log('filters data',filtersFieldValue
-    )
-  }, [filtersFieldValue]);
+ 
 
   const handleAutoComplete=(event,newValue,name)=>{
     console.log('new value is ',newValue);

@@ -17,8 +17,6 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
     const navigate = useNavigate()
     const {pathname}=useLocation();
     const {eventName,setEventName,isSubmissionPage,setIsSubmissionPage}=EventState();
-    console.log('issubmission  page ',isSubmissionPage)
-    console.log('event name in header from context',eventName)
     useEffect(() => {
         getUserDetail()
     }, [])                                              

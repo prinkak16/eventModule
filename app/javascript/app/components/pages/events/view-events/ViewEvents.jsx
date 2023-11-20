@@ -29,15 +29,13 @@ const ViewEvents=({isEdit=true})=>{
     const [countryStates, setCountryStates] = useState([]);
 
 
-    const getAllData = async () => {
-        console.log("get all data is called");
+  /*  const getAllData = async () => {
         try {
             const { data } = await getStates();
             if (data?.success) {
                 setCountryStates(data?.data ?? []);
             }
 
-            console.log("response by all states", data);
         } catch (error) {
             console.log("error is ", error);
         }
@@ -47,40 +45,48 @@ const ViewEvents=({isEdit=true})=>{
             if (dataLevelResponse?.data?.success) {
                 setDataLevels(dataLevelResponse?.data?.data);
             }
-            console.log("data levels ", dataLevelResponse);
         } catch (error) {
             console.log("error is ", error);
         }
         // const data = await Promise.allSettled([getStates(), getDataLevels()]);
         // console.log("data of promise all", data);
-    };
+    };*/
 
     useEffect(() => {
         (async ()=>{
             const {data}= await ApiClient.get(`/event/edit/${id}`) ;
-         
+
             if (data?.success) {
                 setIframeUrl(data?.data[0]?.create_form_url);
 
-                formFieldValue.event_id = data?.data[0]?.id;
-                formFieldValue.event_title = data?.data[0]?.name;
-                formFieldValue.img = data?.data[0]?.image_url;
-                setImage(data?.data[0]?.image_url);
-                formFieldValue.start_datetime = data?.data[0]?.start_date;
-                formFieldValue.end_datetime = data?.data[0]?.end_date;
-                formFieldValue.level_id = data?.data[0]?.data_level_id;
-                formFieldValue.event_type = data?.data[0]?.event_type;
-                formFieldValue.location_ids = data?.data[0]?.state_ids?.map(
-                    (obj) => obj.id
-                );
-                formFieldValue.state_obj = data?.data[0]?.state_ids ?? [];
+
+                    setFormFieldValue((prevData)=>({
+                        ...prevData,
+                        event_id: data?.data[0]?.id,
+                        event_title: data?.data[0]?.name,
+                        img : data?.data[0]?.image_url,
+                        start_datetime : data?.data[0]?.start_date,
+                        end_datetime : data?.data[0]?.end_date,
+                        level_id : data?.data[0]?.data_level_id,
+                        event_type : data?.data[0]?.event_type,
+                        location_ids : data?.data[0]?.state_ids?.map(
+                            (obj) => obj.id
+                        ),
+                        state_obj : data?.data[0]?.state_ids ?? []
+                    }) )
             }   
             
 
         })();
 
-        getAllData()
+/*
+        getAllData() 
+*/
     }, []);
+
+    useEffect(() => {
+        console.log('form field value in view  ',formFieldValue)
+    }, [formFieldValue]);
     return(
         <div className="view-event-container">
             <div className="container-adjust" style={{width:"48%"}}>
@@ -101,6 +107,7 @@ const ViewEvents=({isEdit=true})=>{
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <div className="d-flex justify-content-between">
                             <DateTimePicker
+                                disabled    
                                 required={true}
                                 label="Start date & Time*"
                                 className="w-49"
