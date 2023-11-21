@@ -29,7 +29,7 @@ const ViewEvents=({isEdit=true})=>{
     const [countryStates, setCountryStates] = useState([]);
 
 
-  /*  const getAllData = async () => {
+    const getAllData = async () => {
         try {
             const { data } = await getStates();
             if (data?.success) {
@@ -50,14 +50,14 @@ const ViewEvents=({isEdit=true})=>{
         }
         // const data = await Promise.allSettled([getStates(), getDataLevels()]);
         // console.log("data of promise all", data);
-    };*/
+    };
 
     useEffect(() => {
         (async ()=>{
             const {data}= await ApiClient.get(`/event/edit/${id}`) ;
 
             if (data?.success) {
-                setIframeUrl(data?.data[0]?.create_form_url);
+                setIframeUrl(data?.data[0]?.preview_url);
 
 
                     setFormFieldValue((prevData)=>({
@@ -79,22 +79,19 @@ const ViewEvents=({isEdit=true})=>{
 
         })();
 
-/*
-        getAllData() 
-*/
+        getAllData()
     }, []);
 
-    useEffect(() => {
-        console.log('form field value in view  ',formFieldValue)
-    }, [formFieldValue]);
+   
     return(
         <div className="view-event-container">
-            <div className="container-adjust" style={{width:"48%"}}>
-                <div className="event-path">
-                    <MyBreadcrumbs />
-                </div>
+            <div className="event-path">
+                <MyBreadcrumbs />
+            </div>
+            <div className="form-and-iframe-container" >
 
-                <Box  className="event-create-form-bg" style={{background:"#f6f8fa"}}>
+
+                <Box  className="event-create-form-bg" style={{width:"50%"}}>
                     <TextField
                         disabled
                         id="event_title"
@@ -194,13 +191,13 @@ const ViewEvents=({isEdit=true})=>{
                             />
                         </RadioGroup>
                     </div>
-                </Box>
+                </Box >
+                <div className={"iframe-container"}>
+                    <iframe src={iframeUrl} height="100%" width="100%" title="Iframe Example"></iframe>
+                </div>
             </div>
 
-            <div className={"iframe-container"}>
-                <iframe src={`${iframeUrl}&np=1`} height="100%" width="100%" title="Iframe Example"></iframe>
 
-            </div>
         </div>
 
     )
