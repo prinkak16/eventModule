@@ -85,6 +85,7 @@ const ImageCropper = ({handleImage,Initial_images, isEditable=true
         if (isEditable) {
             handleImage(finalImageFile)
         }
+        console.log('final image is ',finalImageFile)
     }, [finalImageFile])
 
     return (

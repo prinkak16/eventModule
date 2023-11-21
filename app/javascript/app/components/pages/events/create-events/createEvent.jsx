@@ -112,6 +112,7 @@ export default function CreateEvent({ isEdit, editData }) {
   };
 
   const handleImage=(finalImageAfterCropping)=>{
+    console.log('final image after crop is ',finalImageAfterCropping)
     setFormFieldValue((prevData)=>({...prevData,img:finalImageAfterCropping}))
     
   }
@@ -147,14 +148,18 @@ export default function CreateEvent({ isEdit, editData }) {
     formData.append("level_id", formFieldValue?.level_id);
     formData.append("location_ids", formFieldValue?.location_ids);
     formData.append("event_type", formFieldValue?.event_type);
-    formData.append("img", formFieldValue?.img);
+    formData.append("aspect_ratio",JSON.stringify(formFieldValue?.img[0]?.aspect_ratio??""));
+    formData.append("crop_data", formFieldValue?.img[0]?.crop_data??"");
+
+    formData.append("img", formFieldValue?.img[0]?.file??"");
+    formData.append("un_cropped_file", formFieldValue?.img[0]?.un_cropped_file??"");
     try {
         const response = await createEvent(formData,{event_id:id});
       if (response.data.success) {
+        setLoader(false);
       if(type==='go_to_form'||type==='create') {
         window.location.href = response.data.event.create_form_url;
       }else{
-        setLoader(false);
 
         toast.success(response.data.message);
         navigate('/events')

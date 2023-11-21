@@ -67,6 +67,7 @@ const FormSubmission = () => {
             const {data} = await ApiClient.get(`user/submit_event/${event_id}`);
             console.log('data', data);
             if (data?.success) {
+                setIsLoading(false)
                 window.location.href = data?.data?.redirect_url;
             }
         } catch (e) {
