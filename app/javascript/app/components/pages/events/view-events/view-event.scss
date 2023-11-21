@@ -1,15 +1,37 @@
 .view-event-container{
   margin-top: 8rem !important;
   margin-left: 20px;
+  margin-bottom: 80px;
 
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap:20px;
+  .form-and-iframe-container{
+    display: flex;
+    justify-content: space-between;
+  }
 
   .iframe-container{
+    box-shadow: 10px 2px 20px rgba(0, 0, 0, 0.01);
+
     width: 48%;
-    height: 85vh;
-    margin-bottom: 50px;
+   
   }
-  
+
+  .css-1jy569b-MuiFormLabel-root-MuiInputLabel-root.Mui-disabled {
+    color: #000;
+  }
+  .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input.Mui-disabled {
+    opacity: 1;
+    -webkit-text-fill-color: #000;
+  }
+  .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input.Mui-disabled {
+    opacity: 1;
+    -webkit-text-fill-color: #000;
+  }
+  .css-38raov-MuiButtonBase-root-MuiChip-root.Mui-disabled {
+     opacity:1;
+    pointer-events: none;
+  }
 }
 

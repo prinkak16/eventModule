@@ -1,5 +1,5 @@
 class EventSerializer < ActiveModel::Serializer
-  attributes :id, :name, :start_date, :end_date, :data_level_id, :event_type, :data_level, :start_datetime, :end_datetime, :status, :states, :image_url, :state_ids, :create_form_url
+  attributes :id, :name, :start_date, :end_date, :data_level_id, :event_type, :data_level, :start_datetime, :end_datetime, :status, :states, :image_url, :state_ids, :create_form_url, :preview_url
 
   def data_level
     object&.data_level&.name
@@ -41,6 +41,13 @@ class EventSerializer < ActiveModel::Serializer
   end
 
   def create_form_url
+    "#{ENV['FORM_CREATE_URL']}?authToken=#{ENV['AUTH_TOKEN_FOR_REDIRECTION']}&formToken=#{token}"
+    end
+  def preview_url
+    "#{ENV['FORM_CREATE_URL']}/preview?authToken=#{ENV['AUTH_TOKEN_FOR_REDIRECTION']}&formToken=#{token}&hn=1"
+  end
+
+  def token
     event_meta = {
       stateIds: object.event_locations.pluck(:state_id),
       createRedirectionLink: ENV['ROOT_URL'] + 'events/edit/' + object.id.to_s,
@@ -50,7 +57,6 @@ class EventSerializer < ActiveModel::Serializer
     data = { eventId: object.id, formId: object.event_form.form_id, eventName: object.name,
              eventStartDate: object.start_date, isFormCreator: true, eventEndDate: object.end_date,
              user: { name: instance_options[:current_user].name }, dataLevel: object.data_level&.name, eventMeta: event_meta }
-    token = JWT.encode(data, ENV['JWT_SECRET_KEY'].present? ? ENV['JWT_SECRET_KEY'] : 'thisisasamplesecret')
-    "#{ENV['FORM_CREATE_URL']}?authToken=#{ENV['AUTH_TOKEN_FOR_REDIRECTION']}&formToken=#{token}"
+    JWT.encode(data, ENV['JWT_SECRET_KEY'].present? ? ENV['JWT_SECRET_KEY'] : 'thisisasamplesecret')
   end
 end

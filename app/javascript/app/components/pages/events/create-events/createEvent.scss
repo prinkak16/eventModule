@@ -11,12 +11,12 @@
   align-items: center;
 }
 .event-create-form-bg {
-  background-color: #fff;
   display: flex;
   flex-direction: column;
   gap: 30px;
   padding: 3rem;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.01);
+  background:rgb(242 247 253);
+  box-shadow: 10px 2px 20px rgba(0, 0, 0, 0.01);
     
 }
 .custom-radio-group .css-11zohuh-MuiSvgIcon-root {
@@ -159,6 +159,7 @@
 .levels {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
   //styleName: M3/label/large;
   font-family: Roboto;
   font-size: 14px;
