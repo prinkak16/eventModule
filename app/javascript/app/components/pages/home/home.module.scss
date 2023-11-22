@@ -151,14 +151,11 @@ body {
 }
 
 .event-header-name {
-  margin-left: 1.5rem;
-  margin-top: 0.5rem;
-  width: 200px; /* Adjust the width as needed */
+  width: 200px; 
   white-space: nowrap;
   font-family: Quicksand;
   font-size: 24px;
   font-weight: 600;
-  line-height: 30px;
 }
 .event-header-name-ellipsis {
   overflow: hidden;
@@ -166,16 +163,10 @@ body {
   font-family: Quicksand;
   font-size: 24px;
   font-weight: 600;
- 
-
 }
 
-.event-sub-header {
-  margin-top: -0.5rem;
-  display: block;
-  font-size: 1rem;
-  color: rgba(73, 69, 79, 0.6);
-}
+
+
 
 .hr {
   width: 1rem;

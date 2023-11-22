@@ -277,6 +277,7 @@ const HomeComponent = () => {
 
   const getFilterEvents = () => {
     if(page===1){
+      console.log('appy is called')
       getEventsList();
     }else{
         setPage(1)
@@ -413,21 +414,27 @@ const HomeComponent = () => {
                     <div className="event-list-item">
                       <span>States</span>
 
+
                       <span className="event-sub-header">{event.states}</span>
                     </div>
                     <div className="hr"></div>
                     <div className="event-list-item">
                       <span>Start</span>
                       <span className="event-sub-header any-ellipsis">
-                        {event.start_datetime}
-                      </span>
+                        {moment(event?.start_datetime,"YY-MM-DD hh:mm:ss A").format("DD-MM-YYYY")}
+                        </span>
+                      <span className="event-sub-header any-ellipsis">
+                        {moment(event?.start_datetime,"YY-MM-DD hh:mm:ss A").format("hh:mm A")}
+                        </span>
                     </div>
                     <div className="hr"></div>
                     <div className="event-list-item">
                       <span>End</span>
-                      <span className="event-sub-header">
-                        {event.end_datetime}
-                      </span>
+                      <span className="event-sub-header any-ellipsis">
+                        {moment(event?.end_datetime,"YY-MM-DD hh:mm:ss A").format("DD-MM-YYYY")}
+                        </span> <span className="event-sub-header any-ellipsis">
+                        {moment(event?.end_datetime,"YY-MM-DD hh:mm:ss A").format("hh:mm A")}
+                        </span>
                     </div>
                   </div>
 
