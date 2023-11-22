@@ -62,15 +62,14 @@ const ImageCropper = ({handleImage,Initial_images, isEditable=true
             const widthFactor = canvasData.naturalWidth / canvasData.width;
             const heightFactor = canvasData.naturalHeight / canvasData.height;
             const cropData = `${cropBoxData.width * widthFactor}x${cropBoxData.height * heightFactor}+${(cropBoxData.left - cropBoxData.minLeft) * widthFactor}+${(cropBoxData.top - cropBoxData.minTop) * heightFactor}`
-            console.log('cropBoxData',cropBoxData);
-            console.log('canvasdata',  canvasData);
+           
+            console.log('file size ',file.size,' uncropped file size',pickedImage?.current.size );
             setFinalImageFile   ([ {
                 file: file,
                 un_cropped_file: pickedImage.current,
                 aspect_ratio: aspectRatio,
                 crop_data: cropData
             }])
-            console.log('cropped data',cropData);
             setImageToBeCropped(null)
             // pickedImage.current = null
         }

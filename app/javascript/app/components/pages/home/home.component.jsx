@@ -64,7 +64,8 @@ const HomeComponent = () => {
     event_status: eventStatusArray,
   });
   const [filtersFieldValue, setFiltersFieldValue] = useState({
-    date: "",
+    startDate: "",
+    endDate:"",
     level_id: {name:"",id:"",level_class:""},
     state_id: {name:"",id:""},
     event_status_id: {name:"",id:""},
@@ -175,6 +176,9 @@ const HomeComponent = () => {
   };
 
   useEffect(() => {
+    console.log('filter field vlaue is ',filtersFieldValue);
+  }, [filtersFieldValue]);
+  useEffect(() => {
     callApis();
   }, []);
 
@@ -192,9 +196,33 @@ const HomeComponent = () => {
     }));
   };
 
-  const setDate = (date) => {
-    console.log('date is ',date);
-    setFiltersFieldValue({ ...filtersFieldValue, date:date?.$d });
+  const setDate = (date,key) => {
+    const dateValue=date?.$d;
+    if(key==='endDate'){
+      if(filtersFieldValue?.startDate===""||filtersFieldValue?.startDate===null||filtersFieldValue?.startDate===undefined){
+        console.log('come inside here')
+        setFiltersFieldValue({ ...filtersFieldValue, startDate:dateValue,[key]:dateValue });
+
+      }
+      else if(new Date(dateValue)<new Date(filtersFieldValue?.startDate)){
+        setFiltersFieldValue({ ...filtersFieldValue, startDate:dateValue,[key]:dateValue });
+
+      } else{
+        setFiltersFieldValue({ ...filtersFieldValue, [key]:dateValue });
+
+      }
+
+    }
+    if(key==='startDate'){
+        if(new Date(filtersFieldValue?.endDate)<new Date(dateValue)){
+          setFiltersFieldValue({ ...filtersFieldValue, endDate:dateValue ,[key]:dateValue });
+
+        } else{
+          setFiltersFieldValue({ ...filtersFieldValue, [key]:dateValue });
+
+        }
+    }
+
   };
 
   const clearFiltersValue = () => {
@@ -214,9 +242,12 @@ const HomeComponent = () => {
 
   async function getEventsList() {
     console.log('called get ')
-    const params = `search_query=${eventName??""}&start_date=${filtersFieldValue?.date!==null&&filtersFieldValue?.date!==undefined&&filtersFieldValue?.date!==""?
-        moment(filtersFieldValue.date).format('DD/MM/YYYY'):""
+    const params = `search_query=${eventName??""}&start_date=${filtersFieldValue?.startDate!==null&&filtersFieldValue?.startDate!==undefined&&filtersFieldValue?.startDate!==""?
+        moment(filtersFieldValue.startDate).format('DD/MM/YYYY'):""
    
+    }&end_date=${filtersFieldValue?.endDate!==null&&filtersFieldValue?.endDate!==undefined&&filtersFieldValue?.endDate!==""?
+        moment(filtersFieldValue.endDate).format('DD/MM/YYYY'):""
+
     }&level_id=${filtersFieldValue.level_id?.id??""}&state_id=${
       filtersFieldValue.state_id?.id??""
     }&event_status=${
@@ -380,20 +411,20 @@ const HomeComponent = () => {
                   <div className="event-list-sec visible-divs">
                     <div className="hr"></div>
                     <div className="event-list-item">
-                      <h5>States</h5>
+                      <span>States</span>
 
                       <span className="event-sub-header">{event.states}</span>
                     </div>
                     <div className="hr"></div>
                     <div className="event-list-item">
-                      <h5>Start</h5>
+                      <span>Start</span>
                       <span className="event-sub-header any-ellipsis">
                         {event.start_datetime}
                       </span>
                     </div>
                     <div className="hr"></div>
                     <div className="event-list-item">
-                      <h5>End</h5>
+                      <span>End</span>
                       <span className="event-sub-header">
                         {event.end_datetime}
                       </span>
@@ -456,9 +487,9 @@ const HomeComponent = () => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
                 label="Start Date"
-                onChange={setDate}
+                onChange={(date)=>setDate(date,"startDate")}
                 value={
-                  filtersFieldValue.date ? dayjs(filtersFieldValue.date) : null
+                  filtersFieldValue.startDate ? dayjs(filtersFieldValue.startDate) : null
                 }
                 slotProps={{
                   textField: {
@@ -466,6 +497,19 @@ const HomeComponent = () => {
                   },
                 }}
             />
+            <DatePicker
+                label="End Date"
+                onChange={(date)=>setDate(date,"endDate")}
+                value={
+                  filtersFieldValue.endDate ? dayjs(filtersFieldValue.endDate) : null
+                }
+                slotProps={{
+                  textField: {
+                    readOnly: true,
+                  },
+                }}
+            />
+            
           </LocalizationProvider>
 
 
@@ -493,9 +537,7 @@ const HomeComponent = () => {
 
           <Autocomplete
              fullWidth
-
-
-              options={filtersFieldData["levels"]}
+             options={filtersFieldData["levels"]}
               getOptionLabel={(option) => option?.name}
               value={filtersFieldValue?.level_id}
               onChange={(e,newVal)=>handleAutoComplete(e,newVal,"level_id")}

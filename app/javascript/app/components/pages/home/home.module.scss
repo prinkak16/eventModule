@@ -155,10 +155,19 @@ body {
   margin-top: 0.5rem;
   width: 200px; /* Adjust the width as needed */
   white-space: nowrap;
+  font-family: Quicksand;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 30px;
 }
 .event-header-name-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: Quicksand;
+  font-size: 24px;
+  font-weight: 600;
+ 
+
 }
 
 .event-sub-header {
@@ -178,7 +187,7 @@ body {
 
 .event-list-fir {
   display: flex;
-  width: 40%;
+  width: 50%;
 }
 .visible-divs {
   transition: transform 0.7s;
@@ -199,11 +208,11 @@ body {
     padding: 1.7rem 0rem;
 }
 .event-list:hover .event-list-sec{
-  width: 35%;
-  justify-context:flex-end;
+  width: 50%;
+  justify-context:space-between;
 }
 .event-list:hover .visible-divs {
-  transform: translateX(-45%);
+  transform: translateX(-65%);
 }
 
 .event-list:hover .edit-bar{
@@ -223,7 +232,10 @@ body {
 
 
 .event-list-item {
+  flex-grow: 1;
   width: 25%;
+  font-family: Quicksand;
+  font-size: 18px;
 }
 
 
