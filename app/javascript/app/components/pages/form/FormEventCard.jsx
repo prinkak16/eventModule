@@ -37,9 +37,10 @@ const FormEventCard = ({ event }) => {
               <span style={{ color: "#FF9559" }}>{event.data_level}</span>
             </div>
 
-            <h2 className="heading">
+            <div className="heading">
+              <EllipsesComponent text= {event.name} />
 
-              {event.name} </h2>
+             </div>
           </div>
         </div>
 
