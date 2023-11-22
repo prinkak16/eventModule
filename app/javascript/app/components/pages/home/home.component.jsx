@@ -421,19 +421,20 @@ const HomeComponent = () => {
                     <div className="event-list-item">
                       <span>Start</span>
                       <span className="event-sub-header any-ellipsis">
-                        {moment(event?.start_datetime,"YY-MM-DD hh:mm:ss A").format("DD-MM-YYYY")}
+                        {moment(event?.start_date).format("DD-MM-YYYY")}
                         </span>
                       <span className="event-sub-header any-ellipsis">
-                        {moment(event?.start_datetime,"YY-MM-DD hh:mm:ss A").format("hh:mm A")}
+                        {moment(event?.start_date).format("hh:mm A")}
                         </span>
                     </div>
                     <div className="hr"></div>
                     <div className="event-list-item">
                       <span>End</span>
                       <span className="event-sub-header any-ellipsis">
-                        {moment(event?.end_datetime,"YY-MM-DD hh:mm:ss A").format("DD-MM-YYYY")}
-                        </span> <span className="event-sub-header any-ellipsis">
-                        {moment(event?.end_datetime,"YY-MM-DD hh:mm:ss A").format("hh:mm A")}
+                        {moment(event?.end_date).format("DD-MM-YYYY")}
+                        </span>
+                      <span className="event-sub-header">
+                        {moment(event?.end_date).format("hh:mm A")}
                         </span>
                     </div>
                   </div>

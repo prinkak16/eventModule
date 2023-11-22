@@ -50,7 +50,7 @@ body {
 .level-event-container {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 1px;
 }
 .home-search-div {
   display: flex;
@@ -295,7 +295,6 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   margin-top: -0.5rem;
-  height:120px;
   display: block;
   font-size: 1rem;
   color: rgba(73, 69, 79, 0.6);
@@ -324,9 +323,7 @@ body {
   font-size:0.625rem;
   font-weight: 500;
   padding:1rem 0;
-  line-height: 13px;
-  letter-spacing: 0em;
-  text-align: left;
+ 
   max-width: 50%;
   min-width: 40%;
 
