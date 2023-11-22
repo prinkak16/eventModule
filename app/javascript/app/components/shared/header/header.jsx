@@ -17,6 +17,10 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
     const navigate = useNavigate()
     const {pathname}=useLocation();
     const {eventName,setEventName,isSubmissionPage,setIsSubmissionPage}=EventState();
+
+
+
+
     useEffect(() => {
         getUserDetail()
     }, [])                                              
@@ -71,7 +75,19 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
             </Toolbar>  :
                
                 <Toolbar className="header-form-bg">
-                    <Tooltip className="header-form-back-button" onClick={()=> navigate(-1)}>
+                    <Tooltip className="header-form-back-button" onClick={()=> {
+                        console.log('submissions back button is clicked')
+                        const targetEntryIndex = 2;
+
+                        console.log('length of browser history stack',window.history.length)
+                        const delta = targetEntryIndex - window.history.length;
+
+/*
+                        window.history.go(delta);
+*/
+                        navigate(-1)
+                    }
+                    }>
                         {isSubmissionPage &&
                         <IconButton>
                             <ArrowBackIosIcon />

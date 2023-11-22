@@ -237,6 +237,11 @@ body {
 .event-header-name-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: Quicksand;
+  font-size: 24px;
+  font-weight: 600;
+  
+
 }
 .any-ellipsis{
   overflow: hidden;
@@ -340,9 +345,6 @@ body {
   margin-right: 15px;
 }
 
-.event-list-item {
-  width: 25%;
-}
 
 .edit-bar-sub-div {
   display: flex;
