@@ -42,9 +42,11 @@ class Api::EventSubmissionController < Api::ApplicationController
     data = []
     submissions.each do |submission|
       res = submissions_data[submission.submission_id]
-      data << { reported_on: submission.created_at, images: res['images'],
-                status: res['status'], locations: res['locations'].pluck('locationName'),
-                event_id: submission.event_id, submission_id: submission.submission_id, id: submission.id }
+      if res.present?
+        data << { reported_on: submission.created_at, images: res['images'],
+                  status: res['status'], locations: res['locations'].pluck('locationName'),
+                  event_id: submission.event_id, submission_id: submission.submission_id, id: submission.id }
+      end
     end
     render json: { success: true, data: { events: events, submissions: data }, message: "success full" }, status: 200
   rescue => e
