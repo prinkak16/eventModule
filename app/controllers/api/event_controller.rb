@@ -2,6 +2,7 @@ class Api::EventController < Api::ApplicationController
   require "net/https"
   require 'uri'
   include ApplicationHelper
+  require "image_processing/mini_magick"
 
   def data_levels
     levels = DataLevel.select(:id, :name, :level_class)
@@ -92,6 +93,16 @@ class Api::EventController < Api::ApplicationController
         if params[:img].present? && !valid_url(params[:img])
           event.image_url = nil
           event.image = params[:img]
+
+          tmp_folder_path = Rails.root.join('tmp', 'uploads')
+          FileUtils.mkdir_p(tmp_folder_path) unless File.directory?(tmp_folder_path)
+          temp_image_path = File.join(tmp_folder_path, "#{SecureRandom.hex(10)}_#{params[:img].original_filename}")
+          FileUtils.cp(params[:img].tempfile, temp_image_path)
+          cropped_image = ImageProcessing::MiniMagick.crop(params[:crop_data]).call(open(params[:img].path))
+          cropped_image.write(temp_image_path)
+          file_name = params[:img].original_filename
+          event.image.attach(io: File.open(cropped_image), filename: file_name)
+          File.delete(temp_image_path) if temp_image_path
         end
         event.name = params[:event_title]
         event.data_level_id = params[:level_id]
