@@ -386,66 +386,66 @@ const HomeComponent = () => {
         {allEventList.length > 0 ? (
           <>
             {allEventList.map((event) => (
-              <div key={`${event.id}${event.name}`}>
-                <div className="event-list">
-                  <div className="event-list-fir visible-divs">
-                    <div>
+                <div className="event-list" key={`${event.id}${event.name}`}>
+                  <div className="visible-divs">
+                    <div className="event-list-fir">
                       <img
-                        className="event-photo"
-                        src={event.image_url ? event.image_url : imgDefault}
+                          className="event-photo"
+                          src={event.image_url ? event.image_url : imgDefault}
                       />
-                    </div>
-                    <div className="event-header-name">
-                      <h2 className="event-header-name-ellipsis">
-                        {event.name}
-                      </h2>
-                      <span className="event-sub-header">
+                      <div className="event-header-name">
+                        <h2 className="event-header-name-ellipsis">
+                          {event.name}
+                        </h2>
+                        <span className="event-sub-header">
                         Level : {event.data_level}
                       </span>
+                      </div>
+                      <div className={`${event.status.class_name} active-button` } >
+                        <span>{event.status.name}</span>
+                      </div>
+                      <div></div>
                     </div>
-                    <div className={event.status.class_name}>
-                      <span>{event.status.name}</span>
-                    </div>
-                    <div></div>
-                  </div>
 
-                  <div className="event-list-sec visible-divs">
-                    <div className="hr"></div>
-                    <div className="event-list-item">
-                      <span>States</span>
+                    <div className="event-list-sec">
+                      <div className="hr"></div>
+                      <div className="event-list-item">
+                        <span>States</span>
 
 
-                      <span className="event-sub-header">{event.states}</span>
-                    </div>
-                    <div className="hr"></div>
-                    <div className="event-list-item">
-                      <span>Start</span>
-                      <span className="event-sub-header any-ellipsis">
+                        <span className="event-sub-header">{event.states}</span>
+                      </div>
+                      <div className="hr"></div>
+                      <div className="event-list-item">
+                        <span>Start</span>
+                        <span className="event-sub-header any-ellipsis">
                         {moment(event?.start_date).format("DD-MM-YYYY")}
                         </span>
-                      <span className="event-sub-header any-ellipsis">
+                        <span className="event-sub-header any-ellipsis">
                         {moment(event?.start_date).format("hh:mm A")}
                         </span>
-                    </div>
-                    <div className="hr"></div>
-                    <div className="event-list-item">
-                      <span>End</span>
-                      <span className="event-sub-header any-ellipsis">
+                      </div>
+                      <div className="hr"></div>
+                      <div className="event-list-item">
+                        <span>End</span>
+                        <span className="event-sub-header any-ellipsis">
                         {moment(event?.end_date).format("DD-MM-YYYY")}
                         </span>
-                      <span className="event-sub-header">
+                        <span className="event-sub-header">
                         {moment(event?.end_date).format("hh:mm A")}
                         </span>
+                      </div>
                     </div>
-                  </div>
 
+
+                  </div>
                   <div className="edit-bar">
                     <div
-                      className="edit-bar-sub-div cursor-pointer"
-                      onClick={() => EditEvent(event?.id)}
+                        className="edit-bar-sub-div cursor-pointer"
+                        onClick={() => EditEvent(event?.id)}
                     >
                       <IconButton>
-                     <EditIcon className="event-list-icon" sx={{color:"#3193FF"}}/>
+                        <EditIcon className="event-list-icon" sx={{color:"#3193FF"}}/>
                       </IconButton>
                       <span className="font1-2rem">Edit</span>
                     </div>
@@ -456,20 +456,21 @@ const HomeComponent = () => {
                     }}>
                       <IconButton>
                         <ArchiveIcon className="event-list-icon" sx={{color:"orange"}}/>
-                        
+
                       </IconButton>
                       <span className="font1-2rem">Archive</span>
                     </div>
 
                     <div className="edit-bar-sub-div cursor-pointer"  onClick={()=>navigate(`/events/view/${event?.id}`)}>
                       <IconButton>
-                      <RemoveRedEyeIcon className="event-list-icon" sx={{color:"#60D669"}}/>
+                        <RemoveRedEyeIcon className="event-list-icon" sx={{color:"#60D669"}}/>
                       </IconButton>
                       <span className="font1-2rem">View</span>
                     </div>
                   </div>
+
+
                 </div>
-              </div>
             ))}
           </>
         ) : (
@@ -495,6 +496,8 @@ const HomeComponent = () => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
                 label="Start Date"
+                format="DD/MM/YYYY"
+
                 onChange={(date)=>setDate(date,"startDate")}
                 value={
                   filtersFieldValue.startDate ? dayjs(filtersFieldValue.startDate) : null
@@ -507,6 +510,8 @@ const HomeComponent = () => {
             />
             <DatePicker
                 label="End Date"
+                format="DD/MM/YYYY"
+
                 onChange={(date)=>setDate(date,"endDate")}
                 value={
                   filtersFieldValue.endDate ? dayjs(filtersFieldValue.endDate) : null
