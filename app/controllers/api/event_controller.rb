@@ -2,6 +2,7 @@ class Api::EventController < Api::ApplicationController
   require "net/https"
   require 'uri'
   include ApplicationHelper
+  require "image_processing/mini_magick"
 
   def data_levels
     levels = DataLevel.select(:id, :name, :level_class)
@@ -92,6 +93,10 @@ class Api::EventController < Api::ApplicationController
         if params[:img].present? && !valid_url(params[:img])
           event.image_url = nil
           event.image = params[:img]
+
+          cropped_image = ImageProcessing::MiniMagick.crop(params[:crop_data]).call(MiniMagick::Image.open(params[:img]))
+          file_name = params[:img].original_filename
+          event.image.attach(io: File.open(cropped_image), filename: file_name)
         end
         event.name = params[:event_title]
         event.data_level_id = params[:level_id]
