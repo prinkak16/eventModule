@@ -178,7 +178,7 @@ export default function CreateEvent({ isEdit, editData }) {
 
   }
 
-  function setFormField(event, field) {
+  function  setFormField(event, field) {
     if (field === "start_datetime" || field === "end_datetime") {
       setFormFieldValue((prevFormValues) => ({
         ...prevFormValues,

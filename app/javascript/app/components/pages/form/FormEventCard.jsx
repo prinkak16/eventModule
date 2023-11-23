@@ -38,7 +38,7 @@ const FormEventCard = ({ event }) => {
             </div>
 
             <div className="heading">
-              <EllipsesComponent text= {event.name} />
+            {event.name} 
 
              </div>
           </div>

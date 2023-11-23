@@ -11,7 +11,7 @@ body {
 .home-main-container {
   display:flex;
   gap:2.5rem;
-  padding: 0 0 10rem 5rem;
+  padding: 0 0 4rem 5rem;
   margin-top: 8rem;
   .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar {
     align-items: baseline;
@@ -102,8 +102,13 @@ body {
   border: 1px solid lightgrey;
   padding: 1rem 0rem 1rem 1rem;
   display: flex;
-  position: relative;
   overflow: hidden;
+  position: relative;
+  .active-button{
+    margin: 0!important;
+    padding: -1px!important;
+  }
+ 
 }
 
 .events-container::-webkit-scrollbar {
@@ -151,11 +156,12 @@ body {
 }
 
 .event-header-name {
-  width: 200px; 
+  width: 150px;
   white-space: nowrap;
   font-family: Quicksand;
   font-size: 24px;
   font-weight: 600;
+  
 }
 .event-header-name-ellipsis {
   overflow: hidden;
@@ -179,9 +185,12 @@ body {
 .event-list-fir {
   display: flex;
   width: 50%;
+  gap:10px;
 }
 .visible-divs {
-  transition: transform 0.7s;
+  display: flex;
+  transition: transform 0.7s ease-in-out;;
+  width: 100%;
 }
 
 .event-list-sec {
@@ -189,36 +198,32 @@ body {
   justify-content: space-around;
   width: 50%;
 }
-.edit-bar {
+.edit-bar {     
    display: none;
     justify-content: space-around;
-    width: 22rem;
+    width: 30%;
     background: white;
     height: 8rem;
     margin-top: -1.1rem;
     padding: 1.7rem 0rem;
+  transition: opacity 2s ease-in-out;
+  position: absolute;
+  right:0;
+  opacity: 0;
 }
-.event-list:hover .event-list-sec{
-  width: 50%;
-  justify-context:space-between;
+.event-list:hover .visible-divs{
+  transform: translateX(-30%);
 }
-.event-list:hover .visible-divs {
-  transform: translateX(-65%);
+.event-list:hover .visible-divs .event-list-fir{
+ width: 45%;
+}.event-list:hover .visible-divs .event-list-sec{
+ width: 55%;
 }
 
 .event-list:hover .edit-bar{
    display: flex;
-  animation: fadeIn 1s forwards;
-  opacity: 0;
+  opacity: 1;
 
-
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-    display: flex;
-  }
-}
 }
 
 
@@ -227,6 +232,14 @@ body {
   width: 25%;
   font-family: Quicksand;
   font-size: 18px;
+  font-weight: 500;
+  display: flex;
+  gap:4px;
+  flex-direction: column;
+  align-items: center;
+  line-height: 22px;
+
+
 }
 
 
