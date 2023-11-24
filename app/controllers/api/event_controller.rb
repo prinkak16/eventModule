@@ -123,7 +123,6 @@ class Api::EventController < Api::ApplicationController
     query_conditions = {}
     limit = params[:limit].present? ? params[:limit] : 10
     offset = params[:offset].present? ? params[:offset] : 0
-    query_conditions[:start_date] = get_date_diff(params[:start_date].to_datetime) if params[:start_date].present?
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     event_status = params[:event_status]
     events = Event.where(query_conditions)
@@ -133,11 +132,13 @@ class Api::EventController < Api::ApplicationController
     elsif event_status == "Expired"
       events = events.where("end_date <= ?", date)
     elsif event_status == "Active"
-      events = events.where("start_date <= ?", date).where("end_date >= ?", date)
+      events = events.where("start_date <= :query AND end_date >= :query", query: "#{date}")
+    elsif params[:start_date].present? && params[:end_date].present?
+      events = events.where("start_date >= ? AND end_date <= ?", params[:start_date].to_datetime.beginning_of_day, params[:end_date].to_datetime.end_of_day)
     end
     events = events.joins(:event_locations).where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
-    total = events.count
+    total = events.size
     events = events.order(created_at: :desc).limit(limit).offset(offset)
     render json: {
       data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user),
@@ -166,11 +167,6 @@ class Api::EventController < Api::ApplicationController
     }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
-  end
-
-  def get_date_diff(date)
-    date = date + 5.50.hours
-    (date.beginning_of_day..date.end_of_day)
   end
 
   def valid_url(url)
