@@ -118,8 +118,6 @@ class Api::EventController < Api::ApplicationController
     query_conditions = {}
     limit = params[:limit].present? ? params[:limit] : 10
     offset = params[:offset].present? ? params[:offset] : 0
-    # query_conditions[:start_date] = get_date_diff(params[:start_date].to_datetime) if params[:start_date].present?
-    # query_conditions[:end_date] = get_date_diff(params[:end_date].to_datetime) if params[:end_date].present?
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     event_status = params[:event_status]
     events = Event.where(query_conditions)
@@ -164,11 +162,6 @@ class Api::EventController < Api::ApplicationController
     }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
-  end
-
-  def get_date_diff(date)
-    date = date + 5.50.hours
-    (date.beginning_of_day..date.end_of_day)
   end
 
   def valid_url(url)
