@@ -75,18 +75,8 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
             </Toolbar>  :
                
                 <Toolbar className="header-form-bg">
-                    <Tooltip className="header-form-back-button" onClick={()=> {
-                        console.log('submissions back button is clicked')
-                        const targetEntryIndex = 2;
-
-                        console.log('length of browser history stack',window.history.length)
-                        const delta = targetEntryIndex - window.history.length;
-
-/*
-                        window.history.go(delta);
-*/
+                    <Tooltip className="header-form-back-button" onClick={()=>
                         navigate(-1)
-                    }
                     }>
                         {isSubmissionPage &&
                         <IconButton>
@@ -95,6 +85,8 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
                         }
                     </Tooltip>
                     <h2 className="event-name-heading">{eventName??"Events"} </h2>
+                    {(JSON.parse(document.getElementById("app").getAttribute("date-create")))&&<button className={"header-form-create-button"} onClick={()=>navigate('/events/create')}>Create Event</button>
+                    }
                 </Toolbar>
             }
         </>
