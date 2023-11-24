@@ -241,7 +241,7 @@ const HomeComponent = () => {
   };
 
   async function getEventsList() {
-    console.log('called get ')
+    setLoader(true);
     const params = `search_query=${eventName??""}&start_date=${filtersFieldValue?.startDate!==null&&filtersFieldValue?.startDate!==undefined&&filtersFieldValue?.startDate!==""?
         moment(filtersFieldValue.startDate).format('DD/MM/YYYY'):""
    
@@ -253,22 +253,29 @@ const HomeComponent = () => {
     }&event_status=${
       filtersFieldValue.event_status_id?.name??""
     }&limit=${itemsPerPage}&offset=${itemsPerPage * (page - 1)}`;
-    let {data} = await ApiClient.get(`/event/event_list?` + params, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: "",
-      },
-    });
-    if (data?.success) {
-      setEventsList(data?.data);
-      setAllEventList(data?.data);
-      setTotalCount(data?.total ?? data?.data?.length);
-    } else {
-      toast.error(`Please enter ${data.message}`, {
-        autoClose: 2000,
+    try {
+      let {data} = await ApiClient.get(`/event/event_list?` + params, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: "",
+        },
       });
+      if (data?.success) {
+        setEventsList(data?.data);
+        setAllEventList(data?.data);
+        setTotalCount(data?.total ?? data?.data?.length);
+      } else {
+        toast.error(`Please enter ${data.message}`, {
+          autoClose: 2000,
+        });
+      }
+
+    }catch (e){
+       toast.error(e.message,{autoClose:2000})
     }
+
+    setLoader(false);
   }
 
   useEffect(() => {

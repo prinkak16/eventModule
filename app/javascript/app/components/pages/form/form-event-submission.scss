@@ -87,9 +87,9 @@
 }
 
 
-  @media screen and (max-width: 480px) {
+  @media screen and (width <=480px) {
     .form-event-submission-container{
-      
+
       width: 100%;
 
       background: white;
@@ -112,10 +112,10 @@
         justify-content: center;
         box-shadow:5px 2px 15px #e9e3e3 ;
         .form-event-back-button{
-         padding:0 10px;
+          padding:0 10px;
 
         }
-        
+
         .event-name-heading{
 
           flex-grow: 2  ;
@@ -143,7 +143,7 @@
         font-family: Quicksand;
         font-size: 16px;
         font-weight: 600;
-       
+
         color:#949494;
       }
       .form-event-submissions{
@@ -177,3 +177,17 @@
 
 
   }
+  @media screen and (width=414px) {
+    .form-event-submission-container{
+      .report-button-container{
+        position: sticky;
+        bottom: 45px;
+
+
+      }
+
+    }
+
+
+  }
+
