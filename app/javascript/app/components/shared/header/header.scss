@@ -41,6 +41,20 @@
     position: absolute;
     left:10px;
   }
+  .header-form-create-button{
+    position: absolute;
+    right:10px;
+    width: 172px;
+    height: 40px;
+
+    background: #55545E !important;
+    font-weight: 600;
+    color: #ffffff;
+    border: none;
+    border-radius: 100px;
+    align-items: center;
+
+  }
 }
 .header-img{
   height: 75px;
