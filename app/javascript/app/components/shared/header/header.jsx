@@ -85,7 +85,7 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
                         }
                     </Tooltip>
                     <h2 className="event-name-heading">{eventName??"Events"} </h2>
-                    {(JSON.parse(document.getElementById("app").getAttribute("date-create")))&&<button className={"header-form-create-button"} onClick={()=>navigate('/events')}>Create Event</button>
+                    {(JSON.parse(document.getElementById("app").getAttribute("data-create")))&&<button className={"header-form-create-button"} onClick={()=>navigate('/events/create')}>Create Event</button>
                     }
                 </Toolbar>
             }
