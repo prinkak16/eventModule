@@ -128,8 +128,8 @@ class Api::EventController < Api::ApplicationController
       events = events.where("end_date <= ?", date)
     elsif event_status == "Active"
       events = events.where("start_date <= :query AND end_date >= :query", query: "#{date}")
-    else
-      events = events.where("start_date >= ? AND end_date <= ?", params[:start_date].to_datetime.beginning_of_day, params[:end_date].to_datetime.end_of_day) if params[:start_date].present? && params[:end_date].present?
+    elsif params[:start_date].present? && params[:end_date].present?
+      events = events.where("start_date >= ? AND end_date <= ?", params[:start_date].to_datetime.beginning_of_day, params[:end_date].to_datetime.end_of_day)
     end
     events = events.joins(:event_locations).where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
