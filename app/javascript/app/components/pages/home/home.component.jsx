@@ -64,7 +64,7 @@ const HomeComponent = () => {
     event_status: eventStatusArray,
   });
   const [filtersFieldValue, setFiltersFieldValue] = useState({
-    startDate: "",
+    startDate:"",
     endDate:"",
     level_id: {name:"",id:"",level_class:""},
     state_id: {name:"",id:""},
@@ -336,8 +336,14 @@ const HomeComponent = () => {
 
   const handleAutoComplete=(event,newValue,name)=>{
     console.log('new value is ',newValue);
-    setFiltersFieldValue((prevData)=>({...prevData,[name]:newValue}));
-    
+    if(name==='event_status_id'){
+      setFiltersFieldValue((prevData)=>({...prevData,startDate: "",endDate: "", [name]:newValue}));
+
+    }else{
+      setFiltersFieldValue((prevData)=>({...prevData,[name]:newValue}));
+
+    }
+
     
   }
   return (
@@ -495,6 +501,8 @@ const HomeComponent = () => {
           <h4>Filters</h4>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
+                disabled={filtersFieldValue?.event_status_id!==null&&filtersFieldValue?.event_status_id!==undefined&&filtersFieldValue?.event_status_id!==""&&filtersFieldValue?.event_status_id?.name!==""&&filtersFieldValue?.event_status_id?.id!==""}
+
                 label="Start Date"
                 format="DD/MM/YYYY"
 
@@ -509,6 +517,7 @@ const HomeComponent = () => {
                 }}
             />
             <DatePicker
+                disabled={filtersFieldValue?.event_status_id!==null&&filtersFieldValue?.event_status_id!==undefined&&filtersFieldValue?.event_status_id!==""&&filtersFieldValue?.event_status_id?.name!==""&&filtersFieldValue?.event_status_id?.id!==""}
                 label="End Date"
                 format="DD/MM/YYYY"
 
