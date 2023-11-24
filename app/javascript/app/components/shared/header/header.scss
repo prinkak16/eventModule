@@ -42,6 +42,7 @@
     left:10px;
   }
   .header-form-create-button{
+    display: block;
     position: absolute;
     right:10px;
     width: 172px;
@@ -297,4 +298,14 @@ and (-webkit-min-device-pixel-ratio: 1.5) {
   line-height: 15px;
   color: #4980cf;
   padding: 0 14px 0 0;
+}
+
+@media (width <=480px) {
+  .header-form-bg {
+    .header-form-create-button{
+      display: none;
+
+    }
+  }
+
 }
