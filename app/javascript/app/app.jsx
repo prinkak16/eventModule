@@ -14,7 +14,9 @@ import HeaderBar from "./components/shared/header/header";
 import {useNavigate} from "react-router";
 import Router from "./Routes";
 
-const paths = ["form"];
+const paths = ["forms",];
+
+
 function App() {
   const navigate=useNavigate();
   const { pathname } = useLocation();
