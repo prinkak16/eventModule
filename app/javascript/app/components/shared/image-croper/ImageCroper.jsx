@@ -3,9 +3,14 @@ import {UploadIcon,CrossIcon} from '../../../assests/svg/index'
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import './image-cropper.scss'
-const ImageCropper = ({handleImage,Initial_images, isEditable=true
+    const ImageCropper = ({handleImage,Initial_image, isEditable=false
                           , isCard=false}) => {
+/*
+    console.log("Initial image is on the top ",Initial_image)
+*/
+
     const [finalImageFile, setFinalImageFile] = useState([])
+    const [showInitialImage,setShowInitialImage]=useState(isEditable);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isViewerOpen, setIsViewerOpen] = useState(false);
     const [imageToBeCropped, setImageToBeCropped] = useState(null);
@@ -28,6 +33,10 @@ const ImageCropper = ({handleImage,Initial_images, isEditable=true
         setIsViewerOpen(false);
     };
 
+    /*useEffect(()=>{
+        console.log('initital image is ',initialImage)
+    },[initialImage])
+*/
     const handleImagesChange = (event) => {
         event.preventDefault();
         let files;
@@ -81,17 +90,15 @@ const ImageCropper = ({handleImage,Initial_images, isEditable=true
     }
 
     useEffect(() => {
-        if (isEditable) {
             handleImage(finalImageFile)
-        }
-        console.log('final image is ',finalImageFile)
+        
     }, [finalImageFile])
 
     return (
         <div className={"image-cropper-container"}>
             <div>
                 {
-                    (finalImageFile && isEditable) ?
+                    (Array.isArray(finalImageFile) && finalImageFile.length>0) ?
                         finalImageFile.map((image, index) => {
                             return (<div key={index} className="add-post-images-preview">
                                 <CrossIcon onClick={() => handleImagesClose(index)} className="cross-icon"/>
@@ -103,20 +110,20 @@ const ImageCropper = ({handleImage,Initial_images, isEditable=true
                                 />
                             </div>)
                         }) :
-                        finalImageFile.map((image, index) => {
-                            return (<div key={index} className="add-post-images-preview">
-                                <img
-                                    src={URL.createObjectURL(image.file)}
-                                    alt="preview-image"
-                                    onClick={() => openImageViewer(index)}/>
-                                className={"view-image"}
+                        showInitialImage?<div  className="add-post-images-preview">
+                    <CrossIcon onClick={() => setShowInitialImage(false)} className="cross-icon"/>
+            <img
+                src={Initial_image} style={{objectFit: "contain"}}
+                alt="preview-image"
+                className={"view-image"}
+            />
+        </div>:<></>
+    
+                        }
 
-                            </div>)
-                        })}
 
 
-
-                {isEditable &&(finalImageFile.length < 1)&&<label htmlFor="image-input">
+                {!showInitialImage &&(finalImageFile.length < 1)&&<label htmlFor="image-input">
                     <div className='add-post-image-upload'>
                         <UploadIcon className={"icon-style"} />
                     </div>

@@ -29,7 +29,6 @@ import { getEventById } from "../../../../services/RestServices/Modules/EventSer
 import {UploadIcon, CrossIcon, NextIcon} from '../../../../assests/svg/index'
 import ImageCroper from "../../../shared/image-croper/ImageCroper";
 export default function CreateEvent({ isEdit, editData }) {
-  console.log('isEdit in create ',isEdit)
   const { id } = useParams();
   const urlParams = new URLSearchParams(window.location.search);
   const publishedParamValue = urlParams.get('published');
@@ -54,6 +53,7 @@ export default function CreateEvent({ isEdit, editData }) {
     location_ids: [],
     event_type: "",
     img: "",
+    crop_data:"",
     state_obj: [],
   });
 
@@ -63,7 +63,6 @@ export default function CreateEvent({ isEdit, editData }) {
     if (isEdit) {
       (async () => {
         const { data } = await getEventById(id);
-        console.log('data by id ',data)
          if (data?.success) {
            setImage(data?.data[0]?.image_url),
 
@@ -111,9 +110,12 @@ export default function CreateEvent({ isEdit, editData }) {
     }));
   };
 
+
   const handleImage=(finalImageAfterCropping)=>{
-    console.log('final image after crop is ',finalImageAfterCropping)
-    setFormFieldValue((prevData)=>({...prevData,img:finalImageAfterCropping}))
+/*
+    console.log('final image afeter cropping ',finalImageAfterCropping);
+*/
+    setFormFieldValue((prevData)=>({...prevData,img:finalImageAfterCropping[0]?.un_cropped_file,crop_data: finalImageAfterCropping[0]?.crop_data}))
     
   }
   const getAllData = async () => {
@@ -148,9 +150,9 @@ export default function CreateEvent({ isEdit, editData }) {
     formData.append("level_id", formFieldValue?.level_id);
     formData.append("location_ids", formFieldValue?.location_ids);
     formData.append("event_type", formFieldValue?.event_type);
-    formData.append("crop_data", formFieldValue?.img[0]?.crop_data??"");
+    formData.append("crop_data", formFieldValue?.crop_data??"");
 
-    formData.append("img", formFieldValue?.img[0]?.un_cropped_file??"");
+    formData.append("img", formFieldValue?.img??"");
     try {
         const response = await createEvent(formData,{event_id:id});
       if (response.data.success) {
@@ -376,7 +378,7 @@ export default function CreateEvent({ isEdit, editData }) {
           </LocalizationProvider>
           <div>
           <p>Upload Image/ Banner{' '}<span style={{color:"red"}}>*</span> :</p>
-             <ImageCroper handleImage={handleImage}/>
+             <ImageCroper handleImage={handleImage} Initial_image={formFieldValue?.img} isEditable={isEdit} />
           </div>
 
           <div className="levels">
