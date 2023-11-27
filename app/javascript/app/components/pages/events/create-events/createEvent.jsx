@@ -112,9 +112,7 @@ export default function CreateEvent({ isEdit, editData }) {
 
 
   const handleImage=(finalImageAfterCropping)=>{
-/*
     console.log('final image afeter cropping ',finalImageAfterCropping);
-*/
     setFormFieldValue((prevData)=>({...prevData,img:finalImageAfterCropping[0]?.un_cropped_file,crop_data: finalImageAfterCropping[0]?.crop_data}))
     
   }
@@ -269,14 +267,18 @@ export default function CreateEvent({ isEdit, editData }) {
 
   }, []);
   const isNextButtonDisabled=()=>{
+  
     for(let key in formFieldValue){
+      if(isEdit&&key==="crop_data"){
+        continue;
+      }
       if(key==='location_ids'||key==='state_obj'){
         if(formFieldValue[key].length===0) {
           return true;
         }
-      }  else{
+      } else{
 
-        if(formFieldValue[key]===""||!(/\S/.test(formFieldValue[key])))  {
+        if(formFieldValue[key]===undefined||formFieldValue[key]===null|| formFieldValue[key]===""||!(/\S/.test(formFieldValue[key])))  {
           return true;
         }
         

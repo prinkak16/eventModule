@@ -111,7 +111,10 @@ import './image-cropper.scss'
                             </div>)
                         }) :
                         showInitialImage?<div  className="add-post-images-preview">
-                    <CrossIcon onClick={() => setShowInitialImage(false)} className="cross-icon"/>
+                    <CrossIcon onClick={() => {
+                        setShowInitialImage(false)
+                        setFinalImageFile   ([])
+                    }} className="cross-icon"/>
             <img
                 src={Initial_image} style={{objectFit: "contain"}}
                 alt="preview-image"

@@ -8,5 +8,10 @@ import VerifiedIcon from '../svg/verified.svg'
 import UploadIcon from '../svg/upload.svg'
 import CrossIcon from '../svg/cross.svg'
 import  NextIcon from '../svg/NextIcon.svg'
+import ViewButtonIcon from '../svg/viewbutton.svg'
+import EditButtonIcon from '../svg/editbutton.svg'
 
-export { CalenderIcon, GreendotIcon, ClockIcon, LocationIcon ,EditIcon,DeleteIcon,VerifiedIcon,UploadIcon,CrossIcon,NextIcon};
+export { CalenderIcon, GreendotIcon, ClockIcon, LocationIcon ,EditIcon,ViewButtonIcon,EditButtonIcon,
+    DeleteIcon,VerifiedIcon,UploadIcon,CrossIcon,NextIcon
+
+};
