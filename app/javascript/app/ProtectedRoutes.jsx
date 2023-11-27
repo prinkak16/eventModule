@@ -10,9 +10,7 @@ const ProtectedRoutes=()=>{
        return <Navigate  to="/forms" replace={true} />
     }
     return (
-
         <Outlet/>
-          
     );
 }
 
