@@ -82,6 +82,8 @@ const ViewEvents=({isEdit=true})=>{
         getAllData()
     }, []);
 
+  
+
    
     return(
         <div className="view-event-container">
@@ -133,7 +135,10 @@ const ViewEvents=({isEdit=true})=>{
                     </LocalizationProvider>
                     <div>
                         <p>Upload Image/ Banner*:</p>
-                        <ImageCroper handleImage={()=>{}}/>
+                        <div className={"img-container"}>
+                            <img loading={"lazy"} src={formFieldValue?.img} alt={"Loading..."} className={"img-box"}/>
+
+                        </div>
                     </div>
 
                     <div className="levels">
