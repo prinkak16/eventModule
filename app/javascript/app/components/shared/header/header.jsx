@@ -22,6 +22,7 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
 
 
     useEffect(() => {
+        console.log('is granted ',JSON.parse(document.getElementById("app").getAttribute("data-create")));
         getUserDetail()
     }, [])                                              
 
@@ -56,9 +57,10 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
                     </Link>
                 </div>
                 {!isSaralUser && (
-                    <>
-                        <div className="language-setting-container mt-3">
-                        </div>
+                    <div className={"header-form-button-logout-container"}>
+                        
+                        <button className={"header-form-button"} onClick={()=>navigate('/forms')}>go to forms</button>
+
                         <div className="right-header-content">
                             <div className="user-profile-container">
                                 <span className="user-name">{userDetails ? userDetails?.name : ''}</span>
@@ -68,9 +70,8 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
                                     <></>
                                 }
                             </div>
-                            <div className="user-profile-container-mobile">{/* Mobile content */}</div>
                         </div>
-                    </>
+                    </div>
                 )}
             </Toolbar>  :
                

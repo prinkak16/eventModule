@@ -57,6 +57,9 @@ a {
   margin-right: auto;
   margin-left: auto;
   background: #f6f8fa;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 @media screen and (max-width: 800px) {

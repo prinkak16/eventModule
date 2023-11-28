@@ -25,7 +25,8 @@ const FormSubmission = () => {
     const [eventDeleteId,setEventDeleteId]=useState(-1);
     const [confirmationStatus,setConfirmationStatus]=useState(false);
 
-    useEffect(() => {                                     
+    useEffect(() => {
+
         (async () => {
             setIsLoading(true)
             try {
@@ -54,9 +55,9 @@ const FormSubmission = () => {
 
     }, []);
 
-    useEffect(() => {
+   /* useEffect(() => {
         console.log('events are ', eventDetails)
-    }, [eventDetails]);
+    }, [eventDetails]);*/
 
     useEffect(() => {
         setIsSubmissionPage(true);
@@ -65,7 +66,6 @@ const FormSubmission = () => {
         setIsLoading(true)
         try {
             const {data} = await ApiClient.get(`user/submit_event/${event_id}`);
-            console.log('data', data);
             if (data?.success) {
                 setIsLoading(false)
                 window.location.href = data?.data?.redirect_url;

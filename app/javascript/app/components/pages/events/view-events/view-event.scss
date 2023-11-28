@@ -6,6 +6,8 @@
   display: flex;
   flex-direction: column;
   gap:20px;
+
+
   .form-and-iframe-container{
     display: flex;
     justify-content: space-between;
@@ -35,3 +37,14 @@
   }
 }
 
+.img-container{
+  width: 103px;
+  height: 117.54px;
+  border:1px dotted black;
+  .img-box{
+    object-fit: contain;
+
+    width:100%;
+    height:100%;
+  }
+}

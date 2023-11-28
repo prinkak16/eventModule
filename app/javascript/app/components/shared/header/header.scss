@@ -25,6 +25,25 @@
   width: 100%;
   z-index: 100;
 }
+.header-form-button-logout-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.header-form-button{
+  display: flex !important;
+  width: 152px;
+  height: 40px;
+  border-radius: 100px !important;
+  text-transform: capitalize !important;
+  justify-content: center !important;
+  background: #55545E !important;
+  font-weight: 400;
+  color: #ffffff;
+  border: none;
+  align-items: center;
+}
 .header-form-bg {
   width: 100% !important ;
   box-shadow: 0 2px 20px rgb(0 0 0 / 15%);
