@@ -27,6 +27,7 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import EditIcon from '@mui/icons-material/Edit';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import {EditButtonIcon,ViewButtonIcon} from '../../../assests/svg/index'
 import moment from "moment";
 
 const HomeComponent = () => {
