@@ -142,8 +142,8 @@ import './image-cropper.scss'
                 <div className={"cropperContainer"}>
                     <Cropper
                         src={imageToBeCropped}
-                        style={{flex: 1,     width: "784px",
-                            height: "694px"}}
+                        style={{flex: 1,     width: "600px",
+                            height: "300px"}}
                         aspectRatio={aspectRatio.width / aspectRatio.height}
                         guides={false}
                         autoCrop={true}
@@ -157,40 +157,7 @@ import './image-cropper.scss'
 
                     <div className={"cropperActionsContainer"}>
 
-                        {isCard === true ?
-                            <button type="button"
-                                    className={aspectRatio.width === 1 ? "button btn-active" : "button"}
-                                    onClick={() => {
-                                        changeAspectRatio(1, 1);
-                                    }}>
-                                1:1
-                            </button>
-                            :
-                            <>
-                                <button type="button"
-                                        className={aspectRatio.width === 16 ? "button btn-active" : "button"}
-                                        onClick={() => {
-                                            changeAspectRatio(16, 9);
-                                        }}>
-                                    16:9
-                                </button>
-                                <button type="button"
-                                        className={aspectRatio.width === 1 ? "button btn-active" : "button"}
-                                        onClick={() => {
-                                            changeAspectRatio(1, 1);
-                                        }}>
-                                    1:1
-                                </button>
-                                <button type="button"
-                                        className={aspectRatio.width === 3 ? "button btn-active" : "button"}
-                                        onClick={() => {
-                                            changeAspectRatio(3, 4);
-                                        }}>
-                                    3:4
-                                </button>
-                            </>
-                        }
-
+                       
                         <button type="button" className={"button btn-crop-image"} onClick={getCropData}>
                             Crop Image
                         </button>
