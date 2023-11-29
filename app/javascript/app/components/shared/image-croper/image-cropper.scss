@@ -5,6 +5,8 @@
 .cropperContainer {
   display: flex;
   flex-direction: column;
+  width: 600px;
+  height: 500px;
   .cropperActionsContainer{
     display: flex;
     gap: 10px;
@@ -71,7 +73,7 @@
 }
 
  .btn-crop-image {
-   background: orange;
+   background: #55545e;
    color: #FFFFFF;
    opacity: 100%;
  }
