@@ -49,7 +49,7 @@ class EventSerializer < ActiveModel::Serializer
 
   def token
     event_meta = {
-      stateIds: object.event_locations.pluck(:state_id),
+      stateIds: object&.event_locations.select(location_type: "Saral::Locatable::State").pluck(:state_id),
       createRedirectionLink: ENV['ROOT_URL'] + 'events/edit/' + object.id.to_s,
       createRedirectionName: object.name,
       logo: object.get_image_url,
