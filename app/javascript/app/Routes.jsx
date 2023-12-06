@@ -20,19 +20,16 @@ const Router=()=>{
             <Route path="/forms/submissions/:event_id" element={<FormSubmission />} />
 
 
-            <Route element={<ProtectedRoutes/>}>
 
+            <Route element={<ProtectedRoutes/>}>
 
                 <Route path="/events" element={ <HomeComponent />} />
                 <Route path="/events/create" element={<CreateEvent />} />
                 <Route path="/events/edit/:id" element={<EditEvent />} />
                 <Route path="/events/view/:id"  element={<ViewEvents/>}/>
 
-
             </Route>
-
-
-            <Route path="/*" element={<Navigate to="/" replace={true}  />} />
+       <Route path="/*" element={<Navigate to="/" replace={true}  />} />
         </Routes>
     )
 }

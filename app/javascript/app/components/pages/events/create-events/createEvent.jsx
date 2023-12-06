@@ -38,7 +38,8 @@ export default function CreateEvent({ isEdit, editData }) {
     "https://storage.googleapis.com/public-saral/public_document/icon.jpg";
 
   const navigate = useNavigate();
-  const [dataLevels, setDataLevels] = useState([]);
+  const [
+      dataLevels, setDataLevels] = useState([]);
   const [countryStates, setCountryStates] = useState([]);
   const [image, setImage] = useState(null);
   const [startDate, setStartDate] = useState();
@@ -58,7 +59,7 @@ export default function CreateEvent({ isEdit, editData }) {
   });
 
   const requiredField = ["start_datetime"];
-
+  
   useEffect(() => {
     if (isEdit) {
       (async () => {
