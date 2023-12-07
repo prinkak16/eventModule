@@ -22,6 +22,7 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import {EditButtonIcon,ViewButtonIcon} from '../../../assests/svg/index'
 import moment from "moment";
 import {ImageNotFound} from "../../../assests/png";
+import Button from "@mui/material/Button";
 
 const HomeComponent = () => {
   const eventStatusArray = [
@@ -495,29 +496,6 @@ const HomeComponent = () => {
             
           </LocalizationProvider>
 
-
-
-          {/*  {filterList &&
-            filterList.map((filter, index) => (
-              <div className="dynamic-filters" key={index}>
-                <Autocomplete
-                  key={`${filter}${index}`}
-                  className="w-100"
-                  value={
-                    getOptions(filter).find(
-                      (value) => value.id === parseInt(fieldValue(filter))
-                    ) || null
-                  }
-                  options={getOptions(filter)}
-                  getOptionLabel={(option) => option.name || ""}
-                  onChange={handleFilterChange(filter, index)}
-                  renderInput={(params) => (
-                    <TextField {...params} label={`Select ${filter}`} />
-                  )}
-                />
-              </div>
-            ))}*/}
-
           <Autocomplete
              fullWidth
              options={filtersFieldData["levels"]}
@@ -546,19 +524,20 @@ const HomeComponent = () => {
               renderInput={(params) => <TextField {...params} label="Select Event Status" variant="outlined" />}
           />
           <div className="filters-buttons">
-            <button
+            <Button
                 onClick={clearFiltersValue}
                 className="clear-button"
                 disabled={disableClearFilterButton()}
             >
               Clear
-            </button>
-            <button
+            </Button>
+            <Button
                 onClick={getFilterEvents}
                 className="apply-button"
+                variant={"contained"}
             >
               Apply
-            </button>
+            </Button>
           </div>
         </div>
         </div>
