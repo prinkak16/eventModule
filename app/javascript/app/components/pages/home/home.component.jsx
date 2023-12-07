@@ -79,7 +79,6 @@ const HomeComponent = () => {
 
 
   async function getApisValue(filerType, apiPath) {
-    setLoader(true);
     let levels = await fetch(`api/event/${apiPath}`, {
       method: "GET",
       headers: {
@@ -88,7 +87,6 @@ const HomeComponent = () => {
         Authorization: "",
       },
     });
-    setLoader(false);
     const res = await levels.json();
     const transformedFilter = convertSnackCase(filerType);
     const key =
@@ -176,9 +174,7 @@ const HomeComponent = () => {
     }
   };
 
-  useEffect(() => {
-    console.log('filter field vlaue is ',filtersFieldValue);
-  }, [filtersFieldValue]);
+
   useEffect(() => {
     callApis();
   }, []);
@@ -456,33 +452,35 @@ const HomeComponent = () => {
 
                   </div>
                   <div className="edit-bar">
+                    <div className="edit-bar-sub-div cursor-pointer"
+                         onClick={() => navigate(`/events/view/${event?.id}`)}>
+                      <IconButton>
+                        <RemoveRedEyeIcon className="event-list-icon" sx={{color: "#60D669"}}/>
+                      </IconButton>
+                      <span className="font1-2rem">View</span>
+                    </div>
                     <div
                         className="edit-bar-sub-div cursor-pointer"
                         onClick={() => EditEvent(event?.id)}
                     >
                       <IconButton>
-                        <EditIcon className="event-list-icon" sx={{color:"#3193FF"}}/>
+                        <EditIcon className="event-list-icon" sx={{color: "#3193FF"}}/>
                       </IconButton>
                       <span className="font1-2rem">Edit</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer" onClick={()=> {
+                    <div className="edit-bar-sub-div cursor-pointer" onClick={() => {
                       setEventDeleteId(event?.id)
                       setShowConfirmationModal(true)
                     }}>
                       <IconButton>
-                        <ArchiveIcon className="event-list-icon" sx={{color:"orange"}}/>
+                        <ArchiveIcon className="event-list-icon" sx={{color: "orange"}}/>
 
                       </IconButton>
                       <span className="font1-2rem">Archive</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer"  onClick={()=>navigate(`/events/view/${event?.id}`)}>
-                      <IconButton>
-                        <RemoveRedEyeIcon className="event-list-icon" sx={{color:"#60D669"}}/>
-                      </IconButton>
-                      <span className="font1-2rem">View</span>
-                    </div>
+
                   </div>
 
 
@@ -490,7 +488,7 @@ const HomeComponent = () => {
             ))}
           </>
         ) : (
-          <div className="no-event-data">No Data Found</div>
+            <div className="no-event-data">No Data Found</div>
         )}
           <div className="pagination">
             <Pagination

@@ -28,6 +28,7 @@ import { ApiClient } from "../../../../services/RestServices/BaseRestServices";
 import { getEventById } from "../../../../services/RestServices/Modules/EventServices/EventsServices";
 import {UploadIcon, CrossIcon, NextIcon} from '../../../../assests/svg/index'
 import ImageCroper from "../../../shared/image-croper/ImageCroper";
+import moment from "moment";
 export default function CreateEvent({ isEdit, editData }) {
   const { id } = useParams();
   const urlParams = new URLSearchParams(window.location.search);
@@ -179,10 +180,12 @@ export default function CreateEvent({ isEdit, editData }) {
   }
 
   function  setFormField(event, field) {
+
     if (field === "start_datetime" || field === "end_datetime") {
       setFormFieldValue((prevFormValues) => ({
         ...prevFormValues,
-        [field]: event?.$d,
+        [field]: event?.$d
+
       }));
     } else {
       const {value} = event.target;
@@ -194,26 +197,8 @@ export default function CreateEvent({ isEdit, editData }) {
   }
 
 
-  const handleImagesChange = (e) => {
-    const file = e.target.files[0];
-    formFieldValue.img = file;
-    let reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-      setImage(reader.result);
-    };
-  };
+ 
 
-  const setEndDateCal = (date) => {
-    setStartDate(dayjs(date));
-  };
-
-  const removeImage = () => {
-    setFormFieldValue((prevData)=> {
-      return {...prevData, img: ""}
-    })
-    setImage("");
-  };
 
   const submit = (type,id) => {
     for (let i = 0; i < requiredField.length; i++) {
@@ -327,15 +312,17 @@ export default function CreateEvent({ isEdit, editData }) {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <div className="d-flex justify-content-between">
               <DateTimePicker
-                required={true}
+                  ampm={false}
+
+                  required={true}
                 label={
                   <span>
            Start date & Time{' '}
                     <span style={{ color: 'red' }}>*</span>
-          </span>
+            </span>
                 }
                 className="w-49"
-                minDateTime={dayjs(new Date())}
+                minDateTime={dayjs(new Date()).subtract(10, 'minute')}
                 value={
                   formFieldValue.start_datetime
                     ? dayjs(formFieldValue.start_datetime)
@@ -351,12 +338,13 @@ export default function CreateEvent({ isEdit, editData }) {
                 }}
               />
               <DateTimePicker
+                  ampm={false}
+
                   disabled={formFieldValue?.start_datetime===""}
                   label={
                     <span>
-            End data & Time{' '}
-                      <span style={{ color: 'red' }}>*</span>
-          </span>
+            End data & Time{' '}<span style={{ color: 'red' }}>*</span>
+                   </span>
                   }
                 className="w-49"
                 value={
@@ -364,7 +352,7 @@ export default function CreateEvent({ isEdit, editData }) {
                     ? dayjs(formFieldValue.end_datetime)
                     : null
                 }
-                minDateTime={dayjs(formFieldValue?.start_datetime)}
+                minDateTime={dayjs(formFieldValue?.start_datetime).subtract(10, 'minute')}
                 onChange={(event) => {
                   if (
                     formFieldValue.start_datetime &&

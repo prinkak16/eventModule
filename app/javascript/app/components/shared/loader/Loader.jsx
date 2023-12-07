@@ -2,7 +2,7 @@ import React from 'react'
 import Loader from "react-js-loader";
 
 
-const Loader=()=>{
+const ReactLoader=()=>{
     return(
             <Loader
                 type="bubble-ping"
@@ -14,4 +14,4 @@ const Loader=()=>{
     )
 }
 
-export  default  Loader;
+export  default  ReactLoader;

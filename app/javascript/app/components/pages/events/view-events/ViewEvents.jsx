@@ -11,8 +11,8 @@ import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
 import ImageCroper from "../../../shared/image-croper/ImageCroper";
 import {getDataLevels, getStates} from "../../../../services/CommonServices/commonServices";
-import Loader from "../../../shared/loader/Loader";
 import {toast} from "react-toastify";
+import ReactLoader from "../../../shared/loader/Loader";
 
 const ViewEvents=({isEdit=true})=>{
     const {id}=useParams();
@@ -55,6 +55,7 @@ const ViewEvents=({isEdit=true})=>{
         // console.log("data of promise all", data);
     };
 
+   
     useEffect(() => {
         (async ()=>{
             setIsLoading(true);
@@ -105,7 +106,7 @@ const ViewEvents=({isEdit=true})=>{
             <div className="event-path">
                 <MyBreadcrumbs />
             </div>
-            {isLoading ? <Loader/> : <div className="form-and-iframe-container">
+            {isLoading ? <ReactLoader/> : <div className="form-and-iframe-container">
 
 
                 <Box className="event-create-form-bg" style={{width: "50%"}}>
@@ -213,7 +214,7 @@ const ViewEvents=({isEdit=true})=>{
                     </div>
                 </Box>
                 <div className={"iframe-container"}>
-                    <iframe src={iframeUrl} height="100%" width="100%" title="Iframe Example"></iframe>
+                    <iframe src={iframeUrl} height="100%" width="100%" title="Iframe Example" />
                 </div>
             </div>
             }
