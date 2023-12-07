@@ -455,7 +455,9 @@ const HomeComponent = () => {
                     <div className="edit-bar-sub-div cursor-pointer"
                          onClick={() => navigate(`/events/view/${event?.id}`)}>
                       <IconButton>
-                        <RemoveRedEyeIcon className="event-list-icon" sx={{color: "#60D669"}}/>
+                        <div className={"view-button"}>
+                          <ViewButtonIcon  className={"view-icon"}/>
+                        </div>
                       </IconButton>
                       <span className="font1-2rem">View</span>
                     </div>
@@ -464,7 +466,11 @@ const HomeComponent = () => {
                         onClick={() => EditEvent(event?.id)}
                     >
                       <IconButton>
-                        <EditIcon className="event-list-icon" sx={{color: "#3193FF"}}/>
+                        <div className={"edit-button"} >
+                          <EditButtonIcon className={"edit-icon"} />
+
+                        </div>
+
                       </IconButton>
                       <span className="font1-2rem">Edit</span>
                     </div>
