@@ -131,20 +131,21 @@ body {
   .clear-button{
     width:119px;
     height:32px;
-    background: white;
-    color:#666666;
-    border:1px solid #666666;
-    border-radius:8px;
+    color:#55545E;
+    border:1px solid #55545E;
+    border-radius:15px;
 
   }
   .apply-button{
     width:119px;
     height:32px;
-    background: #55545E;
+    background-color: #55545E;
+    border-radius:15px;
     color:white;
-    border-radius:8px;  
-
-
+    &:hover {
+      background-color: #55545E;
+      color: white;
+    }
   }
 }
 
