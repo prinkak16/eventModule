@@ -266,6 +266,8 @@ const HomeComponent = () => {
         setEventsList(data?.data);
         setAllEventList(data?.data);
         setTotalCount(data?.total ?? data?.data?.length);
+        window.scrollTo({top: 0});
+
       } else {
         toast.error(`Please enter ${data.message}`, {
           autoClose: 2000,

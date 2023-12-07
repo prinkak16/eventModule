@@ -56,6 +56,8 @@ const FormComponent = () => {
         setAllEventList(data.data);
         setTotalCount(data?.total ?? data?.data?.length);
         setLoader(false)
+        window.scrollTo({top: 0});
+
       } else {
         setLoader(false)
         toast.error(`Please enter ${data.message}`, {
