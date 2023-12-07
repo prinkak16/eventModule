@@ -15,9 +15,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { useLocation, useNavigate, Link, useParams } from "react-router-dom";
-import Loader from "react-js-loader";
 import MyBreadcrumbs from "../../../shared/breadcrumbs/Breadcrumbs";
 import { createEvent } from "../../../../services/RestServices/Modules/EventServices/CreateEventServices";
 import {
@@ -29,6 +27,7 @@ import { getEventById } from "../../../../services/RestServices/Modules/EventSer
 import {UploadIcon, CrossIcon, NextIcon} from '../../../../assests/svg/index'
 import ImageCroper from "../../../shared/image-croper/ImageCroper";
 import moment from "moment";
+import ReactLoader from "../../../shared/loader/Loader";
 export default function CreateEvent({ isEdit, editData }) {
   const { id } = useParams();
   const urlParams = new URLSearchParams(window.location.search);
@@ -275,15 +274,7 @@ export default function CreateEvent({ isEdit, editData }) {
 
   return (
     <div className="create-event-container">
-      {loader ? (
-        <Loader
-          type="bubble-ping"
-          bgColor={"#FFFFFF"}
-          title="Loading.."
-          color={"#FFFFFF"}
-          size={100}
-        />
-      ) : (
+      {loader ? <ReactLoader/> : (
         <></>
       )}
       <div className="container-adjust">

@@ -4,24 +4,18 @@ import "./form.module.scss";
 import {Autocomplete, Box, Pagination, Paper, TextField} from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
-import dayjs from "dayjs";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faArchive, faEye } from "@fortawesome/free-solid-svg-icons";
-import Loader from "react-js-loader";
+
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import {useRef} from "react";
 import FormEventMobileCard from "./mobile_view/FormEventMobileCard";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 
 import { ApiClient } from "../../../services/RestServices/BaseRestServices";
 import FormEventCard from "./FormEventCard";
 import {EventState} from "../../../EventContext";
-// import { DefaultImage } from "../../../assests/png";
-import EllipsesComponent from "../../../utils/EllipsesComponent";
+
+import ReactLoader from "../../shared/loader/Loader";
 const FormComponent = () => {
   const imgDefault =
     "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
@@ -124,15 +118,7 @@ const FormComponent = () => {
   }, [innerWidth]);*/
   return (
     <Box className="form-main-container" ref={myRef} >
-      {loader ? (
-        <Loader
-          type="bubble-ping"
-          bgColor={"#FFFFFF"}
-          title="Loading.."
-          color={"#FFFFFF"}
-          size={100}
-        />
-      ) : (
+      {loader ? <ReactLoader/> : (
         <></>
       )}
 
