@@ -118,14 +118,9 @@ const FormComponent = () => {
   }, [innerWidth]);*/
   return (
     <Box className="form-main-container" ref={myRef} >
-      {loader ? <ReactLoader/> : (
-        <></>
-      )}
+      {loader ? <ReactLoader/> :
+     <>
 
-      
-        
-      <div>
-      </div>
         <div className="form-event-search">
           <TextField
               className="search-input"
@@ -170,7 +165,10 @@ const FormComponent = () => {
               variant="outlined"
               shape="rounded"
           />
+
         </div>
+     </>
+      }
 
     </Box>
 

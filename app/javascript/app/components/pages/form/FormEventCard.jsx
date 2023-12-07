@@ -2,13 +2,9 @@ import React from "react";
 import "./form.module.scss";
 import { CalenderIcon, ClockIcon, LocationIcon } from "../../../assests/svg";
 import moment from "moment";
-import { DefaultImage } from "../../../assests/png"
+import { ImageNotFound} from "../../../assests/png"
 import { useNavigate } from "react-router";
-import EllipsesComponent from "../../../utils/EllipsesComponent";
-const imgDefault =
-  "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
-const nextBtn =
-  "https://storage.googleapis.com/public-saral/public_document/button.png";
+
 
 
 const FormEventCard = ({ event }) => {
@@ -25,7 +21,7 @@ const FormEventCard = ({ event }) => {
       <div className="form-list-fir ">
         <img
           className="form-photo"
-          src={event.image_url ? event.image_url : DefaultImage}
+          src={event.image_url ? event.image_url : ImageNotFound}
         />
       </div>
       <div className="form-list-sec">

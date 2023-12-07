@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./home.module.scss";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 
 import {
   Autocomplete,
   Pagination,
-  TablePagination,
   TextField,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faArchive, faEye } from "@fortawesome/free-solid-svg-icons";
 import Loader from "react-js-loader";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
@@ -24,11 +19,9 @@ import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import IconButton from "@mui/material/IconButton";
 import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
 import ArchiveIcon from '@mui/icons-material/Archive';
-import EditIcon from '@mui/icons-material/Edit';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {EditButtonIcon,ViewButtonIcon} from '../../../assests/svg/index'
 import moment from "moment";
+import {ImageNotFound} from "../../../assests/png";
 
 const HomeComponent = () => {
   const eventStatusArray = [
@@ -104,59 +97,13 @@ const HomeComponent = () => {
       pathname: "/events/create",
     });
   };
-
-  const getOptions = (filter) => {
-    let data = [];
-    if (filter) {
-      const transformedFilter = convertSnackCase(filter);
-
-      data =
-        filtersFieldData[
-          filter === "Event Status"
-            ? transformedFilter
-            : `${transformedFilter}s`
-        ];
-    }
-    return data;
-  };
+  
 
   const convertSnackCase = (value) => {
     return value.replace(/\s+/g, "_").toLowerCase();
   };
 
-  const fieldValue = (filter) => {
-    if (filter) {
-      const transformedFilter = convertSnackCase(filter);
-      return filtersFieldValue[`${transformedFilter}_id`];
-    }
-  };
 
-
-
-  const filterData = (searchTerm) => {
-    let text = searchTerm.target.value;
-    if (!text) {
-      setEventsList(allEventList);
-    }
-
-    if (text) {
-      const searchTermLower = text.toLowerCase();
-      const events = eventsList.filter((item) =>
-        item.name.toLowerCase().includes(searchTermLower)
-      );
-      setEventsList(events);
-    }
-  };
-
-  const handleFilterChange = (filterType, index) => (event, value) => {
-    if (filterType) {
-      let valueId = value.id;
-      if (filterType === "Event Status") {
-        valueId = value.name;
-      }
-      setFieldvalue(filterType, valueId);
-    }
-  };
 
   const callApis = (fetchType, value) => {
     for (let i = 0; i < filterList.length; i++) {
@@ -403,7 +350,7 @@ const HomeComponent = () => {
                     <div className="event-list-fir">
                       <img
                           className="event-photo"
-                          src={event.image_url ? event.image_url : imgDefault}
+                          src={event.image_url ? event?.image_url : ImageNotFound}
                       />
                       <div className="event-header-name">
                         <h2 className="event-header-name-ellipsis">
