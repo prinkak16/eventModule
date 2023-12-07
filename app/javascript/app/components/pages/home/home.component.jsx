@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./home.module.scss";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 
 import {
   Autocomplete,
   Pagination,
-  TablePagination,
   TextField,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faArchive, faEye } from "@fortawesome/free-solid-svg-icons";
 import Loader from "react-js-loader";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
@@ -24,11 +19,9 @@ import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import IconButton from "@mui/material/IconButton";
 import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
 import ArchiveIcon from '@mui/icons-material/Archive';
-import EditIcon from '@mui/icons-material/Edit';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {EditButtonIcon,ViewButtonIcon} from '../../../assests/svg/index'
 import moment from "moment";
+import {ImageNotFound} from "../../../assests/png";
 
 const HomeComponent = () => {
   const eventStatusArray = [
@@ -79,7 +72,6 @@ const HomeComponent = () => {
 
 
   async function getApisValue(filerType, apiPath) {
-    setLoader(true);
     let levels = await fetch(`api/event/${apiPath}`, {
       method: "GET",
       headers: {
@@ -88,7 +80,6 @@ const HomeComponent = () => {
         Authorization: "",
       },
     });
-    setLoader(false);
     const res = await levels.json();
     const transformedFilter = convertSnackCase(filerType);
     const key =
@@ -106,59 +97,13 @@ const HomeComponent = () => {
       pathname: "/events/create",
     });
   };
-
-  const getOptions = (filter) => {
-    let data = [];
-    if (filter) {
-      const transformedFilter = convertSnackCase(filter);
-
-      data =
-        filtersFieldData[
-          filter === "Event Status"
-            ? transformedFilter
-            : `${transformedFilter}s`
-        ];
-    }
-    return data;
-  };
+  
 
   const convertSnackCase = (value) => {
     return value.replace(/\s+/g, "_").toLowerCase();
   };
 
-  const fieldValue = (filter) => {
-    if (filter) {
-      const transformedFilter = convertSnackCase(filter);
-      return filtersFieldValue[`${transformedFilter}_id`];
-    }
-  };
 
-
-
-  const filterData = (searchTerm) => {
-    let text = searchTerm.target.value;
-    if (!text) {
-      setEventsList(allEventList);
-    }
-
-    if (text) {
-      const searchTermLower = text.toLowerCase();
-      const events = eventsList.filter((item) =>
-        item.name.toLowerCase().includes(searchTermLower)
-      );
-      setEventsList(events);
-    }
-  };
-
-  const handleFilterChange = (filterType, index) => (event, value) => {
-    if (filterType) {
-      let valueId = value.id;
-      if (filterType === "Event Status") {
-        valueId = value.name;
-      }
-      setFieldvalue(filterType, valueId);
-    }
-  };
 
   const callApis = (fetchType, value) => {
     for (let i = 0; i < filterList.length; i++) {
@@ -176,9 +121,7 @@ const HomeComponent = () => {
     }
   };
 
-  useEffect(() => {
-    console.log('filter field vlaue is ',filtersFieldValue);
-  }, [filtersFieldValue]);
+
   useEffect(() => {
     callApis();
   }, []);
@@ -266,6 +209,8 @@ const HomeComponent = () => {
         setEventsList(data?.data);
         setAllEventList(data?.data);
         setTotalCount(data?.total ?? data?.data?.length);
+        window.scrollTo({top: 0});
+
       } else {
         toast.error(`Please enter ${data.message}`, {
           autoClose: 2000,
@@ -405,7 +350,7 @@ const HomeComponent = () => {
                     <div className="event-list-fir">
                       <img
                           className="event-photo"
-                          src={event.image_url ? event.image_url : imgDefault}
+                          src={event.image_url ? event?.image_url : ImageNotFound}
                       />
                       <div className="event-header-name">
                         <h2 className="event-header-name-ellipsis">
@@ -454,33 +399,41 @@ const HomeComponent = () => {
 
                   </div>
                   <div className="edit-bar">
+                    <div className="edit-bar-sub-div cursor-pointer"
+                         onClick={() => navigate(`/events/view/${event?.id}`)}>
+                      <IconButton>
+                        <div className={"view-button"}>
+                          <ViewButtonIcon  className={"view-icon"}/>
+                        </div>
+                      </IconButton>
+                      <span className="font1-2rem">View</span>
+                    </div>
                     <div
                         className="edit-bar-sub-div cursor-pointer"
                         onClick={() => EditEvent(event?.id)}
                     >
                       <IconButton>
-                        <EditIcon className="event-list-icon" sx={{color:"#3193FF"}}/>
+                        <div className={"edit-button"} >
+                          <EditButtonIcon className={"edit-icon"} />
+
+                        </div>
+
                       </IconButton>
                       <span className="font1-2rem">Edit</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer" onClick={()=> {
+                    <div className="edit-bar-sub-div cursor-pointer" onClick={() => {
                       setEventDeleteId(event?.id)
                       setShowConfirmationModal(true)
                     }}>
                       <IconButton>
-                        <ArchiveIcon className="event-list-icon" sx={{color:"orange"}}/>
+                        <ArchiveIcon className="event-list-icon" sx={{color: "orange"}}/>
 
                       </IconButton>
                       <span className="font1-2rem">Archive</span>
                     </div>
 
-                    <div className="edit-bar-sub-div cursor-pointer"  onClick={()=>navigate(`/events/view/${event?.id}`)}>
-                      <IconButton>
-                        <RemoveRedEyeIcon className="event-list-icon" sx={{color:"#60D669"}}/>
-                      </IconButton>
-                      <span className="font1-2rem">View</span>
-                    </div>
+
                   </div>
 
 
@@ -488,7 +441,7 @@ const HomeComponent = () => {
             ))}
           </>
         ) : (
-          <div className="no-event-data">No Data Found</div>
+            <div className="no-event-data">No Data Found</div>
         )}
           <div className="pagination">
             <Pagination

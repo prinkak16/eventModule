@@ -11,6 +11,8 @@ import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
 import ImageCroper from "../../../shared/image-croper/ImageCroper";
 import {getDataLevels, getStates} from "../../../../services/CommonServices/commonServices";
+import {toast} from "react-toastify";
+import ReactLoader from "../../../shared/loader/Loader";
 
 const ViewEvents=({isEdit=true})=>{
     const {id}=useParams();
@@ -27,6 +29,7 @@ const ViewEvents=({isEdit=true})=>{
     });
     const [dataLevels, setDataLevels] = useState([]);
     const [countryStates, setCountryStates] = useState([]);
+    const [isLoading,setIsLoading]=useState(false);
 
 
     const getAllData = async () => {
@@ -52,12 +55,17 @@ const ViewEvents=({isEdit=true})=>{
         // console.log("data of promise all", data);
     };
 
+   
     useEffect(() => {
         (async ()=>{
-            const {data}= await ApiClient.get(`/event/edit/${id}`) ;
+            setIsLoading(true);
+            try{
 
-            if (data?.success) {
-                setIframeUrl(data?.data[0]?.preview_url);
+
+                const {data}= await ApiClient.get(`/event/edit/${id}`) ;
+
+                if (data?.success) {
+                    setIframeUrl(data?.data[0]?.preview_url);
 
 
                     setFormFieldValue((prevData)=>({
@@ -74,8 +82,16 @@ const ViewEvents=({isEdit=true})=>{
                         ),
                         state_obj : data?.data[0]?.state_ids ?? []
                     }) )
-            }   
-            
+                }else{
+                    toast.error('Failed to load the data')
+                }
+            }catch (e) {
+                toast.error(e.message)
+                
+            }
+
+
+            setIsLoading(false)
 
         })();
 
@@ -90,10 +106,10 @@ const ViewEvents=({isEdit=true})=>{
             <div className="event-path">
                 <MyBreadcrumbs />
             </div>
-            <div className="form-and-iframe-container" >
+            {isLoading ? <ReactLoader/> : <div className="form-and-iframe-container">
 
 
-                <Box  className="event-create-form-bg" style={{width:"50%"}}>
+                <Box className="event-create-form-bg" style={{width: "50%"}}>
                     <TextField
                         disabled
                         id="event_title"
@@ -106,7 +122,7 @@ const ViewEvents=({isEdit=true})=>{
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <div className="d-flex justify-content-between">
                             <DateTimePicker
-                                disabled    
+                                disabled
                                 required={true}
                                 label="Start date & Time*"
                                 className="w-49"
@@ -119,7 +135,7 @@ const ViewEvents=({isEdit=true})=>{
 
                             />
                             <DateTimePicker
-                                
+
                                 disabled
                                 label="End date & Time*"
                                 className="w-49"
@@ -142,13 +158,13 @@ const ViewEvents=({isEdit=true})=>{
                     </div>
 
                     <div className="levels">
-                        <h6 style={{ display: "flex", alignItems: "center" }}>
+                        <h6 style={{display: "flex", alignItems: "center"}}>
                             Event Level:
                         </h6>
                         {Array.isArray(dataLevels) &&
                             dataLevels.map((item, index) => (
                                 <button
-                                    
+
                                     className="level-button"
                                     key={index}
                                     disabled={true}
@@ -173,7 +189,7 @@ const ViewEvents=({isEdit=true})=>{
                         options={countryStates}
                         getOptionLabel={(option) => option.name || ""}
                         renderInput={(params) => (
-                            <TextField {...params} label={`Select State*`} />
+                            <TextField {...params} label={`Select State*`}/>
                         )}
                     />
 
@@ -191,16 +207,17 @@ const ViewEvents=({isEdit=true})=>{
                         >
                             <FormControlLabel
                                 value="open_event"
-                                control={<Radio />}
+                                control={<Radio/>}
                                 label="Open event"
                             />
                         </RadioGroup>
                     </div>
-                </Box >
+                </Box>
                 <div className={"iframe-container"}>
-                    <iframe src={iframeUrl} height="100%" width="100%" title="Iframe Example"></iframe>
+                    <iframe src={iframeUrl} height="100%" width="100%" title="Iframe Example" />
                 </div>
             </div>
+            }
 
 
         </div>

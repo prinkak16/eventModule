@@ -52,19 +52,20 @@ a {
 }
 
 .outer-form-div{
+  box-sizing: border-box;
+  width: 100%;
   max-width: 56rem;
   margin-right: auto;
   margin-left: auto;
-  background: #f6f8fa;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  background: white;
 }
 
 @media screen and (max-width: 800px) {
   .outer-form-div{
     margin-right: 0;
     margin-left: 0;
-    background: #f6f8fa;
   }
 }
