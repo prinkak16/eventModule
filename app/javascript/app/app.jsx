@@ -17,7 +17,7 @@ import Router from "./Routes";
 const paths = ["forms",];
 
 
-function App() {
+function    App() {
   const navigate=useNavigate();
   const { pathname } = useLocation();
 
