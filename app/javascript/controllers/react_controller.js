@@ -13,7 +13,6 @@ export default class extends Controller {
         createRoot(app).render(<BrowserRouter>
             <EventContext>
                 <App/>
-
             </EventContext>
         </BrowserRouter>)
     }
