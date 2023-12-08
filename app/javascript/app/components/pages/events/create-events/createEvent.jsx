@@ -36,7 +36,7 @@ export default function CreateEvent({isEdit, editData}) {
         event_title: "",
         start_datetime: "",
         end_datetime: "",
-        level_id: 1,
+        level_id: "",
         location_ids: [],
         event_type: "",
         img: "",
@@ -116,10 +116,15 @@ export default function CreateEvent({isEdit, editData}) {
         try {
             const dataLevelResponse = await getDataLevels();
             if (dataLevelResponse?.data?.success) {
-                setDataLevels(dataLevelResponse?.data?.data);
-                if(dataLevelResponse?.data?.data?.length>0){
-                    setFormField((prevData)=>({...prevData,"level_id":dataLevelResponse?.data?.data[0]?.id}))
+                    if(dataLevelResponse?.data?.data?.length>1){
+                   const defaultId=dataLevelResponse?.data?.data[0]?.id;
+                    setFormFieldValue((prevData)=>({...prevData,level_id:defaultId}))
                 }
+
+                setDataLevels(dataLevelResponse?.data?.data);
+
+
+
             }
         } catch (error) {
             console.log("error is ", error);
