@@ -5,7 +5,7 @@ class Api::EventController < Api::ApplicationController
   require "image_processing/mini_magick"
 
   def data_levels
-    levels = DataLevel.select(:id, :name, :level_class)
+    levels = DataLevel.select(:id, :name, :level_class).order(:order_id)
     render json: { success: true, data: levels || [], message: "Data levels list." }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
@@ -110,6 +110,7 @@ class Api::EventController < Api::ApplicationController
           EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
         end
         EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid)
+        event = Event.find(event.id)
         render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
