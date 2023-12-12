@@ -14,21 +14,21 @@ import HeaderBar from "./components/shared/header/header";
 import {useNavigate} from "react-router";
 import Router from "./Routes";
 
-const paths = ["form"];
-function App() {
+const paths = ["forms",];
+
+
+function    App() {
   const navigate=useNavigate();
   const { pathname } = useLocation();
-  console.log("pathname is", pathname);
 
   const [showNavbar, setShowNavbar] = useState(true);
 
   const toggleNavbar = () => {
     const isValid = paths.some((item) => pathname.includes(item));
-    console.log("isvalid is ", isValid);
     if (isValid) {
       setShowNavbar(false);
     } else {
-      setShowNavbar(true);
+      setShowNavbar(true);                                                            
     }
   };
 
@@ -44,8 +44,7 @@ function App() {
       <ToastContainer theme="colored"
                       hideProgressBar={true}
                       autoClose={3000}
-
-
+                      
       />
     </div>
   );

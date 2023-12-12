@@ -3,14 +3,12 @@ import {useNavigate, useParams} from "react-router";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import './form-event-submission.scss'
 import {Box, Paper} from "@mui/material";
-import {DefaultImage} from '../../../assests/png'
+import {ImageNotFound} from '../../../assests/png'
 import EventSubmissionCard from "./EventSubmissionCard";
-import Loader from "react-js-loader";
-import Tooltip from "@mui/material/Tooltip";
-import IconButton from "@mui/material/IconButton";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+
 import {EventState} from "../../../EventContext";
 import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
+import ReactLoader from "../../shared/loader/Loader";
 
 
 const FormSubmission = () => {
@@ -25,7 +23,8 @@ const FormSubmission = () => {
     const [eventDeleteId,setEventDeleteId]=useState(-1);
     const [confirmationStatus,setConfirmationStatus]=useState(false);
 
-    useEffect(() => {                                     
+    useEffect(() => {
+
         (async () => {
             setIsLoading(true)
             try {
@@ -54,9 +53,9 @@ const FormSubmission = () => {
 
     }, []);
 
-    useEffect(() => {
+   /* useEffect(() => {
         console.log('events are ', eventDetails)
-    }, [eventDetails]);
+    }, [eventDetails]);*/
 
     useEffect(() => {
         setIsSubmissionPage(true);
@@ -65,8 +64,8 @@ const FormSubmission = () => {
         setIsLoading(true)
         try {
             const {data} = await ApiClient.get(`user/submit_event/${event_id}`);
-            console.log('data', data);
             if (data?.success) {
+                setIsLoading(false)
                 window.location.href = data?.data?.redirect_url;
             }
         } catch (e) {
@@ -76,13 +75,10 @@ const FormSubmission = () => {
     }
 
     const deleteEventHandler = async () => {
-        console.log('submission id is ', eventDeleteId);
         try {
             const {data} = await ApiClient.get(`user/destroy/submission/${eventDeleteId}`);
-            console.log('data of delete is ', data);
             if (data?.success) {
                 const filteredList = eventSubmissionsData?.filter((item) => item?.id !== eventDeleteId  );
-                console.log('filtered list', filteredList)
                 setEventsubmissionsData(filteredList);
             }
             setConfirmationStatus(false);
@@ -102,31 +98,9 @@ const FormSubmission = () => {
 
     return (<Box className="form-event-submission-container" >
          <ConfirmationModal message="Are you sure want to delete ?"  showConfirmationModal={showConfirmationModal} setShowConfirmationModal={setShowConfirmationModal}  setConfirmationStatus={setConfirmationStatus} />
-        {isLoading ? <Loader
-            type="bubble-ping"
-            bgColor={"#FFFFFF"}
-            title="Loading.."
-            color={"#FFFFFF"}
-            size={100}
-        /> : <>
-           {/* <div className="event-name-heading-container">
-
-
-                <div className="form-event-back-button" onClick={() => navigate('/form')}>
-
-
-                    <Tooltip>
-                        <IconButton>
-                            <ArrowBackIosIcon/>
-
-                        </IconButton>
-                    </Tooltip>
-
-                </div>
-
-            </div>*/}
+        {isLoading ? <ReactLoader/> : <>
             <div className="event-image-container">
-                <img src={eventDetails?.image_url ? eventDetails?.image_url : DefaultImage}
+                <img src={eventDetails?.image_url ? eventDetails?.image_url : ImageNotFound}
                      className="event-image"/>
 
             </div>

@@ -4,15 +4,24 @@ import { Link } from "react-router-dom";
 
 export default function MyBreadcrumbs() {
   const { pathname } = useLocation();
-  const urls = pathname?.split("/").filter(Boolean);
-
+  let urls = pathname?.split("/").filter(Boolean);
   
 
+  function isNumeric(input) {
+    return /^\d+$/.test(input);
+  }
+
+  if(isNumeric(urls[urls.length-1])){
+    urls=urls.slice(0,urls.length-1);
+  }
+  
+  
   
   const breadcrumbsNames = {
     events: "Events",
     create: "Create Event",
     edit: "Edit Event",
+    view: "View Event "
   };
 
   return (
@@ -25,9 +34,9 @@ export default function MyBreadcrumbs() {
             }}
             to={`/${urls.slice(0, index + 1).join("/")}`}
           >
-            {breadcrumbsNames[url]}
+            {breadcrumbsNames[url]??url}
           </Link>
-          {index < urls.length - 1 && <span> &nbsp;/&nbsp; </span>}
+          {index < urls.length - 1  && <span> &nbsp;/&nbsp; </span>}
         </span>
       ))}
     </div>

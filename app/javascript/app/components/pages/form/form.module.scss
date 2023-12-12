@@ -50,7 +50,9 @@ body {
 .level-event-container {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 1px;
+  flex:1;
+  width:100%;
 }
 .home-search-div {
   display: flex;
@@ -99,19 +101,20 @@ body {
 
 
 .filters-container-main {
-  width: 20%;
+  width: 18%;
   background: #ffffff;
- 
   border-radius: 1rem;
-  position: sticky;
-  right:0;
+  position: fixed;
+  right: 0;
+  height:80vh;
+
  
 }
 
 .filters-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   padding: 1.5rem;
 }
 
@@ -128,20 +131,21 @@ body {
   .clear-button{
     width:119px;
     height:32px;
-    background: white;
-    color:#666666;
-    border:1px solid #666666;
-    border-radius:8px;
+    color:#55545E;
+    border:1px solid #55545E;
+    border-radius:15px;
 
   }
   .apply-button{
     width:119px;
     height:32px;
-    background: #55545E;
+    background-color: #55545E;
+    border-radius:15px;
     color:white;
-    border-radius:8px;  
-
-
+    &:hover {
+      background-color: #55545E;
+      color: white;
+    }
   }
 }
 
@@ -228,15 +232,15 @@ body {
   object-fit: contain;
 }
 
-.event-header-name {
-  margin-left: 1.5rem;
-  margin-top: 0.5rem;
-  width: 200px; /* Adjust the width as needed */
-  white-space: nowrap;
-}
+
 .event-header-name-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: Quicksand;
+  font-size: 24px;
+  font-weight: 600;
+
+
 }
 .any-ellipsis{
   overflow: hidden;
@@ -292,10 +296,14 @@ body {
 }
 
 .event-sub-header {
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin-top: -0.5rem;
   display: block;
   font-size: 1rem;
   color: rgba(73, 69, 79, 0.6);
+  font-width: 400;
+  font-size: 16px
 }
 
 .hr {
@@ -309,22 +317,17 @@ body {
 .form-list-fir {
   display: flex;
 }
-.visible-divs {
-  transition: transform 0.7s;
-}
+
 
 .form-list-sec {
-  flex-grow: 2;
   display: flex;
   flex-direction: column;
   font-family: Quicksand;
   font-size:0.625rem;
   font-weight: 500;
   padding:1rem 0;
-  line-height: 13px;
-  letter-spacing: 0em;
-  text-align: left;
-  max-width: 50%;
+  flex:1;
+ 
   min-width: 40%;
 
 
@@ -333,6 +336,9 @@ body {
     font-size: 1.25rem;
     font-weight: 600;
     letter-spacing: 0.13174602389335632px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 .form-list-third {
@@ -340,9 +346,6 @@ body {
   margin-right: 15px;
 }
 
-.event-list-item {
-  width: 25%;
-}
 
 .edit-bar-sub-div {
   display: flex;
@@ -352,7 +355,7 @@ body {
   text-align: center;
   .event-list-icon{
     width: 48px;
-    height: 48px;
+    height:48px;
   }
   
 }

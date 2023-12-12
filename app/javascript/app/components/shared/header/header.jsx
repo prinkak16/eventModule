@@ -17,9 +17,12 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
     const navigate = useNavigate()
     const {pathname}=useLocation();
     const {eventName,setEventName,isSubmissionPage,setIsSubmissionPage}=EventState();
-    console.log('issubmission  page ',isSubmissionPage)
-    console.log('event name in header from context',eventName)
+
+
+
+
     useEffect(() => {
+        console.log('is granted ',JSON.parse(document.getElementById("app").getAttribute("data-create")));
         getUserDetail()
     }, [])                                              
 
@@ -54,9 +57,10 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
                     </Link>
                 </div>
                 {!isSaralUser && (
-                    <>
-                        <div className="language-setting-container mt-3">
-                        </div>
+                    <div className={"header-form-button-logout-container"}>
+                        
+                        <button className={"header-form-button"} onClick={()=>navigate('/forms')}>go to forms</button>
+
                         <div className="right-header-content">
                             <div className="user-profile-container">
                                 <span className="user-name">{userDetails ? userDetails?.name : ''}</span>
@@ -66,14 +70,15 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
                                     <></>
                                 }
                             </div>
-                            <div className="user-profile-container-mobile">{/* Mobile content */}</div>
                         </div>
-                    </>
+                    </div>
                 )}
             </Toolbar>  :
                
                 <Toolbar className="header-form-bg">
-                    <Tooltip className="header-form-back-button" onClick={()=> navigate('/forms')}>
+                    <Tooltip className="header-form-back-button" onClick={()=>
+                        navigate(-1)
+                    }>
                         {isSubmissionPage &&
                         <IconButton>
                             <ArrowBackIosIcon />
@@ -81,6 +86,8 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
                         }
                     </Tooltip>
                     <h2 className="event-name-heading">{eventName??"Events"} </h2>
+                    {(JSON.parse(document.getElementById("app").getAttribute("data-create")))&&!isSubmissionPage&&<button className={"header-form-create-button"} onClick={()=>navigate('/events')}>Create Event</button>
+                    }
                 </Toolbar>
             }
         </>

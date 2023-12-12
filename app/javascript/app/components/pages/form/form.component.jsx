@@ -4,24 +4,18 @@ import "./form.module.scss";
 import {Autocomplete, Box, Pagination, Paper, TextField} from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
-import dayjs from "dayjs";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faArchive, faEye } from "@fortawesome/free-solid-svg-icons";
-import Loader from "react-js-loader";
+
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import {useRef} from "react";
 import FormEventMobileCard from "./mobile_view/FormEventMobileCard";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 
 import { ApiClient } from "../../../services/RestServices/BaseRestServices";
 import FormEventCard from "./FormEventCard";
 import {EventState} from "../../../EventContext";
-// import { DefaultImage } from "../../../assests/png";
-import EllipsesComponent from "../../../utils/EllipsesComponent";
+
+import ReactLoader from "../../shared/loader/Loader";
 const FormComponent = () => {
   const imgDefault =
     "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
@@ -32,7 +26,7 @@ const FormComponent = () => {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(1);
   const [loader, setLoader] = useState(false);
-  const [searchEventName, setSearchEventName] = useState("");
+  const [searchEventName, setSearchEventName] = useState(null);
   const rowsPerPage = 10;
   const myRef=useRef(null);
   const [innerWidth,setInnerWidth]          =useState(window.innerWidth);
@@ -43,7 +37,7 @@ const FormComponent = () => {
     setLoader(true)
     
     const params = {
-      search_query: searchEventName,
+      search_query: searchEventName??"",
       limit: rowsPerPage,
       offset: rowsPerPage * (page - 1),
     };
@@ -56,6 +50,8 @@ const FormComponent = () => {
         setAllEventList(data.data);
         setTotalCount(data?.total ?? data?.data?.length);
         setLoader(false)
+        window.scrollTo({top: 0});
+
       } else {
         setLoader(false)
         toast.error(`Please enter ${data.message}`, {
@@ -73,7 +69,6 @@ const FormComponent = () => {
   }
 
   useEffect(() => {
-    console.log('first page was called')
     getEventsList();
   }, [page]);
 
@@ -89,13 +84,12 @@ const FormComponent = () => {
   useEffect(() => {
     let timer;
     timer = setTimeout(() => {
-      console.log('reached here')
-      if (page===1){
-        console.log('it is called for the first time ')
-        getEventsList()
-      }   else{
-        setPage(1)
-
+      if(searchEventName!==null) {
+        if (page === 1) {
+          getEventsList()
+        } else {
+          setPage(1)
+        }
       }
     }, 1000);
 
@@ -124,22 +118,9 @@ const FormComponent = () => {
   }, [innerWidth]);*/
   return (
     <Box className="form-main-container" ref={myRef} >
-      {loader ? (
-        <Loader
-          type="bubble-ping"
-          bgColor={"#FFFFFF"}
-          title="Loading.."
-          color={"#FFFFFF"}
-          size={100}
-        />
-      ) : (
-        <></>
-      )}
+      {loader ? <ReactLoader/> :
+     <>
 
-      
-        
-      <div>
-      </div>
         <div className="form-event-search">
           <TextField
               className="search-input"
@@ -184,7 +165,10 @@ const FormComponent = () => {
               variant="outlined"
               shape="rounded"
           />
+
         </div>
+     </>
+      }
 
     </Box>
 
