@@ -1,6 +1,10 @@
 class Event < ApplicationRecord
   # include AASM
   acts_as_paranoid
+  TYPE_PARENT = "Parent".freeze
+  TYPE_INTERMEDIATE = "Intermediate".freeze
+  TYPE_LEAF = "Leaf".freeze
+
   belongs_to :data_level
   has_many :event_locations, dependent: :destroy
   has_one_attached :image

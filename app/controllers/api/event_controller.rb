@@ -131,9 +131,9 @@ class Api::EventController < Api::ApplicationController
     event_status = params[:event_status]
     event_level = params[:event_level].present? ? params[:event_level] : ""
     events = Event.where(query_conditions)
-    if event_level == "intermediate"
+    if event_level == Event::TYPE_INTERMEDIATE
       events = events.where.not(parent_id: nil, has_sub_event: false)
-    elsif event_level == "leaf"
+    elsif event_level == Event::TYPE_LEAF
       events = events.where.not(parent_id: nil, has_sub_event: true)
     else
       events = events.where(parent_id: nil).uniq

@@ -62,11 +62,11 @@ class EventSerializer < ActiveModel::Serializer
 
   def event_level
     if object&.parent_id.present? && object&.has_sub_event&.present?
-      "Intermediate"
+      Event::TYPE_INTERMEDIATE
     elsif object&.parent_id.present? && object&.has_sub_event&.blank?
-      "Leaf"
+      Event::TYPE_LEAF
     else
-      "Parent"
+      Event::TYPE_PARENT
     end
   end
 
