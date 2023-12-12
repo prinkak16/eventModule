@@ -6,6 +6,6 @@ class User < ApplicationRecord
   serialize :sso_payload
 
   def has_app_access?
-    client_apps.where(name: SsoClient.config[:client_app_permission]).exists?
+    client_apps.where(name: ENV['CLIENT_APP']).exists?
   end
 end
