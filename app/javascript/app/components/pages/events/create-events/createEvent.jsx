@@ -116,13 +116,12 @@ export default function CreateEvent({isEdit, editData}) {
         try {
             const dataLevelResponse = await getDataLevels();
             if (dataLevelResponse?.data?.success) {
-                    if(dataLevelResponse?.data?.data?.length>1){
-                   const defaultId=dataLevelResponse?.data?.data[0]?.id;
-                    setFormFieldValue((prevData)=>({...prevData,level_id:defaultId}))
+                if (dataLevelResponse?.data?.data?.length > 1&&!isEdit) {
+                    const defaultId = dataLevelResponse?.data?.data[0]?.id;
+                    setFormFieldValue((prevData) => ({...prevData, level_id: defaultId}))
                 }
 
                 setDataLevels(dataLevelResponse?.data?.data);
-
 
 
             }
@@ -212,9 +211,9 @@ export default function CreateEvent({isEdit, editData}) {
     };
 
 
-    useEffect(() => {
+  /*  useEffect(() => {
         console.log("form value s", formFieldValue);
-    }, [formFieldValue]);
+    }, [formFieldValue]);*/
 
 
     useEffect(() => {
