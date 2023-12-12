@@ -106,7 +106,7 @@ class Api::EventController < Api::ApplicationController
         event.end_date = params[:end_datetime].to_datetime
         event.created_by_id = current_user&.id
         event.parent_id = params[:parent_id] if params[:parent_id].present?
-        event.allow_create_sub_event = params[:allow_create_sub_event]
+        event.has_sub_event = params[:has_sub_event]
         event.save!
         event.event_locations.destroy_all if event.event_locations.exists?
         locations.each do |location|
@@ -132,9 +132,9 @@ class Api::EventController < Api::ApplicationController
     event_level = params[:event_level].present? ? params[:event_level] : ""
     events = Event.where(query_conditions)
     if event_level == "intermediate"
-      events = events.joins(:parents => :parents).uniq
+      events = events.where.not(parent_id: nil, has_sub_event: false)
     elsif event_level == "leaf"
-      events = events.joins(:parents).where.not(parents: { parent_id: Event.select(:id) })
+      events = events.where.not(parent_id: nil, has_sub_event: true)
     else
       events = events.where(parent_id: nil).uniq
     end
