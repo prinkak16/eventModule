@@ -1,5 +1,5 @@
 class EventSerializer < ActiveModel::Serializer
-  attributes :id, :name, :start_date, :end_date, :data_level_id, :event_type, :data_level, :start_datetime, :end_datetime, :status, :states, :image_url, :state_ids, :create_form_url, :preview_url
+  attributes :id, :name, :start_date, :end_date, :data_level_id, :event_type, :data_level, :start_datetime, :end_datetime, :status, :states, :image_url, :state_ids, :create_form_url, :preview_url, :event_level
 
   def data_level
     object&.data_level&.name
@@ -59,4 +59,15 @@ class EventSerializer < ActiveModel::Serializer
              user: { name: instance_options[:current_user].name }, dataLevel: object.data_level&.name, eventMeta: event_meta }
     JWT.encode(data, ENV['JWT_SECRET_KEY'].present? ? ENV['JWT_SECRET_KEY'] : 'thisisasamplesecret')
   end
+
+  def event_level
+    if object&.parent_id.present? && object&.has_sub_event&.present?
+      Event::TYPE_INTERMEDIATE
+    elsif object&.parent_id.present? && object&.has_sub_event&.blank?
+      Event::TYPE_LEAF
+    else
+      Event::TYPE_PARENT
+    end
+  end
+
 end

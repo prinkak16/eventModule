@@ -19,7 +19,7 @@ Rails.application.routes.draw do
       get 'event/state_zones' => 'event#state_zones'
       post 'event/create' => 'event#create_event'
       get 'event/event_list' => 'event#event_list'
-      get 'event/event_page' => 'event#event_page'
+      get 'event/event_page' => 'app_run#event_page'
       get 'event/event_user_list' => 'event#event_user_list'
 
       get 'event/user' => 'event#login_user_detail'
@@ -31,7 +31,9 @@ Rails.application.routes.draw do
       get 'user/destroy/submission/:submission_id' => 'event_submission#user_destroy_submission'
       get 'event/archive/:id', to: 'event#event_archive'
       get 'event/publish/:id', to: 'event#event_publish'
-
+      get 'event/event_data', to: 'event#individual_event_data'
+      get 'event/path', to: 'event#get_event_path'
+      get 'event/children', to: 'event#get_event_children'
   end
   #noinspection RailsParamDefResolve
   match '*path', to: 'home#index', via: :all, constraints: lambda { |req|

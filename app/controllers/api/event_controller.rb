@@ -3,6 +3,7 @@ class Api::EventController < Api::ApplicationController
   require 'uri'
   include ApplicationHelper
   require "image_processing/mini_magick"
+  before_action :authenticate_user_permission
 
   def data_levels
     levels = DataLevel.select(:id, :name, :level_class).order(:order_id)
@@ -104,12 +105,14 @@ class Api::EventController < Api::ApplicationController
         event.start_date = params[:start_datetime].to_datetime
         event.end_date = params[:end_datetime].to_datetime
         event.created_by_id = current_user&.id
+        event.parent_id = params[:parent_id] if params[:parent_id].present?
+        event.has_sub_event = params[:has_sub_event]
         event.save!
         event.event_locations.destroy_all if event.event_locations.exists?
         locations.each do |location|
           EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
         end
-        EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid)
+        EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank?
         event = Event.find(event.id)
         render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
@@ -126,7 +129,15 @@ class Api::EventController < Api::ApplicationController
     offset = params[:offset].present? ? params[:offset] : 0
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     event_status = params[:event_status]
+    event_level = params[:event_level].present? ? params[:event_level] : ""
     events = Event.where(query_conditions)
+    if event_level == Event::TYPE_INTERMEDIATE
+      events = events.where.not(parent_id: nil, has_sub_event: false)
+    elsif event_level == Event::TYPE_LEAF
+      events = events.where.not(parent_id: nil, has_sub_event: true)
+    else
+      events = events.where(parent_id: nil).uniq
+    end
     date = DateTime.now
     if event_status == "Upcoming"
       events = events.where("start_date >= ?", date)
@@ -146,7 +157,7 @@ class Api::EventController < Api::ApplicationController
       message: ['Event list'],
       success: true,
       total: total
-    }, status: 200
+    }, status: :ok
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
@@ -165,7 +176,7 @@ class Api::EventController < Api::ApplicationController
       message: ['Event list'],
       success: true,
       total: total,
-    }, status: 200
+    }, status: :ok
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
   end
@@ -189,33 +200,78 @@ class Api::EventController < Api::ApplicationController
       data: data,
       message: "User detail",
       success: true
-    }, status: 200
+    }, status: :ok
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
-  end
-
-  def event_page
-    render json: { success: true, message: "Hello World!!!" }, status: 200
   end
 
   def edit
     event = Event.where(id: params[:id])
     data = ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: '', current_user: current_user)
-    render json: { success: true, data: data, message: "success full" }, status: 200
+    render json: { success: true, data: data, message: "successfull" }, status: :ok
   end
 
   def event_archive
-    data = Event.find_by_id(params[:id])
-    raise StandardError, 'Error Deleting Submission' if data.blank?
-    data.destroy!
-    render json: { success: true, data: data, message: "successfully Archive" }, status: 200
-  rescue => e
-    render json: { message: e.message }, status: 400
+    begin
+      data = Event.find_by_id(params[:id])
+      raise StandardError, 'Error Deleting Submission' if data.blank?
+      data.destroy!
+      render json: { success: true, data: data, message: "successfully Archive" }, status: :ok
+    rescue => e
+      puts e.message
+      render json: { success: false, message: e.message }, status: :bad_request
+      raise ActiveRecord::Rollback, e.message
+    end
   end
 
   def event_publish
     event = Event.find_by(id: params[:id])
     event.update(published: true)
     render json: { success: true, data: event, message: "successful" }, status: 200
+  end
+
+  def individual_event_data
+    begin
+      event = Event.find_by_id(params[:id])
+      child_events = event.children
+      is_child = child_events.blank?
+      render json: { success: true,
+                     data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, current_user: current_user),
+                     child_data: ActiveModelSerializers::SerializableResource.new(child_events, each_serializer: EventSerializer, current_user: current_user),
+                     is_child: is_child}, status: :ok
+    rescue => e
+      puts e.message
+      render json: { success: false, message: e.message }, status: :bad_request
+      raise ActiveRecord::Rollback, e.message
+    end
+  end
+
+  def get_event_path
+    begin
+      data = Hash.new
+      event = Event.find_by_id(params[:id])
+      data[params[:id]] = event.name
+      while event.parent_id.present?
+        parent_id = event.parent_id
+        event = Event.find_by_id(event.parent_id)
+        data[parent_id] = event.name
+      end
+      reversed_data = Hash[data.to_a.reverse]
+      render json: { success: true, message: "Record Fetched Successfully", data: reversed_data }, status: :ok
+  rescue => e
+    puts e.message
+    render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
+
+  def get_event_children
+    begin
+      events = Event.find_by_id(params[:id]).children
+      render json: { success: true,
+                     data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, current_user: current_user) }, status: :ok
+    rescue => e
+      puts e.message
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
   end
 end
