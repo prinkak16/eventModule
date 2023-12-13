@@ -8,6 +8,7 @@ import { useNavigate } from "react-router";
 
 
 const FormEventCard = ({ event }) => {
+  console.log('event in event car is ',event);
 
   const navigate = useNavigate();
   const submissionHandler = (event_id) => {
@@ -21,7 +22,7 @@ const FormEventCard = ({ event }) => {
       <div className="form-list-fir ">
         <img
           className="form-photo"
-          src={event.image_url ? event.image_url : ImageNotFound}
+          src={event?.image_url ? event?.image_url : ImageNotFound}
         />
       </div>
       <div className="form-list-sec">
@@ -30,11 +31,11 @@ const FormEventCard = ({ event }) => {
           <div className="level-event-container">
             <div>
               <span style={{ color: " #66666699" }}>Level : </span>
-              <span style={{ color: "#FF9559" }}>{event.data_level}</span>
+              <span style={{ color: "#FF9559" }}>{event?.data_level}</span>
             </div>
 
             <div className="heading">
-            {event.name} 
+            {event?.name}
 
              </div>
           </div>
@@ -68,8 +69,8 @@ const FormEventCard = ({ event }) => {
       </div>
 
       <div className="form-list-third">
-        <div className={event.status.class_name}>
-          <span>{event.status.name}</span>
+        <div className={event?.status?.class_name}>
+          <span>{event?.status?.name}</span>
         </div>
       </div>
     </div>

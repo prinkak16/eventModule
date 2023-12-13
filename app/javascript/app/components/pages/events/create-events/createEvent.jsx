@@ -42,6 +42,8 @@ export default function CreateEvent({isEdit, editData}) {
         img: "",
         crop_data: "",
         state_obj: [],
+        parent_id:!isEdit&&id?id:null,
+        has_sub_event:false,
     });
 
     const requiredField = ["start_datetime"];
@@ -144,12 +146,22 @@ export default function CreateEvent({isEdit, editData}) {
         formData.append("crop_data", formFieldValue?.crop_data ?? "");
 
         formData.append("img", formFieldValue?.img ?? "");
+        formData.append('has_sub_event',formFieldValue?.has_sub_event)
+        if(formFieldValue?.parent_id!==null&&formFieldValue?.parent_id!==undefined) {
+            formData.append('parent_id', formFieldValue?.parent_id);
+        }
         try {
             const response = await createEvent(formData, {event_id: id});
+            const eventId=response?.data?.event?.id;
             if (response.data.success) {
                 setLoader(false);
                 if (type === 'go_to_form' || type === 'create') {
-                    window.location.href = response.data.event.create_form_url;
+                    if(formFieldValue?.has_sub_event){
+                                    navigate(`/events/${eventId}`);
+                    } else{
+                        window.location.href = response?.data?.event?.create_form_url;
+
+                    }
                 } else {
 
                     toast.success(response.data.message);
@@ -211,9 +223,9 @@ export default function CreateEvent({isEdit, editData}) {
     };
 
 
-  /*  useEffect(() => {
+    useEffect(() => {
         console.log("form value s", formFieldValue);
-    }, [formFieldValue]);*/
+    }, [formFieldValue]);
 
 
     useEffect(() => {
@@ -243,6 +255,8 @@ export default function CreateEvent({isEdit, editData}) {
             if (isEdit && key === "crop_data") {
                 continue;
             }
+            if(key==='parent_id'&&formFieldValue[key]===null){}
+            continue;
             if (key === 'location_ids' || key === 'state_obj') {
                 if (formFieldValue[key].length === 0) {
                     return true;
@@ -262,9 +276,9 @@ export default function CreateEvent({isEdit, editData}) {
     return (<div className="create-event-container">
         {loader ? <ReactLoader/> : (<></>)}
         <div className="container-adjust">
-            <div className="event-path">
+          {/*  <div className="event-path">
                 <MyBreadcrumbs/>
-            </div>
+            </div>*/}
             <h3 className="font-weight-300">
                 {isEdit ? "Edit the Event" : "Create an Event"}
             </h3>
@@ -293,7 +307,7 @@ export default function CreateEvent({isEdit, editData}) {
                                 <span style={{color: 'red'}}>*</span>
             </span>}
                             className="w-49"
-                            minDateTime={dayjs(new Date()).subtract(10, 'minute')}
+                            minDateTime={dayjs(new Date()).subtract(5, 'minute')}
                             value={formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
                             onChange={(event) => {
                                 setFormField(event, "start_datetime");
@@ -313,12 +327,9 @@ export default function CreateEvent({isEdit, editData}) {
                    </span>}
                             className="w-49"
                             value={formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
-                            minDateTime={dayjs(formFieldValue?.start_datetime).subtract(10, 'minute')}
+                            minDateTime={dayjs(formFieldValue?.start_datetime)}
                             onChange={(event) => {
-                                if (formFieldValue.start_datetime && event.$d < formFieldValue.start_datetime) {
-                                    alert("End date cannot be earlier than the start date.");
-                                    return;
-                                }
+
                                 setFormField(event, "end_datetime");
                             }}
                         />
@@ -361,6 +372,36 @@ export default function CreateEvent({isEdit, editData}) {
                         <span style={{color: 'red'}}>*</span>
           </span>}/>)}
                 />
+
+                <div className="mt-2">
+                    <h6>Allow to create sub-events{' '} <span style={{color: "red"}}>*</span></h6>
+
+                    <RadioGroup
+                        className="custom-radio-group"
+                        row
+                        value={formFieldValue?.has_sub_event===true?'yes':'no'}
+                        name="row-radio-buttons-group"
+                        onChange={(event) => {
+                            setFormFieldValue((prevData) => {
+                                return {...prevData, has_sub_event: event.target.value === 'yes' ? true : false};
+                            })
+                        }
+                    }
+                    >
+                        <FormControlLabel
+                            value='yes'
+                            control={<Radio/>}
+                            label="Yes"
+
+                        />
+                        <FormControlLabel
+                            value="no"
+                            control={<Radio/>}
+                            label="No"
+
+                        />
+                    </RadioGroup>
+                </div>
 
                 <div className="mt-2">
                     <h6>Reporting Target{' '} <span style={{color: "red"}}>*</span></h6>

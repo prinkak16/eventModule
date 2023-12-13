@@ -3,7 +3,7 @@ class Api::EventController < Api::ApplicationController
   require 'uri'
   include ApplicationHelper
   require "image_processing/mini_magick"
-  before_action :authenticate_user_permission
+  #before_action :authenticate_user_permission
 
   def data_levels
     levels = DataLevel.select(:id, :name, :level_class).order(:order_id)
