@@ -4,6 +4,7 @@ import {ApiClient} from "../../../../services/RestServices/BaseRestServices";
 import EventDetailsCard from './event-details-card/EventDetailsCard'
 import {Button} from "@mui/material";
 import {useLocation} from "react-router";
+import './event-details.scss'
 
 const EventDetails=()=>{
     const {pathname}=useLocation();
@@ -23,19 +24,25 @@ const EventDetails=()=>{
 
     useEffect(() => {  
         getEventDetails();
-    }, [pathname    ]);
+    }, [pathname]);
 
     const handleClick=()=>{
         navigate(`/events/create/${id}`);
     }
     
     return(
-        <>
+        <div className={"event-details-main-container"}>
+            <div className={"heading"}>Event Details</div>
             <EventDetailsCard event={parentEvent} />
-            <Button onClick={handleClick}>+ Add Sub Event</Button>
-            {childEvents?.length>0&&childEvents?.map((childEvent)=><EventDetailsCard event={childEvent}/>)}
+            <div className={"add-event-button-container"}>
+                {!isChildEvent&&<Button onClick={handleClick} className={"add-event-button"} variant={"contained"}>+ Add Sub Event</Button>}
+
+            </div>
+            <div className={"heading"}>Sub Events</div>
+            {childEvents?.length===0&&<h4>No sub event is created</h4>}
+            {childEvents?.length>0&&childEvents?.map((childEvent,index)=><EventDetailsCard event={childEvent} key={index} />)}
             
-        </>
+        </div>
     )
 }
 

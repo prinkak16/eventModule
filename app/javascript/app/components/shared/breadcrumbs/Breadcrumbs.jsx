@@ -42,7 +42,8 @@ export default function MyBreadcrumbs() {
 
   return (
     <div>
-      <Link to={"/events"}>Events / </Link>
+      <Link to={"/events"}>Events</Link>
+      {Object.keys(dynamicRoutes).length>0&&<span> &nbsp;/&nbsp; </span>}
       {Object.keys(dynamicRoutes)?.map((key,index)=> <span>
          <Link to={`/events/${key}`}>{dynamicRoutes[key]}</Link>
             {index < Object.keys(dynamicRoutes).length - 1  && <span> &nbsp;/&nbsp; </span>}
@@ -61,7 +62,7 @@ export default function MyBreadcrumbs() {
           {index < urls.length - 1  && <span> &nbsp;/&nbsp; </span>}
         </span>
       ))}*/}
-      {urls.length>1&&<span> &nbsp;/&nbsp; </span>}
+      {urls.length>1&& <span> &nbsp;/&nbsp; </span>}
       {urls.length > 1 && <Link
           style={{
             color:"black"

@@ -4,19 +4,32 @@ import { CalenderIcon, ClockIcon, LocationIcon } from "../../../../../assests/sv
 import moment from "moment";
 import { ImageNotFound} from "../../../../../assests/png/index"
 import { useNavigate } from "react-router";
+import {useParams} from "react-router-dom";
 
 
 
 const EventDetailsCard = ({ event }) => {
+    const {id}=useParams();
 
     const navigate = useNavigate();
-    const submissionHandler = (event_id) => {
-        navigate(`/events/${event_id}`);
+    const submissionHandler = (event_id,event_label) => {
+        console.log('event label is ',event_label)
+        if(event_label.toLowerCase()==='leaf'){
+            navigate(`/events/edit/${event_id}`)
+        }
+        else{
+            if(id===event_id){
+                navigate(`/events/edit/${event_id}`)
+
+            }else{
+                navigate(`/events/${event_id}`);
+            }
+        }
     };
     return (
         <div
             className="form-list-card"
-            onClick={() => submissionHandler(event?.id)}
+            onClick={() => submissionHandler(event?.id,event?.event_label)}
         >
             <div className="form-list-fir ">
                 <img
