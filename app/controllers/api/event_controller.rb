@@ -13,7 +13,7 @@ class Api::EventController < Api::ApplicationController
   end
 
   def states
-    states = Saral::Locatable::State.select(:id, :name).order(:name)
+    states = Saral::Locatable::State.where(id: country_states_with_create_permission).select(:id, :name).order(:name)
     render json: { success: true, data: states || [], message: "States list" }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
