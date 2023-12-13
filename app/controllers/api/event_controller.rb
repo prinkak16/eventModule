@@ -136,7 +136,7 @@ class Api::EventController < Api::ApplicationController
     elsif event_level == Event::TYPE_LEAF
       events = events.where.not(parent_id: nil, has_sub_event: true)
     else
-      events = events.where(parent_id: nil).uniq
+      events = events.where(parent_id: nil)
     end
     date = DateTime.now
     if event_status == "Upcoming"
@@ -167,7 +167,8 @@ class Api::EventController < Api::ApplicationController
     offset = params[:offset].present? ? params[:offset] : 0
     date = DateTime.now
     events = Event.where("end_date >= ?", date).where("start_date <= ?", date).where(published: true)
-    events = events.joins(:event_locations).where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
+    events = events.joins(:event_locations).where(event_locations: { state_id: current_user.sso_payload["country_state_id"] })
+    events = events.where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
     total = events.count
     events = events.order(created_at: :desc).limit(limit).offset(offset)
@@ -234,7 +235,7 @@ class Api::EventController < Api::ApplicationController
     begin
       event = Event.find_by_id(params[:id])
       child_events = event.children
-      is_child = child_events.blank?
+      is_child = !event.has_sub_event
       render json: { success: true,
                      data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, current_user: current_user),
                      child_data: ActiveModelSerializers::SerializableResource.new(child_events, each_serializer: EventSerializer, current_user: current_user),

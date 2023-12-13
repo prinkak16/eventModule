@@ -15,7 +15,13 @@ import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import IconButton from "@mui/material/IconButton";
 import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
 import ArchiveIcon from '@mui/icons-material/Archive';
-import {EditButtonIcon, ViewButtonIcon} from '../../../assests/svg/index'
+import {
+    EditButtonIcon,
+    IntermediateEventIcon,
+    LeafEventIcon,
+    PrimaryEventIcon,
+    ViewButtonIcon
+} from '../../../assests/svg/index'
 import moment from "moment";
 import {ImageNotFound} from "../../../assests/png";
 import Button from "@mui/material/Button";
@@ -261,17 +267,31 @@ const HomeComponent = () => {
 
 
     }
-    return (<div className="home-main-container">
+
+    const RenderEventIcon=(event_level)=>{
+        console.log('event level is ',event_level);
+        if(event_level.toLowerCase()==='parent'){
+            return <span className={"event-primary-icon-container"}><PrimaryEventIcon/></span>
+        }
+        else if(event_level.toLowerCase()==='intermediate'){
+             return <span className={"event-intermediate-icon-container"}><IntermediateEventIcon/></span>
+        }else{
+            return  <span className={"event-leaf-icon-container"}><LeafEventIcon/></span>
+        }
+
+    }
+
+    return <div className="home-main-container">
         <ConfirmationModal message="Are you sure want to archive ?" showConfirmationModal={showConfirmationModal}
                            setShowConfirmationModal={setShowConfirmationModal}
                            setConfirmationStatus={setConfirmationStatus}/>
-        {loader ? (<Loader
+        {loader ? <Loader
             type="bubble-ping"
             bgColor={"#FFFFFF"}
             title="Loading.."
             color={"#FFFFFF"}
             size={100}
-        />) : (<></>)}
+        /> : <></>}
         <div className="header-and-list-container">
             <div className="home-search-div">
                 <div className="event-header">
@@ -285,9 +305,9 @@ const HomeComponent = () => {
                     placeholder="Search by Event Name"
                     variant="outlined"
                     InputProps={{
-                        startAdornment: (<InputAdornment position="start">
+                        startAdornment: <InputAdornment position="start">
                             <SearchIcon/>
-                        </InputAdornment>),
+                        </InputAdornment>,
                     }}
                 />
 
@@ -298,8 +318,31 @@ const HomeComponent = () => {
                     </div>
                 </button>
             </div>
+            <div className={"home-icon-description"}>
+                <span className={"svg-icon-outermost-container"}>
+                    <span className={"primary-icon-container"}>
+                                            <PrimaryEventIcon/>
+
+                    </span>
+                    <span>Primary Events</span>
+                </span>
+                <span className={"svg-icon-outermost-container"}>
+                    <span className={"intermediate-icon-container"}>
+                        <IntermediateEventIcon/>
+
+                    </span>
+                    <span>Intermediate Events</span>
+                </span>
+                <span className={"svg-icon-outermost-container"}>
+                    <span className={"leaf-icon-container"}>
+                                           <LeafEventIcon className={"leaf-icon"}/>
+
+                    </span>
+                    <span>Leaf Events</span>
+                </span>
+            </div>
             <div className="events-container">
-                {allEventList.length > 0 ? (<>
+                {allEventList.length > 0 ? <>
                     {allEventList.map((event) => (<div className="event-list" key={`${event.id}${event.name}`}>
                         <div className="visible-divs">
                             <div className="event-list-fir">
@@ -317,6 +360,9 @@ const HomeComponent = () => {
                                 </div>
                                 <div className={`${event.status.class_name} active-button`}>
                                     <span>{event.status.name}</span>
+                                </div>
+                                <div>
+                                    {RenderEventIcon(event?.event_level)}
                                 </div>
                                 <div></div>
                             </div>
@@ -393,7 +439,7 @@ const HomeComponent = () => {
 
 
                     </div>))}
-                </>) : (<div className="no-event-data">No Data Found</div>)}
+                </> : <div className="no-event-data">No Data Found</div>}
                 <div className="pagination">
                     <Pagination
                         count={Math.ceil(totalCount / 10)}
@@ -490,7 +536,7 @@ const HomeComponent = () => {
         </div>
 
 
-    </div>);
+    </div>;
 };
 
 export default HomeComponent;
