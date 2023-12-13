@@ -29,9 +29,7 @@ const Router=()=>{
                     <Route path="/events/create/:id?" element={<CreateEvent />} />
                     <Route path="/events/edit/:id" element={<EditEvent />} />
                     <Route path="/events/view/:id"  element={<ViewEvents/>}/>
-
                     <Route path="/events/:id"  element={<EventDetails/>}/>
-
                 </Route>
             </Route>
        <Route path="/*" element={<Navigate to="/" replace={true}  />} />

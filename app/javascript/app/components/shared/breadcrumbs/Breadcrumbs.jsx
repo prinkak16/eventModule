@@ -10,9 +10,7 @@ export default function MyBreadcrumbs() {
   const { pathname } = useLocation();
   const [dynamicRoutes,setDynamicRoutes]=useState({});
   let urls = pathname?.split("/").filter(Boolean);
-/*
-  const indexOfEvent=urls('events');
-*/
+
 
 
   function isNumeric(input) {
@@ -35,10 +33,6 @@ export default function MyBreadcrumbs() {
   const getDynamicRoutes=async ()=>{
     const {data}=await ApiClient.get(`event/path`,{params:{id}})
     setDynamicRoutes(data?.data);
-
-    for(let key in data?.data){
-      console.log('key is ',key, 'and vlaue is ',data?.data[key]) ;
-    }
     
   }
 
@@ -46,7 +40,6 @@ export default function MyBreadcrumbs() {
     getDynamicRoutes();
   }, [pathname]);
 
-  console.log('urls of breadcurmbs is ',urls);
   return (
     <div>
       <Link to={"/events"}>Events / </Link>
@@ -68,7 +61,8 @@ export default function MyBreadcrumbs() {
           {index < urls.length - 1  && <span> &nbsp;/&nbsp; </span>}
         </span>
       ))}*/}
-      {urls.length>1&& <Link
+      {urls.length>1&&<span> &nbsp;/&nbsp; </span>}
+      {urls.length > 1 && <Link
           style={{
             color:"black"
           }}

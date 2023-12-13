@@ -8,7 +8,6 @@ import { useNavigate } from "react-router";
 
 
 const EventDetailsCard = ({ event }) => {
-    console.log('event in event car is ',event);
 
     const navigate = useNavigate();
     const submissionHandler = (event_id) => {

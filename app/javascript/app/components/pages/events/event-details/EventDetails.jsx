@@ -3,8 +3,10 @@ import {useParams,useNavigate} from "react-router-dom";
 import {ApiClient} from "../../../../services/RestServices/BaseRestServices";
 import EventDetailsCard from './event-details-card/EventDetailsCard'
 import {Button} from "@mui/material";
+import {useLocation} from "react-router";
 
 const EventDetails=()=>{
+    const {pathname}=useLocation();
     const navigate=useNavigate();
     const [parentEvent,setParentEvent]=useState({});
     const [childEvents,setChildEVents]=useState([]);
@@ -16,17 +18,17 @@ const EventDetails=()=>{
         setParentEvent(data?.data)
         setChildEVents(data?.child_data);
         setIsChildEvent(data?.is_child);
-        console.log('event details ',data);
-        
+
     }
 
     useEffect(() => {  
         getEventDetails();
-    }, []);
+    }, [pathname    ]);
 
     const handleClick=()=>{
         navigate(`/events/create/${id}`);
     }
+    
     return(
         <>
             <EventDetailsCard event={parentEvent} />
