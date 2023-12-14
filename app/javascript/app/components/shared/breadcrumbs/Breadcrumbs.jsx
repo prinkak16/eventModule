@@ -4,6 +4,7 @@ import {Link, useParams} from "react-router-dom";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import {useEffect,useState} from "react";
 import './breadcrumbs.scss'
+import {IntermediateEventIcon, LeafEventIcon, PrimaryEventIcon} from "../../../assests/svg";
 
 export default function MyBreadcrumbs() {
 
@@ -31,6 +32,16 @@ export default function MyBreadcrumbs() {
     view: "View Event "
   };
 
+  const RenderEventIcon = (event_level) => {
+    if (event_level?.toLowerCase() === 'parent') {
+      return <span className={"event-details-primary-icon-container"}><PrimaryEventIcon/></span>
+    } else if (event_level?.toLowerCase() === 'intermediate') {
+      return <span className={"event-details-intermediate-icon-container"}><IntermediateEventIcon/></span>
+    } else {
+      return <span className={"event-details-leaf-icon-container"}><LeafEventIcon/></span>
+    }
+
+  }
   const getDynamicRoutes=async ()=>{
     const {data}=await ApiClient.get(`event/path`,{params:{id}})
     setDynamicRoutes(data?.data);
@@ -45,8 +56,11 @@ export default function MyBreadcrumbs() {
     <div className={"breadcrumbs-main-container"}>
       <Link to={"/events"}>Events</Link>
       {Object.keys(dynamicRoutes).length>0&&<span> &nbsp;/&nbsp; </span>}
-      {Object.keys(dynamicRoutes)?.map((key,index)=> <span key={index}>
-         <Link to={`/events/${key}`}>{dynamicRoutes[key]}</Link>
+      {Object.keys(dynamicRoutes)?.map((key,index)=> <span key={index} style={{display:"flex"}}>
+         <Link to={`/events/${key}`}>
+           <span style={{display:"flex",gap:"10px"}}> {RenderEventIcon(dynamicRoutes[key][1])}
+             {dynamicRoutes[key][0]}</span>
+         </Link>
             {index < Object.keys(dynamicRoutes).length - 1  && <span> &nbsp;/&nbsp; </span>}
       </span>
          )}
