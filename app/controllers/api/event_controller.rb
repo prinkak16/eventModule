@@ -84,11 +84,16 @@ class Api::EventController < Api::ApplicationController
     ActiveRecord::Base.transaction do
       begin
         locations = Saral::Locatable::State.where(id: [params[:location_ids].split(',')])
-
         if params[:event_id].present?
           event = Event.find_by(id: params[:event_id])
         else
           event = Event.new
+        end
+        new_record = event.new_record?
+        inherit_from_parent = params[:inherit_from_parent]
+        if params[:parent_id].present? && inherit_from_parent
+          parent_event = Event.find_by_id(params[:parent_id])
+          locations = parent_event.event_locations
         end
 
         if params[:img].present? && !valid_url(params[:img])
@@ -100,19 +105,31 @@ class Api::EventController < Api::ApplicationController
           event.image.attach(io: File.open(cropped_image), filename: file_name)
         end
         event.name = params[:event_title]
-        event.data_level_id = params[:level_id]
-        event.event_type = params[:event_type]
+        if new_record && inherit_from_parent
+            event.data_level_id = parent_event.data_level_id
+        elsif new_record
+          event.data_level_id = params[:level_id]
+          event.event_type = params[:event_type]
+          event.has_sub_event = params[:has_sub_event]
+        end
         event.start_date = params[:start_datetime].to_datetime
         event.end_date = params[:end_datetime].to_datetime
         event.created_by_id = current_user&.id
         event.parent_id = params[:parent_id] if params[:parent_id].present?
-        event.has_sub_event = params[:has_sub_event]
-        event.save!
-        event.event_locations.destroy_all if event.event_locations.exists?
-        locations.each do |location|
-          EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
+        if params[:event_type] == "csv_upload"
+          if inherit_from_parent
+            event.csv_file.attach(parent_event.csv_file.blob)
+          else
+            event.csv_file.attach(params[:file])
+          end
         end
-        EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank?
+        event.save!
+        if new_record
+          locations.each do |location|
+            EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
+          end
+          EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank? #only leaf event can create form
+        end
         event = Event.find(event.id)
         render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
@@ -120,7 +137,6 @@ class Api::EventController < Api::ApplicationController
         raise ActiveRecord::Rollback
       end
     end
-
   end
 
   def event_list
@@ -130,7 +146,7 @@ class Api::EventController < Api::ApplicationController
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     event_status = params[:event_status]
     event_level = params[:event_level].present? ? params[:event_level] : ""
-    events = Event.where(query_conditions)
+    events = Event.joins(:event_locations).where(query_conditions).where(event_locations: { state_id: country_states_with_create_permission })
     if event_level == Event::TYPE_INTERMEDIATE
       events = events.where.not(parent_id: nil, has_sub_event: false)
     elsif event_level == Event::TYPE_LEAF
@@ -251,11 +267,11 @@ class Api::EventController < Api::ApplicationController
     begin
       data = Hash.new
       event = Event.find_by_id(params[:id])
-      data[params[:id]] = event.name
+      data[params[:id]] = [event.name, get_event_level(params[:id])]
       while event.parent_id.present?
         parent_id = event.parent_id
         event = Event.find_by_id(event.parent_id)
-        data[parent_id] = event.name
+        data[parent_id] = [event.name, get_event_level(data[parent_id])]
       end
       reversed_data = Hash[data.to_a.reverse]
       render json: { success: true, message: "Record Fetched Successfully", data: reversed_data }, status: :ok
@@ -275,4 +291,16 @@ class Api::EventController < Api::ApplicationController
       render json: { success: false, message: e.message }, status: :bad_request
     end
   end
+
+  def get_event_level(id = nil)
+    event = Event.find_by_id(id)
+    if event.parent_id.present? && event.has_sub_event.present?
+      Event::TYPE_INTERMEDIATE
+    elsif event.parent_id.present? && event.has_sub_event.blank?
+      Event::TYPE_LEAF
+    else
+      Event::TYPE_PARENT
+    end
+  end
+
 end
