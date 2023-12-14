@@ -3,7 +3,7 @@ class Api::EventController < Api::ApplicationController
   require 'uri'
   include ApplicationHelper
   require "image_processing/mini_magick"
-  #before_action :authenticate_user_permission
+  before_action :authenticate_user_permission
 
   def data_levels
     levels = DataLevel.select(:id, :name, :level_class).order(:order_id)
@@ -267,11 +267,11 @@ class Api::EventController < Api::ApplicationController
     begin
       data = Hash.new
       event = Event.find_by_id(params[:id])
-      data[params[:id]] = [event.name, get_event_level(params[:id])]
+      data[params[:id]] = [event.name, event.get_event_level]
       while event.parent_id.present?
         parent_id = event.parent_id
-        event = Event.find_by_id(parent_id)
-        data[parent_id] = [event.name, get_event_level(parent_id)]
+        event = Event.find_by_id(event.parent_id)
+        data[parent_id] = [event.name, event.get_event_level]
       end
       reversed_data = Hash[data.to_a.reverse]
       render json: { success: true, message: "Record Fetched Successfully", data: reversed_data }, status: :ok
@@ -289,17 +289,6 @@ class Api::EventController < Api::ApplicationController
     rescue => e
       puts e.message
       render json: { success: false, message: e.message }, status: :bad_request
-    end
-  end
-
-  def get_event_level(id = nil)
-    event = Event.find_by_id(id)
-    if event.parent_id.present? && event.has_sub_event.present?
-      Event::TYPE_INTERMEDIATE
-    elsif event.parent_id.present? && event.has_sub_event.blank?
-      Event::TYPE_LEAF
-    else
-      Event::TYPE_PARENT
     end
   end
 
