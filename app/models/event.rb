@@ -19,4 +19,15 @@ class Event < ApplicationRecord
     end
     self.image_url
   end
+
+  def get_event_level
+    if parent_id && has_sub_event
+      Event::TYPE_INTERMEDIATE
+    elsif parent_id && !has_sub_event
+      Event::TYPE_LEAF
+    else
+      Event::TYPE_PARENT
+    end
+  end
+
 end
