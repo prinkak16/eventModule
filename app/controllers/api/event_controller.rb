@@ -271,7 +271,7 @@ class Api::EventController < Api::ApplicationController
       while event.parent_id.present?
         parent_id = event.parent_id
         event = Event.find_by_id(event.parent_id)
-        data[parent_id] = [event.name, get_event_level(data[parent_id])]
+        data[parent_id] = [event.name, get_event_level(parent_id)]
       end
       reversed_data = Hash[data.to_a.reverse]
       render json: { success: true, message: "Record Fetched Successfully", data: reversed_data }, status: :ok
