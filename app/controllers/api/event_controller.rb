@@ -83,20 +83,17 @@ class Api::EventController < Api::ApplicationController
   def create_event
     ActiveRecord::Base.transaction do
       begin
+        locations = Saral::Locatable::State.where(id: [params[:location_ids].split(',')])
         if params[:event_id].present?
           event = Event.find_by(id: params[:event_id])
         else
           event = Event.new
         end
-
-        if params[:parent_id].present? && params[:inherit_from_parent].present?
+        new_record = event.new_record?
+        inherit_from_parent = params[:inherit_from_parent]
+        if params[:parent_id].present? && inherit_from_parent
           parent_event = Event.find_by_id(params[:parent_id])
-        end
-
-        if params[:inherit_from_parent].present?
           locations = parent_event.event_locations
-        else
-          locations = Saral::Locatable::State.where(id: [params[:location_ids].split(',')])
         end
 
         if params[:img].present? && !valid_url(params[:img])
@@ -108,25 +105,32 @@ class Api::EventController < Api::ApplicationController
           event.image.attach(io: File.open(cropped_image), filename: file_name)
         end
         event.name = params[:event_title]
-        if event.event_locations.present?
-          if params[:inherit_from_parent].present?
+        if new_record && inherit_from_parent
             event.data_level_id = parent_event.data_level_id
-          else
-            event.data_level_id = params[:level_id]
-          end
+        elsif new_record
+          event.data_level_id = params[:level_id]
         end
-        event.event_type = params[:event_type] if event.event_locations.present?
+        event.event_type = params[:event_type] if new_record
         event.start_date = params[:start_datetime].to_datetime
         event.end_date = params[:end_datetime].to_datetime
         event.created_by_id = current_user&.id
         event.parent_id = params[:parent_id] if params[:parent_id].present?
-        event.has_sub_event = params[:has_sub_event] if event.event_locations.present?
-        event.save!
-        event.event_locations.destroy_all if event.event_locations.exists?
-        locations.each do |location|
-          EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
+        event.has_sub_event = params[:has_sub_event] if new_record
+        if params[:event_type] == "csv_upload"
+          if inherit_from_parent
+            event.csv_file.attach(parent_event.csv_file.blob)
+          else
+            event.csv_file.attach(params[:file])
+          end
         end
-        EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank? && !params[:event_id].present?
+        event.save!
+        if new_record
+          event.event_locations.destroy_all
+          locations.each do |location|
+            EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
+          end
+          EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank?
+        end
         event = Event.find(event.id)
         render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
@@ -143,7 +147,7 @@ class Api::EventController < Api::ApplicationController
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     event_status = params[:event_status]
     event_level = params[:event_level].present? ? params[:event_level] : ""
-    events = Event.where(query_conditions)
+    events = Event.joins(:event_locations).where(query_conditions).where(event_locations: { state_id: country_states_with_create_permission })
     if event_level == Event::TYPE_INTERMEDIATE
       events = events.where.not(parent_id: nil, has_sub_event: false)
     elsif event_level == Event::TYPE_LEAF
