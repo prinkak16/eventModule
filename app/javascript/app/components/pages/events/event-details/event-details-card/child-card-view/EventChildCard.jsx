@@ -3,7 +3,8 @@ import "./event-child-card.scss";
 import {
     CalenderIcon,
     ClockIcon,
-    IntermediateEventIcon, LeafEventIcon,
+    IntermediateEventIcon,
+    LeafEventIcon,
     LocationIcon,
     PrimaryEventIcon
 } from "../../../../../../assests/svg";
@@ -43,7 +44,6 @@ const EventChildCard = ({event}) => {
         setIsLoading(true);
         try {
             const {data} = await ApiClient.get('/event/children', {params: {id: event?.id}});
-            console.log('child events are ', data);
             if (data?.success) {
                 setChildrenEvents(data?.data);
             } else {
@@ -58,33 +58,36 @@ const EventChildCard = ({event}) => {
 
     }
 
-    const RenderEventIcon=(event_level)=>{
-        if(event_level?.toLowerCase()==='parent'){
+    const RenderEventIcon = (event_level) => {
+        if (event_level?.toLowerCase() === 'parent') {
             return <span className={"event-details-primary-icon-container"}><PrimaryEventIcon/></span>
-        }
-        else if(event_level?.toLowerCase()==='intermediate'){
+        } else if (event_level?.toLowerCase() === 'intermediate') {
             return <span className={"event-details-intermediate-icon-container"}><IntermediateEventIcon/></span>
-        }else{
-            return  <span className={"event-details-leaf-icon-container"}><LeafEventIcon/></span>
+        } else {
+            return <span className={"event-details-leaf-icon-container"}><LeafEventIcon/></span>
         }
 
     }
 
     useEffect(() => {
-        if (showChildrenEvents) {
+        if (showChildrenEvents && childrenEvents?.length === 0) {
             getAllSubEvents();
         }
 
     }, [showChildrenEvents]);
     return (
-        <div>
+        <div style={{marginLeft: "36px"}}>
             <div style={{display: "flex"}}>
-                {String(id) !== String(event?.id)&& event?.event_level?.toLowerCase()!=='leaf' && <IconButton onClick={() => {
-                    setShowChildrenEvents(!showChildrenEvents)
-                }}>{!showChildrenEvents ? <ExpandMoreIcon/> : <ExpandLessIcon/>}</IconButton>}
+                {event?.event_level?.toLowerCase() !== 'leaf' &&
+                    <IconButton style={{
+                        width: "40px", height: "40px"
+                    }} onClick={() => {
+                        setShowChildrenEvents(!showChildrenEvents)
+                    }}>{!showChildrenEvents ? <ExpandMoreIcon/> : <ExpandLessIcon/>}</IconButton>}
                 <div
                     className="event-details-child-list-card"
                     onClick={() => submissionHandler(event?.id, event?.event_level)}
+                    style={{marginLeft:event?.event_level?.toLowerCase() !== 'leaf'?"0px":"40px"}}
                 >
                     <div className="event-details-list-first-part">
                         <img
@@ -136,7 +139,7 @@ const EventChildCard = ({event}) => {
                     </div>
 
                     <div className="event-details-list-third-part">
-                        <div className={`${event?.status?.class_name} active-button-style`} >
+                        <div className={`${event?.status?.class_name} active-button-style`}>
                             <span>{event?.status?.name}</span>
                         </div>
                         <div>{RenderEventIcon(event?.event_level)}</div>
@@ -144,13 +147,14 @@ const EventChildCard = ({event}) => {
                     </div>
                 </div>
             </div>
-            <div style={{marginLeft: "20px"}}>
-                {isLoading ?  <Box sx={{ display: 'flex' }}>
-                        <CircularProgress />
+            <div>
+                {isLoading ? <Box className={"sub-event-loader"}>
+                        <CircularProgress/>
                     </Box>
-                    : (showChildrenEvents && childrenEvents?.length === 0) ? <span>No sub event found</span>:
-                        (showChildrenEvents&&childrenEvents?.length > 0) ? <div className={"sub-events-container"}> {childrenEvents?.map((item,index) =>
-                            <EventChildCard key={index} event={item}/>)    } </div> : <></>
+                    : (showChildrenEvents && childrenEvents?.length === 0) ? <span className={"no-event-found"}>No sub event found</span> :
+                        (showChildrenEvents && childrenEvents?.length > 0) ?
+                            <div className={"sub-events-container"}> {childrenEvents?.map((item, index) =>
+                                <EventChildCard key={index} event={item}/>)} </div> : <></>
                 }
 
             </div>

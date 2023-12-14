@@ -24,14 +24,10 @@ const EventDetailsCard = ({event}) => {
     const {id} = useParams();
 
     const navigate = useNavigate();
-    const [childrenEvents, setChildrenEvents] = useState([]);
-    const [showChildrenEvents, setShowChildrenEvents] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+   
     const submissionHandler = (event_id, event_level) => {
-        console.log('event label is ', event_level)
-
             if (String(id) === String(event_id)) {
-                navigate(`/events/edit/${event_id}`)
+                navigate(`/events/edit/${event_id}`);
 
             } else {
                 navigate(`/events/${event_id}`);
@@ -39,24 +35,6 @@ const EventDetailsCard = ({event}) => {
 
     };
 
-    const getAllSubEvents = async () => {
-        setIsLoading(true);
-        try {
-            const {data} = await ApiClient.get('/event/children', {params: {id: event?.id}});
-            console.log('child events are ', data);
-            if (data?.success) {
-                setChildrenEvents(data?.data);
-            } else {
-                toast.error("Failed to get the sub events");
-            }
-        } catch (e) {
-            toast.error(e.message);
-
-        }
-        setIsLoading(false);
-
-
-    }
 
     const RenderEventIcon=(event_level)=>{
         if(event_level?.toLowerCase()==='parent'){
@@ -70,18 +48,10 @@ const EventDetailsCard = ({event}) => {
 
     }
 
-    useEffect(() => {
-        if (showChildrenEvents) {
-            getAllSubEvents();
-        }
 
-    }, [showChildrenEvents]);
     return (
         <div>
-            <div style={{display: "flex"}}>
-                {String(id) !== String(event?.id)&& event?.event_level?.toLowerCase()!=='leaf' && <IconButton onClick={() => {
-                    setShowChildrenEvents(!showChildrenEvents)
-                }}>{!showChildrenEvents ? <ExpandMoreIcon/> : <ExpandLessIcon/>}</IconButton>}
+
                 <div
                     className="event-details-list-card"
                     onClick={() => submissionHandler(event?.id, event?.event_level)}
@@ -143,20 +113,10 @@ const EventDetailsCard = ({event}) => {
 
                     </div>
                 </div>
-            </div>
-            <div style={{marginLeft: "20px"}}>
-                {isLoading ?  <Box sx={{ display: 'flex' }}>
-                        <CircularProgress />
-                    </Box>
-                    : (showChildrenEvents && childrenEvents?.length === 0) ? <span>No sub event found</span>:
-                    (showChildrenEvents&&childrenEvents?.length > 0) ? <div className={"sub-events-container"}> {childrenEvents?.map((item,index) =>
-                        <EventDetailsCard key={index} event={item}/>)    } </div> : <></>
-            }
-            
-        </div>
+
 </div>
 )
-    ;
+
 };
 
 export default EventDetailsCard;

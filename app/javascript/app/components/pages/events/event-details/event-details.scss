@@ -1,9 +1,12 @@
 .event-details-main-container{
+  display: flex;
+  flex-direction: column;
+  gap:20px;
   .heading  {
     font-family: Roboto;
     font-size: 24px;
     font-weight: 400;
-    line-height: 28px;
+    color:#000000;
   }
   .add-event-button-container{
     display: flex;

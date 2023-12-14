@@ -85,6 +85,7 @@ body {
       letter-spacing: 0.13174602389335632px;
       white-space: nowrap;
       text-overflow: ellipsis;
+      
     }
   }
 
@@ -97,6 +98,24 @@ body {
       margin:0;
     }
   }
+
+}
+.sub-event-loader{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin:50px;
+}
+
+.no-event-found{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Roboto;
+  font-size: 24px;
+  font-weight: 400;
+ 
+
 }
 
 .sub-events-container{
