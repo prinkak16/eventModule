@@ -155,15 +155,12 @@ export default function CreateEvent({isEdit, editData}) {
             const eventId=response?.data?.event?.id;
             if (response.data.success) {
                 setLoader(false);
-                if (type === 'go_to_form' || type === 'create') {
-                    if(formFieldValue?.has_sub_event){
-                                    navigate(`/events/${eventId}`);
-                    } else{
+                if( type === 'create'){
+                    navigate(`/events/${eventId}`);
+                }
+                else if(type === 'go_to_form') {
                         window.location.href = response?.data?.event?.create_form_url;
-
-                    }
                 } else {
-
                     toast.success(response.data.message);
                     navigate('/events')
                 }

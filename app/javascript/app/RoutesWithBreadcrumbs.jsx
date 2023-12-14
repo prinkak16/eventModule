@@ -6,7 +6,7 @@ import {useParams} from "react-router-dom";
 const RoutesWithBreadcrumbs=()=>{
     return(
         <div className={"routes-with-breadcrumbs-main-container"}>
-            <div style={{width:"100%"}}>
+            <div className={"inner-container"}>
                 <Breadcrumbs/>
                 <Outlet/>
             </div>

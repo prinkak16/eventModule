@@ -3,6 +3,7 @@ import { useLocation } from "react-router";
 import {Link, useParams} from "react-router-dom";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import {useEffect,useState} from "react";
+import './breadcrumbs.scss'
 
 export default function MyBreadcrumbs() {
 
@@ -41,10 +42,10 @@ export default function MyBreadcrumbs() {
   }, [pathname]);
 
   return (
-    <div>
+    <div className={"breadcrumbs-main-container"}>
       <Link to={"/events"}>Events</Link>
       {Object.keys(dynamicRoutes).length>0&&<span> &nbsp;/&nbsp; </span>}
-      {Object.keys(dynamicRoutes)?.map((key,index)=> <span>
+      {Object.keys(dynamicRoutes)?.map((key,index)=> <span key={index}>
          <Link to={`/events/${key}`}>{dynamicRoutes[key]}</Link>
             {index < Object.keys(dynamicRoutes).length - 1  && <span> &nbsp;/&nbsp; </span>}
       </span>

@@ -27,7 +27,7 @@ import {ImageNotFound} from "../../../assests/png";
 import Button from "@mui/material/Button";
 
 const HomeComponent = () => {
-    const eventStatusArray = [{
+    const       eventStatusArray = [{
         id: 1, name: "Active",
     }, {
         id: 2, name: "Expired",
@@ -268,6 +268,10 @@ const HomeComponent = () => {
 
     }
 
+    const handleEventClick=(event_id)=>{
+        navigate(`/events/${event_id}`)
+    }
+
     const RenderEventIcon=(event_level)=>{
         console.log('event level is ',event_level);
         if(event_level.toLowerCase()==='parent'){
@@ -343,7 +347,7 @@ const HomeComponent = () => {
             </div>
             <div className="events-container">
                 {allEventList.length > 0 ? <>
-                    {allEventList.map((event) => (<div className="event-list" key={`${event.id}${event.name}`}>
+                    {allEventList.map((event) => (<div className="event-list" key={`${event.id}${event.name}`} onClick={()=>handleEventClick(event?.id)}>
                         <div className="visible-divs">
                             <div className="event-list-fir">
                                 <img

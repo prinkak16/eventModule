@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {useParams,useNavigate} from "react-router-dom";
 import {ApiClient} from "../../../../services/RestServices/BaseRestServices";
-import EventDetailsCard from './event-details-card/EventDetailsCard'
+import EventDetailsCard from './event-details-card/parent-card-view/EventDetailsCard'
+import EventChildCard from '../event-details/event-details-card/child-card-view/EventChildCard'
 import {Button} from "@mui/material";
 import {useLocation} from "react-router";
 import './event-details.scss'
@@ -26,22 +27,33 @@ const EventDetails=()=>{
         getEventDetails();
     }, [pathname]);
 
-    const handleClick=()=>{
-        navigate(`/events/create/${id}`);
+    const handleClick=(event_action)=>{
+        if(event_action==='create_event') {
+            navigate(`/events/create/${id}`);
+        }else{
+            window.location.href=parentEvent?.create_form_url;
+        }
     }
     
     return(
         <div className={"event-details-main-container"}>
             <div className={"heading"}>Event Details</div>
             <EventDetailsCard event={parentEvent} />
-            <div className={"add-event-button-container"}>
-                {!isChildEvent&&<Button onClick={handleClick} className={"add-event-button"} variant={"contained"}>+ Add Sub Event</Button>}
+            {parentEvent?.event_level?.toLowerCase()!=='leaf' &&<>
 
+            <div className={"add-event-button-container"}>
+               <Button onClick={()=>handleClick('create_event')} className={"add-event-button"} variant={"contained"}>+ Add Sub Event</Button>
             </div>
-            <div className={"heading"}>Sub Events</div>
-            {childEvents?.length===0&&<h4>No sub event is created</h4>}
-            {childEvents?.length>0&&childEvents?.map((childEvent,index)=><EventDetailsCard event={childEvent} key={index} />)}
             
+            <div className={"heading"}>Sub Events</div>
+                <div>{childEvents?.length===0&&<h4>No sub event is created</h4>}</div>
+                <div>{childEvents?.length>0&&childEvents?.map((childEvent,index)=><EventChildCard event={childEvent} key={index} />)}</div>
+            </>
+            }
+            {parentEvent?.event_level?.toLowerCase() === 'leaf' && <div className={"add-event-button-container"}>
+                <Button  onClick={()=>handleClick('go_to_form')} className={"add-event-button"} variant={"contained"}>Go to form</Button>
+            </div>}
+
         </div>
     )
 }
