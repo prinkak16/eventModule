@@ -109,13 +109,13 @@ class Api::EventController < Api::ApplicationController
             event.data_level_id = parent_event.data_level_id
         elsif new_record
           event.data_level_id = params[:level_id]
+          event.event_type = params[:event_type]
+          event.has_sub_event = params[:has_sub_event]
         end
-        event.event_type = params[:event_type] if new_record
         event.start_date = params[:start_datetime].to_datetime
         event.end_date = params[:end_datetime].to_datetime
         event.created_by_id = current_user&.id
         event.parent_id = params[:parent_id] if params[:parent_id].present?
-        event.has_sub_event = params[:has_sub_event] if new_record
         if params[:event_type] == "csv_upload"
           if inherit_from_parent
             event.csv_file.attach(parent_event.csv_file.blob)
@@ -125,11 +125,10 @@ class Api::EventController < Api::ApplicationController
         end
         event.save!
         if new_record
-          event.event_locations.destroy_all
           locations.each do |location|
             EventLocation.where(location: location, event: event, state_id: location&.id).first_or_create!
           end
-          EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank?
+          EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank? #only leaf event can create form
         end
         event = Event.find(event.id)
         render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
