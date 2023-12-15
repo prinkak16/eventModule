@@ -12,6 +12,7 @@ import ViewEvents from "./components/pages/events/view-events/ViewEvents";
 import ProtectedRoutes from "./ProtectedRoutes";
 import RoutesWithBreadcrumbs from "./RoutesWithBreadcrumbs";
 import EventDetails from "./components/pages/events/event-details/EventDetails";
+import FormDetails from "./components/pages/form/form-details/FormDetails";
 
 const Router=()=>{
     return(
@@ -19,7 +20,11 @@ const Router=()=>{
         <Routes >
             <Route path="/" element={<Navigate  to="/forms" replace={true} />} />
             <Route path="/forms" element={<FormComponent />} />
-            <Route path="/forms/submissions/:event_id" element={<FormSubmission />} />
+            <Route element={<RoutesWithBreadcrumbs/>}>
+                <Route path={"/forms/:id"} element={<FormDetails/>}/>
+                <Route path="/forms/submissions/:event_id" element={<FormSubmission />} />
+            </Route>
+
 
 
 
