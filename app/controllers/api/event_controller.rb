@@ -183,7 +183,7 @@ class Api::EventController < Api::ApplicationController
     limit = params[:limit].present? ? params[:limit] : 10
     offset = params[:offset].present? ? params[:offset] : 0
     date = DateTime.now
-    events = Event.where("end_date >= ?", date).where("start_date <= ?", date).where(parent_id: nil, has_sub_event: true).or(Event.where("end_date >= ?", date).where("start_date <= ?", date).where.not(parent_id: nil).where(has_sub_event: false, published: true))
+    events = Event.where(parent_id: nil, has_sub_event: true).or(Event.where.not(parent_id: nil).where(has_sub_event: false, published: true)).where("end_date >= ?", date).where("start_date <= ?", date)
     events = events.joins(:event_locations).where(event_locations: { state_id: current_user.sso_payload["country_state_id"] })
     events = events.where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
@@ -295,8 +295,7 @@ class Api::EventController < Api::ApplicationController
   def user_list_children
     begin
       event = Event.find_by_id(params[:id])
-      event_ids = event.children.where.not(parent_id: nil).where(has_sub_event: false, published: false).pluck(:id).uniq
-      child_events = event.where.not(id: event_ids)
+      child_events = event.children.where.not(has_sub_event: false, published: false)
       is_child = !event.has_sub_event
       render json: { success: true,
                      data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, current_user: current_user),
