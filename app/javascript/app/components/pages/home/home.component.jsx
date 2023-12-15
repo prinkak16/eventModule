@@ -15,19 +15,28 @@ import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import IconButton from "@mui/material/IconButton";
 import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
 import ArchiveIcon from '@mui/icons-material/Archive';
-import {EditButtonIcon, ViewButtonIcon} from '../../../assests/svg/index'
+import {
+    EditButtonIcon,
+    IntermediateEventIcon,
+    LeafEventIcon,
+    PrimaryEventIcon,
+    ViewButtonIcon
+} from '../../../assests/svg/index'
 import moment from "moment";
 import {ImageNotFound} from "../../../assests/png";
 import Button from "@mui/material/Button";
 
 const HomeComponent = () => {
-    const eventStatusArray = [{
+    const       eventStatusArray = [{
         id: 1, name: "Active",
     }, {
         id: 2, name: "Expired",
     }, {
         id: 3, name: "Upcoming",
     },];
+
+    const eventLevelArray=[{id:1,name:"Parent"},{id:2,name:"Intermediate"},{id:3,name:"Leaf"}]
+    
     const imgDefault = "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
     const navigate = useNavigate();
     const [eventsList, setEventsList] = useState([]);
@@ -42,7 +51,7 @@ const HomeComponent = () => {
 
     const filterList = ["Level", "State", "Event Status"];
     const [filtersFieldData, setFiltersFieldData] = useState({
-        levels: [{id: "", name: ""}], states: [{id: "", name: ""}], event_status: eventStatusArray,
+        levels: [{id: "", name: ""}], states: [{id: "", name: ""}], event_status: eventStatusArray, event_level:eventLevelArray
     });
     const [filtersFieldValue, setFiltersFieldValue] = useState({
         startDate: "",
@@ -50,6 +59,7 @@ const HomeComponent = () => {
         level_id: {name: "", id: "", level_class: ""},
         state_id: {name: "", id: ""},
         event_status_id: {name: "", id: ""},
+        event_level:{name:"Parent",id:"1"},
     });
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [confirmationStatus, setConfirmationStatus] = useState(false);
@@ -151,6 +161,7 @@ const HomeComponent = () => {
         }
         setFiltersFieldValue({
             date: "", level_id: {id: "", name: ""}, state_id: {id: "", name: ""}, event_status_id: {id: "", name: ""},
+            event_level:{id:1,name:"Parent"}
         });
         setEventName("");
         setClearFilter(!clearFilter);
@@ -162,7 +173,7 @@ const HomeComponent = () => {
 
         }&end_date=${filtersFieldValue?.endDate !== null && filtersFieldValue?.endDate !== undefined && filtersFieldValue?.endDate !== "" ? moment(filtersFieldValue.endDate).format('DD/MM/YYYY') : ""
 
-        }&level_id=${filtersFieldValue.level_id?.id ?? ""}&state_id=${filtersFieldValue.state_id?.id ?? ""}&event_status=${filtersFieldValue.event_status_id?.name ?? ""}&limit=${itemsPerPage}&offset=${itemsPerPage * (page - 1)}`;
+        }&level_id=${filtersFieldValue.level_id?.id ?? ""}&state_id=${filtersFieldValue.state_id?.id ?? ""}&event_status=${filtersFieldValue.event_status_id?.name ?? ""}&event_level=${filtersFieldValue?.event_level?.name??""}&limit=${itemsPerPage}&offset=${itemsPerPage * (page - 1)}`;
         try {
             let {data} = await ApiClient.get(`/event/event_list?` + params, {
                 headers: {
@@ -250,28 +261,44 @@ const HomeComponent = () => {
 
 
     const handleAutoComplete = (event, newValue, name) => {
-        console.log('new value is ', newValue);
+        console.log('new value is ', newValue, 'and name is ',name);
         if (name === 'event_status_id') {
             setFiltersFieldValue((prevData) => ({...prevData, startDate: "", endDate: "", [name]: newValue}));
 
         } else {
             setFiltersFieldValue((prevData) => ({...prevData, [name]: newValue}));
+        }
+        
+    }
 
+    const handleEventClick=(event_id)=>{
+        navigate(`/events/${event_id}`)
+    }
+
+    const RenderEventIcon=(event_level)=>{
+        console.log('event level is ',event_level);
+        if(event_level.toLowerCase()==='parent'){
+            return <span className={"event-primary-icon-container"}><PrimaryEventIcon/></span>
+        }
+        else if(event_level.toLowerCase()==='intermediate'){
+             return <span className={"event-intermediate-icon-container"}><IntermediateEventIcon/></span>
+        }else{
+            return  <span className={"event-leaf-icon-container"}><LeafEventIcon/></span>
         }
 
-
     }
-    return (<div className="home-main-container">
+
+    return <div className="home-main-container">
         <ConfirmationModal message="Are you sure want to archive ?" showConfirmationModal={showConfirmationModal}
                            setShowConfirmationModal={setShowConfirmationModal}
                            setConfirmationStatus={setConfirmationStatus}/>
-        {loader ? (<Loader
+        {loader ? <Loader
             type="bubble-ping"
             bgColor={"#FFFFFF"}
             title="Loading.."
             color={"#FFFFFF"}
             size={100}
-        />) : (<></>)}
+        /> : <></>}
         <div className="header-and-list-container">
             <div className="home-search-div">
                 <div className="event-header">
@@ -285,9 +312,9 @@ const HomeComponent = () => {
                     placeholder="Search by Event Name"
                     variant="outlined"
                     InputProps={{
-                        startAdornment: (<InputAdornment position="start">
+                        startAdornment: <InputAdornment position="start">
                             <SearchIcon/>
-                        </InputAdornment>),
+                        </InputAdornment>,
                     }}
                 />
 
@@ -298,8 +325,31 @@ const HomeComponent = () => {
                     </div>
                 </button>
             </div>
+            <div className={"home-icon-description"}>
+                <span className={"svg-icon-outermost-container"}>
+                    <span className={"primary-icon-container"}>
+                                            <PrimaryEventIcon/>
+
+                    </span>
+                    <span>Primary Events</span>
+                </span>
+                <span className={"svg-icon-outermost-container"}>
+                    <span className={"intermediate-icon-container"}>
+                        <IntermediateEventIcon/>
+
+                    </span>
+                    <span>Intermediate Events</span>
+                </span>
+                <span className={"svg-icon-outermost-container"}>
+                    <span className={"leaf-icon-container"}>
+                                           <LeafEventIcon className={"leaf-icon"}/>
+
+                    </span>
+                    <span>Leaf Events</span>
+                </span>
+            </div>
             <div className="events-container">
-                {allEventList.length > 0 ? (<>
+                {allEventList.length > 0 ? <>
                     {allEventList.map((event) => (<div className="event-list" key={`${event.id}${event.name}`}>
                         <div className="visible-divs">
                             <div className="event-list-fir">
@@ -317,6 +367,9 @@ const HomeComponent = () => {
                                 </div>
                                 <div className={`${event.status.class_name} active-button`}>
                                     <span>{event.status.name}</span>
+                                </div>
+                                <div>
+                                    {RenderEventIcon(event?.event_level)}
                                 </div>
                                 <div></div>
                             </div>
@@ -355,7 +408,7 @@ const HomeComponent = () => {
                         </div>
                         <div className="edit-bar">
                             <div className="edit-bar-sub-div cursor-pointer"
-                                 onClick={() => navigate(`/events/view/${event?.id}`)}>
+                                 onClick={() => navigate(`/events/${event?.id}`)}>
                                 <IconButton>
                                     <div className={"view-button"}>
                                         <ViewButtonIcon className={"view-icon"}/>
@@ -393,7 +446,7 @@ const HomeComponent = () => {
 
 
                     </div>))}
-                </>) : (<div className="no-event-data">No Data Found</div>)}
+                </> : <div className="no-event-data">No Data Found</div>}
                 <div className="pagination">
                     <Pagination
                         count={Math.ceil(totalCount / 10)}
@@ -470,6 +523,15 @@ const HomeComponent = () => {
                     renderInput={(params) => <TextField {...params} label="Select Event Status"
                                                         variant="outlined"/>}
                 />
+                <Autocomplete
+                    fullWidth
+                    options={filtersFieldData["event_level"]}
+                    getOptionLabel={(option) => option?.name}
+                    value={filtersFieldValue?.event_level}
+                    onChange={(e, newVal) => handleAutoComplete(e, newVal, "event_level")}
+                    renderInput={(params) => <TextField {...params} label="Select Event Level"
+                                                        variant="outlined"/>}
+                />
                 <div className="filters-buttons">
                     <Button
                         onClick={clearFiltersValue}
@@ -490,7 +552,7 @@ const HomeComponent = () => {
         </div>
 
 
-    </div>);
+    </div>;
 };
 
 export default HomeComponent;

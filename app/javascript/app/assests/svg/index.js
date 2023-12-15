@@ -10,8 +10,11 @@ import CrossIcon from '../svg/cross.svg'
 import  NextIcon from '../svg/NextIcon.svg'
 import ViewButtonIcon from '../svg/viewbutton.svg'
 import EditButtonIcon from '../svg/editbutton.svg'
+import PrimaryEventIcon from '../svg/primaryEventIcon.svg';
+import IntermediateEventIcon from '../svg/intermediateEventIcon.svg';
+import LeafEventIcon from '../svg/leafEventIcon.svg';
 
 export { CalenderIcon, GreendotIcon, ClockIcon, LocationIcon ,EditIcon,ViewButtonIcon,EditButtonIcon,
-    DeleteIcon,VerifiedIcon,UploadIcon,CrossIcon,NextIcon
+    DeleteIcon,VerifiedIcon,UploadIcon,CrossIcon,NextIcon,PrimaryEventIcon,IntermediateEventIcon,LeafEventIcon
 
 };

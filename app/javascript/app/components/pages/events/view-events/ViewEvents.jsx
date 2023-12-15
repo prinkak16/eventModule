@@ -103,9 +103,9 @@ const ViewEvents=({isEdit=true})=>{
    
     return(
         <div className="view-event-container">
-            <div className="event-path">
+         {/*   <div className="event-path">
                 <MyBreadcrumbs />
-            </div>
+            </div>*/}
             {isLoading ? <ReactLoader/> : <div className="form-and-iframe-container">
 
 

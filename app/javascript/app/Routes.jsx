@@ -10,6 +10,8 @@ import {Navigate} from "react-router";
 
 import ViewEvents from "./components/pages/events/view-events/ViewEvents";
 import ProtectedRoutes from "./ProtectedRoutes";
+import RoutesWithBreadcrumbs from "./RoutesWithBreadcrumbs";
+import EventDetails from "./components/pages/events/event-details/EventDetails";
 
 const Router=()=>{
     return(
@@ -22,12 +24,13 @@ const Router=()=>{
 
 
             <Route element={<ProtectedRoutes/>}>
-
                 <Route path="/events" element={ <HomeComponent />} />
-                <Route path="/events/create" element={<CreateEvent />} />
-                <Route path="/events/edit/:id" element={<EditEvent />} />
-                <Route path="/events/view/:id"  element={<ViewEvents/>}/>
-
+                <Route element={<RoutesWithBreadcrumbs/>}>
+                    <Route path="/events/create/:id?" element={<CreateEvent />} />
+                    <Route path="/events/edit/:id" element={<EditEvent />} />
+                    <Route path="/events/view/:id"  element={<ViewEvents/>}/>
+                    <Route path="/events/:id"  element={<EventDetails/>}/>
+                </Route>
             </Route>
        <Route path="/*" element={<Navigate to="/" replace={true}  />} />
         </Routes>

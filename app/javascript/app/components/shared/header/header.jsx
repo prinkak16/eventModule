@@ -22,7 +22,6 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
 
 
     useEffect(() => {
-        console.log('is granted ',JSON.parse(document.getElementById("app").getAttribute("data-create")));
         getUserDetail()
     }, [])                                              
 

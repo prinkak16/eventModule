@@ -148,9 +148,9 @@ class Api::EventController < Api::ApplicationController
     event_level = params[:event_level].present? ? params[:event_level] : ""
     events = Event.joins(:event_locations).where(query_conditions).where(event_locations: { state_id: country_states_with_create_permission })
     if event_level == Event::TYPE_INTERMEDIATE
-      events = events.where.not(parent_id: nil, has_sub_event: false)
-    elsif event_level == Event::TYPE_LEAF
-      events = events.where.not(parent_id: nil, has_sub_event: true)
+      events = events.where.not(parent_id: nil).where.not(has_sub_event: false)
+    elsif event_level == Event::TYPE_LEAF 
+      events = events.where.not(parent_id: nil).where.not(has_sub_event: true)
     else
       events = events.where(parent_id: nil)
     end
