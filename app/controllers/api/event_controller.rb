@@ -146,10 +146,11 @@ class Api::EventController < Api::ApplicationController
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     event_status = params[:event_status]
     event_level = params[:event_level].present? ? params[:event_level] : ""
-    events = Event.joins(:event_locations).where(query_conditions).where(event_locations: { state_id: country_states_with_create_permission })
+    event_ids = Event.joins(:event_locations).where(event_locations: { state_id: country_states_with_create_permission }).pluck(:id).uniq
+    events = Event.where(query_conditions).where(id: event_ids)
     if event_level == Event::TYPE_INTERMEDIATE
       events = events.where.not(parent_id: nil).where.not(has_sub_event: false)
-    elsif event_level == Event::TYPE_LEAF 
+    elsif event_level == Event::TYPE_LEAF
       events = events.where.not(parent_id: nil).where.not(has_sub_event: true)
     else
       events = events.where(parent_id: nil)
@@ -182,7 +183,7 @@ class Api::EventController < Api::ApplicationController
     limit = params[:limit].present? ? params[:limit] : 10
     offset = params[:offset].present? ? params[:offset] : 0
     date = DateTime.now
-    events = Event.where("end_date >= ?", date).where("start_date <= ?", date).where(published: true)
+    events = Event.where("end_date >= ?", date).where("start_date <= ?", date).where(parent_id: nil, has_sub_event: true).or(Event.where("end_date >= ?", date).where("start_date <= ?", date).where.not(parent_id: nil).where(has_sub_event: false, published: true))
     events = events.joins(:event_locations).where(event_locations: { state_id: current_user.sso_payload["country_state_id"] })
     events = events.where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
@@ -258,8 +259,7 @@ class Api::EventController < Api::ApplicationController
                      is_child: is_child}, status: :ok
     rescue => e
       puts e.message
-      render json: { success: false, message: e.message }, status: :bad_request
-      raise ActiveRecord::Rollback, e.message
+      render json: { success: false, message: e.message }, status: :bad_reques
     end
   end
 
@@ -286,6 +286,22 @@ class Api::EventController < Api::ApplicationController
       events = Event.find_by_id(params[:id]).children
       render json: { success: true,
                      data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, current_user: current_user) }, status: :ok
+    rescue => e
+      puts e.message
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
+
+  def user_list_children
+    begin
+      event = Event.find_by_id(params[:id])
+      event_ids = event.children.where.not(parent_id: nil).where(has_sub_event: false, published: false).pluck(:id).uniq
+      child_events = event.where.not(id: event_ids)
+      is_child = !event.has_sub_event
+      render json: { success: true,
+                     data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, current_user: current_user),
+                     child_data: ActiveModelSerializers::SerializableResource.new(child_events, each_serializer: EventSerializer, current_user: current_user),
+                     is_child: is_child}, status: :ok
     rescue => e
       puts e.message
       render json: { success: false, message: e.message }, status: :bad_request
