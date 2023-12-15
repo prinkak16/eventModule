@@ -34,6 +34,7 @@ Rails.application.routes.draw do
       get 'event/event_data', to: 'event#individual_event_data'
       get 'event/path', to: 'event#get_event_path'
       get 'event/children', to: 'event#get_event_children'
+      get 'event/user_children', to: 'event#user_list_children'
   end
   #noinspection RailsParamDefResolve
   match '*path', to: 'home#index', via: :all, constraints: lambda { |req|
