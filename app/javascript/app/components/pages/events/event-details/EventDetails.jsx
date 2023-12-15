@@ -13,6 +13,7 @@ const EventDetails=()=>{
     const [parentEvent,setParentEvent]=useState({});
     const [childEvents,setChildEVents]=useState([]);
     const [isChildEvent,setIsChildEvent]=useState(false)
+
     const {id}=useParams();
 
     const getEventDetails=async ()=>{
@@ -39,20 +40,29 @@ const EventDetails=()=>{
         <div className={"event-details-main-container"}>
             <div className={"heading"}>Event Details</div>
             <EventDetailsCard event={parentEvent} />
-            {parentEvent?.event_level?.toLowerCase()!=='leaf' &&<>
+            {parentEvent?.has_sub_event &&<>
 
             <div className={"add-event-button-container"}>
                <Button onClick={()=>handleClick('create_event')} className={"add-event-button"} variant={"contained"}>+ Add Sub Event</Button>
             </div>
             
             <div className={"heading"}>Sub Events</div>
-                <div>{childEvents?.length===0&&<h4>No sub event is created</h4>}</div>
+                <div>{childEvents?.length===0&&<h5 className={"no-sub-event-style"}>No sub event is created yet</h5>}</div>
                 <div>{childEvents?.length>0&&childEvents?.map((childEvent,index)=><EventChildCard event={childEvent} key={index} />)}</div>
             </>
             }
-            {parentEvent?.event_level?.toLowerCase() === 'leaf' && <div className={"add-event-button-container"}>
-                <Button  onClick={()=>handleClick('go_to_form')} className={"add-event-button"} variant={"contained"}>Go to form</Button>
-            </div>}
+            {!parentEvent?.has_sub_event && <>
+
+                <div className={"add-event-button-container"}>
+                    <Button onClick={() => handleClick('go_to_form')} className={"add-event-button"}
+                            variant={"contained"}>Go to form</Button>
+                </div>
+                <div className={"heading"}>Form View</div>
+                <div className={"iframe-container"}>
+                    <iframe src={parentEvent?.preview_url} height="700px" width="100%" title="Iframe Example"/>
+                </div>
+            </>
+            }
 
         </div>
     )

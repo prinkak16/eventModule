@@ -90,7 +90,9 @@ body {
       white-space: nowrap;
       text-overflow: ellipsis;
     }
+
   }
+
 
   .event-details-list-third-part{
     display: flex;
@@ -161,3 +163,8 @@ body {
 
 
 
+.no-sub-event-style{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}

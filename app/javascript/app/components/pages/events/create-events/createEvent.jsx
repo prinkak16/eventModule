@@ -65,7 +65,8 @@ export default function CreateEvent({isEdit, editData}) {
                             level_id: data?.data[0]?.data_level_id,
                             event_type: data?.data[0]?.event_type,
                             location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
-                            state_obj: data?.data[0]?.state_ids ?? []
+                            state_obj: data?.data[0]?.state_ids ?? [],
+                            has_sub_event: data?.data[0]?.has_sub_event,
                         }))
                 }
             })();
@@ -155,18 +156,15 @@ export default function CreateEvent({isEdit, editData}) {
             const eventId=response?.data?.event?.id;
             if (response.data.success) {
                 setLoader(false);
-                if( type === 'create'){
+                if( type === 'create' || type==='save'){
+                    toast.success(`Event ${type}d successfully`);
                     navigate(`/events/${eventId}`);
                 }
                 else if(type === 'go_to_form') {
                         window.location.href = response?.data?.event?.create_form_url;
-                } else {
-                    toast.success(response.data.message);
-                    navigate('/events')
                 }
             } else {
                 setLoader(false);
-
                 toast.error(response.data.message);
             }
 
@@ -252,8 +250,9 @@ export default function CreateEvent({isEdit, editData}) {
             if (isEdit && key === "crop_data") {
                 continue;
             }
-            if(key==='parent_id'&&formFieldValue[key]===null){}
-            continue;
+            if(key==='parent_id'&&formFieldValue[key]===null){
+                continue;
+            }
             if (key === 'location_ids' || key === 'state_obj') {
                 if (formFieldValue[key].length === 0) {
                     return true;
@@ -277,7 +276,7 @@ export default function CreateEvent({isEdit, editData}) {
                 <MyBreadcrumbs/>
             </div>*/}
             <h3 className="font-weight-300">
-                {isEdit ? "Edit the Event" : "Create an Event"}
+                {isEdit ? "Edit the Event" : "Create the Event"}
             </h3>
             <Box className="event-create-form-bg">
 
@@ -358,6 +357,7 @@ export default function CreateEvent({isEdit, editData}) {
                 </div>
 
                 <Autocomplete
+                    disabled={isEdit}
                     className="w-100"
                     multiple
                     value={formFieldValue?.state_obj}
@@ -374,6 +374,7 @@ export default function CreateEvent({isEdit, editData}) {
                     <h6>Allow to create sub-events{' '} <span style={{color: "red"}}>*</span></h6>
 
                     <RadioGroup
+                        disabled={isEdit}
                         className="custom-radio-group"
                         row
                         value={formFieldValue?.has_sub_event===true?'yes':'no'}
@@ -386,12 +387,14 @@ export default function CreateEvent({isEdit, editData}) {
                     }
                     >
                         <FormControlLabel
+                            disabled={isEdit}
                             value='yes'
                             control={<Radio/>}
                             label="Yes"
 
                         />
                         <FormControlLabel
+                            disabled={isEdit}
                             value="no"
                             control={<Radio/>}
                             label="No"
@@ -404,6 +407,7 @@ export default function CreateEvent({isEdit, editData}) {
                     <h6>Reporting Target{' '} <span style={{color: "red"}}>*</span></h6>
 
                     <RadioGroup
+
                         className="custom-radio-group"
                         row
                         value={formFieldValue?.event_type}
@@ -413,6 +417,7 @@ export default function CreateEvent({isEdit, editData}) {
                         })}
                     >
                         <FormControlLabel
+                            disabled={isEdit}
                             value="open_event"
                             control={<Radio/>}
                             label="Open event"
