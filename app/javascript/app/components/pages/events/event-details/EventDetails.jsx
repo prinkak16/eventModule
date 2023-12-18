@@ -6,6 +6,7 @@ import EventChildCard from '../event-details/event-details-card/child-card-view/
 import {Button} from "@mui/material";
 import {useLocation} from "react-router";
 import './event-details.scss'
+import {toast} from "react-toastify";
 
 const EventDetails=()=>{
     const {pathname}=useLocation();
@@ -17,10 +18,23 @@ const EventDetails=()=>{
     const {id}=useParams();
 
     const getEventDetails=async ()=>{
-        const {data}=await  ApiClient.get('event/event_data',{params:{id}})
-        setParentEvent(data?.data)
-        setChildEVents(data?.child_data);
-        setIsChildEvent(data?.is_child);
+        try{
+            const {data}=await  ApiClient.get('event/event_data',{params:{id}})
+            if(data?.success){
+                setParentEvent(data?.data)
+                setChildEVents(data?.child_data);
+                setIsChildEvent(data?.is_child);
+                window.scrollTo({top: 0});
+            } else{
+                toast.error("Failed to get events details")
+            }
+
+
+        }catch (e) {
+            toast.error(e?.message);
+
+        }
+
 
     }
 

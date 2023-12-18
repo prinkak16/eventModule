@@ -12,7 +12,7 @@ const FormEventMobileCard=({event,index})=>{
     const navigate=useNavigate();
 
     const submissionHandler = (event_id) => {
-        navigate(`/forms/submissions/${event_id}`);
+        navigate(`/forms/${event_id}`);
     };
 
     return(

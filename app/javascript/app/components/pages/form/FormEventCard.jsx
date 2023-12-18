@@ -8,15 +8,10 @@ import { useNavigate } from "react-router";
 
 
 const FormEventCard = ({ event }) => {
-  console.log('event in event car is ',event);
 
   const navigate = useNavigate();
   const submissionHandler = (event_id) => {
-    if(event?.has_sub_event){
       navigate(`/forms/${event_id}`);
-    }else{
-      navigate(`/forms/submissions/${event_id}`);
-    }
   };
   return (
     <div

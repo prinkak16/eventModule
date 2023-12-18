@@ -22,7 +22,9 @@ const Router=()=>{
             <Route path="/forms" element={<FormComponent />} />
             <Route element={<RoutesWithBreadcrumbs/>}>
                 <Route path={"/forms/:id"} element={<FormDetails/>}/>
-                <Route path="/forms/submissions/:event_id" element={<FormSubmission />} />
+{/*
+                <Route path="/forms/submissions/:id" element={<FormSubmission />} />
+*/}
             </Route>
 
 

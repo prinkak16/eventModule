@@ -7,7 +7,6 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import {toast} from "react-toastify";
 import {useNavigate, useParams} from "react-router-dom";
-import MyBreadcrumbs from "../../../shared/breadcrumbs/Breadcrumbs";
 import {createEvent} from "../../../../services/RestServices/Modules/EventServices/CreateEventServices";
 import {getDataLevels, getStates,} from "../../../../services/CommonServices/commonServices";
 import {ApiClient} from "../../../../services/RestServices/BaseRestServices";
@@ -42,8 +41,8 @@ export default function CreateEvent({isEdit, editData}) {
         img: "",
         crop_data: "",
         state_obj: [],
-        parent_id:!isEdit&&id?id:null,
-        has_sub_event:false,
+        parent_id: !isEdit && id ? id : null,
+        has_sub_event: false,
     });
 
     const requiredField = ["start_datetime"];
@@ -119,7 +118,7 @@ export default function CreateEvent({isEdit, editData}) {
         try {
             const dataLevelResponse = await getDataLevels();
             if (dataLevelResponse?.data?.success) {
-                if (dataLevelResponse?.data?.data?.length > 1&&!isEdit) {
+                if (dataLevelResponse?.data?.data?.length > 1 && !isEdit) {
                     const defaultId = dataLevelResponse?.data?.data[0]?.id;
                     setFormFieldValue((prevData) => ({...prevData, level_id: defaultId}))
                 }
@@ -147,21 +146,20 @@ export default function CreateEvent({isEdit, editData}) {
         formData.append("crop_data", formFieldValue?.crop_data ?? "");
 
         formData.append("img", formFieldValue?.img ?? "");
-        formData.append('has_sub_event',formFieldValue?.has_sub_event)
-        if(formFieldValue?.parent_id!==null&&formFieldValue?.parent_id!==undefined) {
+        formData.append('has_sub_event', formFieldValue?.has_sub_event)
+        if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
             formData.append('parent_id', formFieldValue?.parent_id);
         }
         try {
             const response = await createEvent(formData, {event_id: id});
-            const eventId=response?.data?.event?.id;
+            const eventId = response?.data?.event?.id;
             if (response.data.success) {
                 setLoader(false);
-                if( type === 'create' || type==='save'){
+                if (type === 'create' || type === 'save') {
                     toast.success(`Event ${type}d successfully`);
                     navigate(`/events/${eventId}`);
-                }
-                else if(type === 'go_to_form') {
-                        window.location.href = response?.data?.event?.create_form_url;
+                } else if (type === 'go_to_form') {
+                    window.location.href = response?.data?.event?.create_form_url;
                 }
             } else {
                 setLoader(false);
@@ -250,7 +248,7 @@ export default function CreateEvent({isEdit, editData}) {
             if (isEdit && key === "crop_data") {
                 continue;
             }
-            if(key==='parent_id'&&formFieldValue[key]===null){
+            if (key === 'parent_id' && formFieldValue[key] === null) {
                 continue;
             }
             if (key === 'location_ids' || key === 'state_obj') {
@@ -272,7 +270,7 @@ export default function CreateEvent({isEdit, editData}) {
     return (<div className="create-event-container">
         {loader ? <ReactLoader/> : (<></>)}
         <div className="container-adjust">
-          {/*  <div className="event-path">
+            {/*  <div className="event-path">
                 <MyBreadcrumbs/>
             </div>*/}
             <h3 className="font-weight-300">
@@ -377,14 +375,14 @@ export default function CreateEvent({isEdit, editData}) {
                         disabled={isEdit}
                         className="custom-radio-group"
                         row
-                        value={formFieldValue?.has_sub_event===true?'yes':'no'}
+                        value={formFieldValue?.has_sub_event === true ? 'yes' : 'no'}
                         name="row-radio-buttons-group"
                         onChange={(event) => {
                             setFormFieldValue((prevData) => {
                                 return {...prevData, has_sub_event: event.target.value === 'yes' ? true : false};
                             })
                         }
-                    }
+                        }
                     >
                         <FormControlLabel
                             disabled={isEdit}
@@ -445,17 +443,17 @@ export default function CreateEvent({isEdit, editData}) {
                     onClick={() => submit('save', id)}
                 > Save Event
                 </button>
+                {!formFieldValue?.has_sub_event &&
+                    <button
+                        disabled={isNextButtonDisabled()}
+                        className="go-to-form-button"
+                        style={{
+                            background: "black", color: "white", height: "40px", width: "150px",
+                        }}
 
-                <button
-                    disabled={isNextButtonDisabled()}
-                    className="go-to-form-button"
-                    style={{
-                        background: "black", color: "white", height: "40px", width: "150px",
-                    }}
-
-                    onClick={() => submit('go_to_form', id)}
-                > Go to form
-                </button>
+                        onClick={() => submit('go_to_form', id)}
+                    > Go to form
+                    </button>}
             </>)}
         </div>
     </div>);
