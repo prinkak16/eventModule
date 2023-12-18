@@ -17,7 +17,7 @@ const FormSubmission = () => {
     const [eventSubmissionsData, setEventsubmissionsData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const {event_id} = useParams();
+    const {id} = useParams();
     const {setEventName,setIsSubmissionPage}=EventState();
     const [showConfirmationModal,setShowConfirmationModal]=useState(false);
     const [eventDeleteId,setEventDeleteId]=useState(-1);
@@ -28,7 +28,7 @@ const FormSubmission = () => {
         (async () => {
             setIsLoading(true)
             try {
-                const {data} = await ApiClient.get(`/user/submissions/${event_id}`);
+                const {data} = await ApiClient.get(`/user/submissions/${id}`);
                 if (data?.success) {
                     setEventDetails(data?.data?.events[0] ?? {})
                     setEventsubmissionsData(data?.data?.submissions)
@@ -63,7 +63,7 @@ const FormSubmission = () => {
     const reportEventHandler = async () => {
         setIsLoading(true)
         try {
-            const {data} = await ApiClient.get(`user/submit_event/${event_id}`);
+            const {data} = await ApiClient.get(`user/submit_event/${id}`);
             if (data?.success) {
                 setIsLoading(false)
                 window.location.href = data?.data?.redirect_url;

@@ -54,10 +54,10 @@ export default function MyBreadcrumbs() {
 
   return (
     <div className={"breadcrumbs-main-container"}>
-      <Link to={"/events"}>Events</Link>
+      {urls?.length>0&&<Link to={`/${urls[0]}`}>{urls[0]}</Link>}
       {Object.keys(dynamicRoutes).length>0&&<span> &nbsp;/&nbsp; </span>}
       {Object.keys(dynamicRoutes)?.map((key,index)=> <span key={index} style={{display:"flex"}}>
-         <Link to={`/events/${key}`}>
+         <Link to={`/${urls[0]}/${key}`}>
            <span style={{display:"flex",gap:"10px"}}> {RenderEventIcon(dynamicRoutes[key][1])}
              {dynamicRoutes[key][0]}</span>
          </Link>

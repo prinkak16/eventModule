@@ -182,7 +182,7 @@ const HomeComponent = () => {
             });
             if (data?.success) {
                 setEventsList(data?.data);
-                setAllEventList(data?.data);
+                setAllEventList(data?.data);        
                 setTotalCount(data?.total ?? data?.data?.length);
                 window.scrollTo({top: 0});
 
