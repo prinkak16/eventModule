@@ -120,7 +120,7 @@ class Api::EventController < Api::ApplicationController
           event.data_level_id = params[:level_id]
           event.event_type = params[:event_type]
           event.has_sub_event = params[:has_sub_event]
-          event.parent_id = params[:parent_id] if params[:parent_id].present?
+          event.parent_ id = params[:parent_id] if params[:parent_id].present?
         end
         event.end_date = inherit_from_parent.present? ? parent_event.end_date : params[:end_datetime].to_datetime
         event.start_date = inherit_from_parent.present? ? parent_event.start_date : params[:start_datetime].to_datetime
