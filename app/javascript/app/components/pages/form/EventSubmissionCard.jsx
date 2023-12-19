@@ -52,7 +52,7 @@ const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler,s
                 <Tooltip title={data?.locations?.join(' , ')}>
                     <div className="event-location-data">
                         <EllipsesComponent    text=
-                                                  {data?.locations?.join(' , ')} /></div>
+                                                  {data?.locations?.filter(Boolean)?.join(' , ')} /></div>
 
                 </Tooltip>
             </div>

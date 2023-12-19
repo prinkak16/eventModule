@@ -59,8 +59,10 @@ const HomeComponent = () => {
         level_id: {name: "", id: "", level_class: ""},
         state_id: {name: "", id: ""},
         event_status_id: {name: "", id: ""},
-        event_level:{name:"Parent",id:"1"},
+        event_level:{name:"",id:"1"},
     });
+    
+    
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [confirmationStatus, setConfirmationStatus] = useState(false);
     const [eventDeleteId, setEventDeleteId] = useState(-1);
@@ -161,7 +163,7 @@ const HomeComponent = () => {
         }
         setFiltersFieldValue({
             date: "", level_id: {id: "", name: ""}, state_id: {id: "", name: ""}, event_status_id: {id: "", name: ""},
-            event_level:{id:1,name:"Parent"}
+            event_level:{id:1,name:""}
         });
         setEventName("");
         setClearFilter(!clearFilter);
