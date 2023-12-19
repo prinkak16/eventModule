@@ -30,8 +30,8 @@ class Event < ApplicationRecord
     end
   end
 
-  def get_state_ids
-    self.event_locations.where(location_type: "Saral::Locatable::State").pluck(:location_id)
+  def get_states
+    Saral::Locatable::State.where(id: self.event_locations.where(location_type: "Saral::Locatable::State").pluck(:location_id)).select(:id, :name).order(:name)
   end
 
 end

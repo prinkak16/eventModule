@@ -14,12 +14,9 @@ class Api::EventController < Api::ApplicationController
 
   def states
     if params[:parent_id].present?
-      state_id = Event.find_by(id: params[:id])&.get_state_ids
-    end
-    if state_id.present?
-      states = Saral::Locatable::State.where(id: state_id).select(:id, :name).order(:name)
+      states = Event.find_by(id: params[:parent_id]).get_states
     else
-      states = Saral::Locatable::State.where(id: country_states_with_create_permission).select(:id, :name).order(:name)
+      states = country_states_with_create_permission
     end
     render json: { success: true, data: states || [], message: "States list" }, status: 200
   rescue StandardError => e
