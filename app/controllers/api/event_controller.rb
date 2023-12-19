@@ -13,7 +13,11 @@ class Api::EventController < Api::ApplicationController
   end
 
   def states
-    states = Saral::Locatable::State.where(id: country_states_with_create_permission).select(:id, :name).order(:name)
+    if params[:parent_id].present?
+      states = Event.find_by(id: params[:parent_id]).get_states
+    else
+      states = country_states_with_create_permission
+    end
     render json: { success: true, data: states || [], message: "States list" }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
@@ -108,6 +112,12 @@ class Api::EventController < Api::ApplicationController
         event.name = params[:event_title]
         if new_record
           event.data_level_id = inherit_from_parent.present? ? parent_event.data_level_id : params[:level_id]
+        if new_record && inherit_from_parent
+            event.data_level_id = parent_event.data_level_id
+            event.start_date = parent_event.start_date
+            event.end_date = parent_event.end_date
+        elsif new_record
+          event.data_level_id = params[:level_id]
           event.event_type = params[:event_type]
           event.has_sub_event = params[:has_sub_event]
           event.parent_id = params[:parent_id] if params[:parent_id].present?
@@ -115,6 +125,11 @@ class Api::EventController < Api::ApplicationController
         event.end_date = inherit_from_parent.present? ? parent_event.end_date : params[:end_datetime].to_datetime
         event.start_date = inherit_from_parent.present? ? parent_event.start_date : params[:start_datetime].to_datetime
         event.created_by_id = current_user&.id
+          event.start_date = params[:start_datetime].to_datetime
+          event.end_date = params[:end_datetime].to_datetime
+        end
+        event.created_by_id = current_user&.id
+        event.parent_id = params[:parent_id] if params[:parent_id].present?
         if params[:event_type] == "csv_upload"
           if inherit_from_parent
             event.csv_file.attach(parent_event.csv_file.blob)
@@ -145,7 +160,7 @@ class Api::EventController < Api::ApplicationController
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     event_status = params[:event_status]
     event_level = params[:event_level].present? ? params[:event_level] : ""
-    event_ids = Event.joins(:event_locations).where(event_locations: { state_id: country_states_with_create_permission }).pluck(:id).uniq
+    event_ids = Event.joins(:event_locations).where(event_locations: { state_id: country_states_with_create_permission.pluck(:id) }).pluck(:id).uniq
     events = Event.where(query_conditions).where(id: event_ids)
     if event_level == Event::TYPE_INTERMEDIATE
       events = events.where.not(parent_id: nil).where.not(has_sub_event: false)
@@ -294,7 +309,7 @@ class Api::EventController < Api::ApplicationController
   def user_list_children
     begin
       event = Event.find_by_id(params[:id])
-      child_events = event.children.where.not(has_sub_event: false, published: false)
+      child_events = event.children.where.not(has_sub_event: false, published: false).order(start_date: :desc)
       is_child = !event.has_sub_event
       render json: { success: true,
                      data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, current_user: current_user),
