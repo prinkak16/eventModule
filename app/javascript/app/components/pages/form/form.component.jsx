@@ -29,7 +29,7 @@ const FormComponent = () => {
   const [searchEventName, setSearchEventName] = useState(null);
   const rowsPerPage = 10;
   const myRef=useRef(null);
-  const [innerWidth,setInnerWidth]          =useState(window.innerWidth);
+  const [innerWidth,setInnerWidth]  =useState(window.innerWidth);
   const [isEventChanged,setIsEventChanged]=useState(false);
    const {setIsSubmissionPage,setEventName}=EventState();
 

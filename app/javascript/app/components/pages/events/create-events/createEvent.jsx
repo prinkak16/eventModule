@@ -27,7 +27,6 @@ export default function CreateEvent({isEdit, editData}) {
     const [dataLevels, setDataLevels] = useState([]);
     const [countryStates, setCountryStates] = useState([]);
     const [image, setImage] = useState(null);
-    const [startDate, setStartDate] = useState();
 
     const [loader, setLoader] = useState(false);
 
@@ -41,9 +40,10 @@ export default function CreateEvent({isEdit, editData}) {
         img: "",
         crop_data: "",
         state_obj: [],
-        parent_id: !isEdit && id ? id : null,           // here !isEdit is used because in case of edit {id} form useParams() will be id of that current event which we are editing
+        parent_id: !isEdit && id ? id : null,     // here !isEdit is used because in case of edit event {id} from useParams() will be id of that current event which we are editing
         has_sub_event: false,
         inherit_from_parent: false,
+        status:""
     });
 
     const requiredField = ["start_datetime"];
@@ -67,6 +67,7 @@ export default function CreateEvent({isEdit, editData}) {
                             location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
                             state_obj: data?.data[0]?.state_ids ?? [],
                             has_sub_event: data?.data[0]?.has_sub_event,
+                            status: data?.data[0]?.status?.name??"",
                         }))
                 }
             })();
@@ -240,7 +241,10 @@ export default function CreateEvent({isEdit, editData}) {
     const isNextButtonDisabled = () => {
 
         for (let key in formFieldValue) {
-            if (formFieldValue?.inherit_from_parent && (key === 'start_datetime' || key === 'end_datetime' || key === 'level_id' || key === 'state_obj'||key==="location_ids"))
+            if(key==="status"){
+                continue;
+            }
+           else if (formFieldValue?.inherit_from_parent && (key === 'start_datetime' || key === 'end_datetime' || key === 'level_id' || key === 'state_obj'||key==="location_ids"))
             {
                 continue;
             }
@@ -275,11 +279,12 @@ export default function CreateEvent({isEdit, editData}) {
             <Box className="event-create-form-bg">
                 {!isEdit && (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) &&
                     <FormControlLabel control={<Switch name={"inherit_from_parent"} onChange={switchHandler}/>}
-                                      label="Inherit form parent"/>
+                                      label="Inherit from parent"/>
 
                 }
 
                 <TextField
+                    disabled={isEdit&&formFieldValue?.status?.toLowerCase()==='expired'}
                     id="event_title"
                     onChange={(event) => setFormField(event, "event_title")}
                     variant="outlined"
@@ -294,7 +299,7 @@ export default function CreateEvent({isEdit, editData}) {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <div className="d-flex justify-content-between">
                         <DateTimePicker
-                            disabled={formFieldValue?.inherit_from_parent}
+                            disabled={formFieldValue?.inherit_from_parent||(isEdit&&formFieldValue?.status?.toLowerCase()==='expired')}
                             ampm={false}
 
                             required={true}
@@ -333,7 +338,7 @@ export default function CreateEvent({isEdit, editData}) {
                 </LocalizationProvider>
                 <div>
                     <p>Upload Image/ Banner{' '}<span style={{color: "red"}}>*</span> :</p>
-                    <ImageCroper handleImage={handleImage} Initial_image={formFieldValue?.img} isEditable={isEdit}/>
+                    <ImageCroper handleImage={handleImage} Initial_image={formFieldValue?.img} isEditable={isEdit} eventStatus={formFieldValue?.status?.toLowerCase()}/>
                 </div>
 
                 <div className="levels">
@@ -445,7 +450,7 @@ export default function CreateEvent({isEdit, editData}) {
                     onClick={() => submit('save', id)}
                 > Save Event
                 </button>
-                {!formFieldValue?.has_sub_event &&
+                {(!formFieldValue?.has_sub_event&&formFieldValue?.status?.toLowerCase()!=='expired') &&
                     <button
                         disabled={isNextButtonDisabled()}
                         className="go-to-form-button"
