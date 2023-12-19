@@ -13,7 +13,14 @@ class Api::EventController < Api::ApplicationController
   end
 
   def states
-    states = Saral::Locatable::State.where(id: country_states_with_create_permission).select(:id, :name).order(:name)
+    if params[:parent_id].present?
+      state_id = Event.find(params[:parent_id]).state_id
+    end
+    if state_id.present?
+      states = Saral::Locatable::State.where(id: state_id).select(:id, :name).order(:name)
+    else
+      states = Saral::Locatable::State.where(id: country_states_with_create_permission).select(:id, :name).order(:name)
+    end
     render json: { success: true, data: states || [], message: "States list" }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
@@ -107,13 +114,15 @@ class Api::EventController < Api::ApplicationController
         event.name = params[:event_title]
         if new_record && inherit_from_parent
             event.data_level_id = parent_event.data_level_id
+            event.start_date = parent_event.start_date
+            event.end_date = parent_event.end_date
         elsif new_record
           event.data_level_id = params[:level_id]
           event.event_type = params[:event_type]
           event.has_sub_event = params[:has_sub_event]
+          event.start_date = params[:start_datetime].to_datetime
+          event.end_date = params[:end_datetime].to_datetime
         end
-        event.start_date = params[:start_datetime].to_datetime
-        event.end_date = params[:end_datetime].to_datetime
         event.created_by_id = current_user&.id
         event.parent_id = params[:parent_id] if params[:parent_id].present?
         if params[:event_type] == "csv_upload"
@@ -295,7 +304,7 @@ class Api::EventController < Api::ApplicationController
   def user_list_children
     begin
       event = Event.find_by_id(params[:id])
-      child_events = event.children.where.not(has_sub_event: false, published: false)
+      child_events = event.children.where.not(has_sub_event: false, published: false).order(start_date: :desc)
       is_child = !event.has_sub_event
       render json: { success: true,
                      data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, current_user: current_user),
