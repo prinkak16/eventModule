@@ -53,7 +53,6 @@ const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler,s
                     <div className="event-location-data">
                         <EllipsesComponent    text=
                                                   {data?.locations?.filter(Boolean)?.join(' , ')} /></div>
-
                 </Tooltip>
             </div>
             <div className="submission-image-group-container">
@@ -67,7 +66,7 @@ const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler,s
 
 
     </div>
-         
+          {event?.status?.name?.toLowerCase() === 'active'&&
     <div className="event-submission-card-action-icon">
       <div className="event-submission-card-action-icon-child" onClick={()=>
           eventEditHandler(data?.event_id, data?.submission_id)
@@ -79,7 +78,7 @@ const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler,s
 
       </div>
 
-              <div className="event-submission-card-action-icon-child" onClick={()=> {
+              <div className="event-submission-card-action-icon-child"  onClick={()=> {
                   setEventDeleteId(data?.id)
                   setShowConfirmationModal(true)
               }} >
@@ -92,6 +91,7 @@ const EventSubmissionCard = ({data,event,setIsLoading,index,deleteEventHandler,s
 
 
     </div>
+          }
 
   </div>
 )

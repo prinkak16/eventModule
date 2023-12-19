@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import "./createEvent.scss";
-import {Autocomplete, Box, FormControlLabel, Radio, RadioGroup, TextField,} from "@mui/material";
+import {Autocomplete, Box, FormControlLabel, Radio, RadioGroup, Switch, TextField,} from "@mui/material";
 import dayjs from "dayjs";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
@@ -41,8 +41,9 @@ export default function CreateEvent({isEdit, editData}) {
         img: "",
         crop_data: "",
         state_obj: [],
-        parent_id: !isEdit && id ? id : null,
+        parent_id: !isEdit && id ? id : null,           // here !isEdit is used because in case of edit {id} form useParams() will be id of that current event which we are editing
         has_sub_event: false,
+        inherit_from_parent: false,
     });
 
     const requiredField = ["start_datetime"];
@@ -147,6 +148,7 @@ export default function CreateEvent({isEdit, editData}) {
 
         formData.append("img", formFieldValue?.img ?? "");
         formData.append('has_sub_event', formFieldValue?.has_sub_event)
+        formData?.append('inherit_from_parent',formFieldValue?.inherit_from_parent);
         if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
             formData.append('parent_id', formFieldValue?.parent_id);
         }
@@ -215,6 +217,10 @@ export default function CreateEvent({isEdit, editData}) {
         }
     };
 
+    const switchHandler = (e) => {
+        setFormFieldValue((prevData) => ({...prevData, [e?.target?.name]: e?.target?.checked}))
+
+    }
 
     useEffect(() => {
         console.log("form value s", formFieldValue);
@@ -270,13 +276,15 @@ export default function CreateEvent({isEdit, editData}) {
     return (<div className="create-event-container">
         {loader ? <ReactLoader/> : (<></>)}
         <div className="container-adjust">
-            {/*  <div className="event-path">
-                <MyBreadcrumbs/>
-            </div>*/}
             <h3 className="font-weight-300">
                 {isEdit ? "Edit the Event" : "Create the Event"}
             </h3>
             <Box className="event-create-form-bg">
+                {!isEdit&&(formFieldValue?.parent_id!==null&&formFieldValue?.parent_id!==undefined)&&
+                <FormControlLabel control={<Switch name={"inherit_from_parent"} onChange={switchHandler}/>}
+                                  label="Inherit form parent"/>
+
+                }
 
                 <TextField
                     id="event_title"
@@ -293,6 +301,7 @@ export default function CreateEvent({isEdit, editData}) {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <div className="d-flex justify-content-between">
                         <DateTimePicker
+                            disabled={formFieldValue?.inherit_from_parent}
                             ampm={false}
 
                             required={true}
@@ -315,7 +324,7 @@ export default function CreateEvent({isEdit, editData}) {
                         <DateTimePicker
                             ampm={false}
 
-                            disabled={formFieldValue?.start_datetime === ""}
+                            disabled={formFieldValue?.start_datetime === "" || formFieldValue?.inherit_from_parent}
                             label={<span>
             End data & Time{' '}<span style={{color: 'red'}}>*</span>
                    </span>}
@@ -341,7 +350,7 @@ export default function CreateEvent({isEdit, editData}) {
                     {Array.isArray(dataLevels) && dataLevels.map((item, index) => (<button
                         className="level-button"
                         key={index}
-                        disabled={isEdit}
+                        disabled={isEdit || formFieldValue?.inherit_from_parent}
                         style={{
                             height: "40px",
                             width: "120px",
@@ -355,7 +364,7 @@ export default function CreateEvent({isEdit, editData}) {
                 </div>
 
                 <Autocomplete
-                    disabled={isEdit}
+                    disabled={isEdit || formFieldValue?.inherit_from_parent}
                     className="w-100"
                     multiple
                     value={formFieldValue?.state_obj}

@@ -85,6 +85,10 @@
         padding:10px 50px;
         border-radius: 10px;
       }
+      .report-event-button[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     }
 
 }
@@ -173,6 +177,11 @@
           border-radius: 10px;
           width: 100%;
         }
+
+      }
+      .report-button-container[disabled]{
+        opacity: 0.5;
+        cursor: not-allowed;
       }
 
     }
