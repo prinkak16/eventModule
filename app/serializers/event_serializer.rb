@@ -41,10 +41,18 @@ class EventSerializer < ActiveModel::Serializer
   end
 
   def create_form_url
-    "#{ENV['FORM_CREATE_URL']}?authToken=#{ENV['AUTH_TOKEN_FOR_REDIRECTION']}&formToken=#{token}"
+    if object.has_sub_event
+      ""
+    else
+      "#{ENV['FORM_CREATE_URL']}?authToken=#{ENV['AUTH_TOKEN_FOR_REDIRECTION']}&formToken=#{token}"
     end
+  end
   def preview_url
-    "#{ENV['FORM_CREATE_URL']}/preview?authToken=#{ENV['AUTH_TOKEN_FOR_REDIRECTION']}&formToken=#{token}&hn=1"
+    if object.has_sub_event
+      ""
+    else
+      "#{ENV['FORM_CREATE_URL']}/preview?authToken=#{ENV['AUTH_TOKEN_FOR_REDIRECTION']}&formToken=#{token}&hn=1"
+    end
   end
 
   def token
