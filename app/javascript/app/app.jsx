@@ -44,7 +44,11 @@ function    App() {
       <ToastContainer theme="colored"
                       hideProgressBar={true}
                       autoClose={3000}
-                      
+                      closeOnClick
+                      pauseOnHover
+
+
+
       />
     </div>
   );

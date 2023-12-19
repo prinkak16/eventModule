@@ -155,7 +155,7 @@ export default function CreateEvent({isEdit, editData}) {
         try {
             const response = await createEvent(formData, {event_id: id});
             const eventId = response?.data?.event?.id;
-            if (response.data.success) {
+            if (response?.data?.success) {
                 setLoader(false);
                 if (type === 'create' || type === 'save') {
                     toast.success(`Event ${type}d successfully`);
@@ -165,13 +165,11 @@ export default function CreateEvent({isEdit, editData}) {
                 }
             } else {
                 setLoader(false);
-                toast.error(response.data.message);
+                toast.error(response?.data?.message);
             }
 
         } catch (error) {
-
-            toast.error(error);
-
+            toast.error(error?.message);
         }
 
         setLoader(false);
