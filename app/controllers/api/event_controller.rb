@@ -14,7 +14,7 @@ class Api::EventController < Api::ApplicationController
 
   def states
     if params[:parent_id].present?
-      state_id = Event.find(params[:parent_id]).state_id
+      state_id = EventLocation.where(event_id: params[:parent_id], location_type: "Saral::Locatable::State").pluck(:location_id)
     end
     if state_id.present?
       states = Saral::Locatable::State.where(id: state_id).select(:id, :name).order(:name)
