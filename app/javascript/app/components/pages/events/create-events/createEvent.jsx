@@ -107,7 +107,7 @@ export default function CreateEvent({isEdit, editData}) {
     }
     const getAllData = async () => {
         try {
-            const {data} = await getStates();
+            const {data} = await getStates({id});
             if (data?.success) {
                 setCountryStates(data?.data ?? []);
             }
@@ -148,7 +148,7 @@ export default function CreateEvent({isEdit, editData}) {
 
         formData.append("img", formFieldValue?.img ?? "");
         formData.append('has_sub_event', formFieldValue?.has_sub_event)
-        formData?.append('inherit_from_parent',formFieldValue?.inherit_from_parent);
+        formData?.append('inherit_from_parent', formFieldValue?.inherit_from_parent);
         if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
             formData.append('parent_id', formFieldValue?.parent_id);
         }
@@ -195,15 +195,6 @@ export default function CreateEvent({isEdit, editData}) {
 
 
     const submit = (type, id) => {
-        for (let i = 0; i < requiredField.length; i++) {
-            const item = formFieldValue[requiredField[i]];
-            if (!item) {
-                toast.error(`Please enter ${requiredField[i]}`, {
-                    autoClose: 2000,
-                });
-                return;
-            }
-        }
         CreateEvents(type, id);
     };
 
@@ -251,13 +242,17 @@ export default function CreateEvent({isEdit, editData}) {
     const isNextButtonDisabled = () => {
 
         for (let key in formFieldValue) {
-            if (isEdit && key === "crop_data") {
+            if (formFieldValue?.inherit_from_parent && (key === 'start_datetime' || key === 'end_datetime' || key === 'level_id' || key === 'state_obj'||key==="location_ids"))
+            {
                 continue;
             }
-            if (key === 'parent_id' && formFieldValue[key] === null) {
+            else if (isEdit && key === "crop_data") {
+                    continue;
+                }
+            else if (key === 'parent_id' && formFieldValue[key] === null) {
                 continue;
             }
-            if (key === 'location_ids' || key === 'state_obj') {
+           else if (key === 'location_ids' || key === 'state_obj') {
                 if (formFieldValue[key].length === 0) {
                     return true;
                 }
@@ -280,9 +275,9 @@ export default function CreateEvent({isEdit, editData}) {
                 {isEdit ? "Edit the Event" : "Create the Event"}
             </h3>
             <Box className="event-create-form-bg">
-                {!isEdit&&(formFieldValue?.parent_id!==null&&formFieldValue?.parent_id!==undefined)&&
-                <FormControlLabel control={<Switch name={"inherit_from_parent"} onChange={switchHandler}/>}
-                                  label="Inherit form parent"/>
+                {!isEdit && (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) &&
+                    <FormControlLabel control={<Switch name={"inherit_from_parent"} onChange={switchHandler}/>}
+                                      label="Inherit form parent"/>
 
                 }
 
