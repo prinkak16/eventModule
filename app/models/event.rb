@@ -30,4 +30,8 @@ class Event < ApplicationRecord
     end
   end
 
+  def get_state_ids
+    self.event_locations.where(location_type: "Saral::Locatable::State").pluck(:location_id)
+  end
+
 end
