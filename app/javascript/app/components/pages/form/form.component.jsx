@@ -54,33 +54,34 @@ const FormComponent = () => {
 
       } else {
         setLoader(false)
-        toast.error(`Please enter ${data.message}`, {
-          position: "top-center",
-          autoClose: 2000,
-          theme: "colored",
-        });
+        toast.error(`Failed to get event list`);
       }
     } catch (error) {
       setLoader(false)
-      toast.error("Failed to get event list", { autoClose: 2000 });
+      toast.error("Failed to get event list");
     }
     setIsEventChanged(false)
 
   }
 
+
+  const handlePageChange = (e, newPage) => {
+    setPage(newPage);
+  };
+
+
   useEffect(() => {
     getEventsList();
   }, [page]);
 
+  //useEffect related to context api
   useEffect(() => {
     setEventName(null);
     setIsSubmissionPage(false);
   }, []);
  
-  const handlePageChange = (e, newPage) => {
-    setPage(newPage);
-  };
 
+  //debouncing for search filter
   useEffect(() => {
     let timer;
     timer = setTimeout(() => {

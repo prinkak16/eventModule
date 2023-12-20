@@ -8,6 +8,7 @@ import {
     LocationIcon,
     PrimaryEventIcon
 } from "../../../../../../assests/svg";
+import {motion} from 'framer-motion'
 import moment from "moment";
 import {ImageNotFound} from "../../../../../../assests/png"
 import {useNavigate} from "react-router";
@@ -69,6 +70,11 @@ const EventChildCard = ({event}) => {
 
     }
 
+    const zoomVariants = {
+        initial: {scale: 1},
+        hover: {scale: 1.02},
+    };
+
     useEffect(() => {
         if (showChildrenEvents && childrenEvents?.length === 0) {
             getAllSubEvents();
@@ -76,6 +82,7 @@ const EventChildCard = ({event}) => {
 
     }, [showChildrenEvents]);
     return (
+
         <div style={{marginLeft: "36px"}}>
             <div style={{display: "flex"}}>
                 {event?.event_level?.toLowerCase() !== 'leaf' &&
@@ -87,7 +94,7 @@ const EventChildCard = ({event}) => {
                 <div
                     className="event-details-child-list-card"
                     onClick={() => submissionHandler(event?.id, event?.event_level)}
-                    style={{marginLeft:event?.event_level?.toLowerCase() !== 'leaf'?"0px":"40px"}}
+                    style={{marginLeft: event?.event_level?.toLowerCase() !== 'leaf' ? "0px" : "40px"}}
                 >
                     <div className="event-details-list-first-part">
                         <img
@@ -145,13 +152,15 @@ const EventChildCard = ({event}) => {
                         <div>{RenderEventIcon(event?.event_level)}</div>
 
                     </div>
+
                 </div>
             </div>
             <div>
                 {isLoading ? <Box className={"sub-event-loader"}>
                         <CircularProgress/>
                     </Box>
-                    : (showChildrenEvents && childrenEvents?.length === 0) ? <span className={"no-event-found"}>No sub event found</span> :
+                    : (showChildrenEvents && childrenEvents?.length === 0) ?
+                        <span className={"no-event-found"}>No sub event found</span> :
                         (showChildrenEvents && childrenEvents?.length > 0) ?
                             <div className={"sub-events-container"}> {childrenEvents?.map((item, index) =>
                                 <EventChildCard key={index} event={item}/>)} </div> : <></>

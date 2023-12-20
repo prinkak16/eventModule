@@ -4,20 +4,29 @@ import { CalenderIcon, ClockIcon, LocationIcon } from "../../../assests/svg";
 import moment from "moment";
 import { ImageNotFound} from "../../../assests/png"
 import { useNavigate } from "react-router";
+import {motion} from 'framer-motion'
 
 
 
 const FormEventCard = ({ event }) => {
+
+  const zoomVariants = {
+    initial: { scale: 1 },
+    hover: { scale: 1.02 },
+  };
 
   const navigate = useNavigate();
   const submissionHandler = (event_id) => {
       navigate(`/forms/${event_id}`);
   };
   return (
-    <div
-      className="form-list-card"
-      onClick={() => submissionHandler(event?.id)}
-    >
+      <motion.div
+          variants={zoomVariants}
+          initial="initial"
+          whileHover="hover"
+          className="form-list-card"
+          onClick={() => submissionHandler(event?.id)}
+   >
       <div className="form-list-fir ">
         <img
           className="form-photo"
@@ -72,7 +81,7 @@ const FormEventCard = ({ event }) => {
           <span>{event?.status?.name}</span>
         </div>
       </div>
-    </div>
+      </motion.div>
   );
 };
 
