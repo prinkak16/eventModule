@@ -100,36 +100,23 @@ class Api::EventController < Api::ApplicationController
           location_ids = EventLocation.where(event_id: params[:parent_id], location_type: "Saral::Locatable::State").pluck(:location_id)
           locations = Saral::Locatable::State.where(id: location_ids)
         end
-
         if params[:img].present? && !valid_url(params[:img])
           event.image_url = nil
           event.image = params[:img]
-
           cropped_image = ImageProcessing::MiniMagick.crop(params[:crop_data]).call(MiniMagick::Image.open(params[:img]))
           file_name = params[:img].original_filename
           event.image.attach(io: File.open(cropped_image), filename: file_name)
         end
-        event.name = params[:event_title]
         if new_record
-          event.data_level_id = inherit_from_parent.present? ? parent_event.data_level_id : params[:level_id]
-        if new_record && inherit_from_parent
-            event.data_level_id = parent_event.data_level_id
-            event.start_date = parent_event.start_date
-            event.end_date = parent_event.end_date
-        elsif new_record
-          event.data_level_id = params[:level_id]
-          event.event_type = params[:event_type]
+          event.data_level_id = (parent_event.present? && inherit_from_parent) ? parent_event.data_level_id : params[:level_id]
+          event.event_type = (parent_event.present? && inherit_from_parent) ? parent_event.event_type : params[:event_type]
           event.has_sub_event = params[:has_sub_event]
-          event.parent_ id = params[:parent_id] if params[:parent_id].present?
+          event.parent_id = params[:parent_id] if params[:parent_id].present?
         end
-        event.end_date = inherit_from_parent.present? ? parent_event.end_date : params[:end_datetime].to_datetime
-        event.start_date = inherit_from_parent.present? ? parent_event.start_date : params[:start_datetime].to_datetime
+        event.name = params[:event_title]
+        event.start_date = (parent_event.present? && inherit_from_parent) ? parent_event.start_date : params[:start_datetime].to_datetime
+        event.end_date = (parent_event.present? && inherit_from_parent) ? parent_event.end_date : params[:end_datetime].to_datetime
         event.created_by_id = current_user&.id
-          event.start_date = params[:start_datetime].to_datetime
-          event.end_date = params[:end_datetime].to_datetime
-        end
-        event.created_by_id = current_user&.id
-        event.parent_id = params[:parent_id] if params[:parent_id].present?
         if params[:event_type] == "csv_upload"
           if inherit_from_parent
             event.csv_file.attach(parent_event.csv_file.blob)
