@@ -369,7 +369,7 @@ export default function CreateEvent({isEdit, editData}) {
                             className="w-49"
                             value={ formFieldValue?.inherit_from_parent? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
                             minDateTime={dayjs(formFieldValue?.start_datetime)}
-                            maxDateTime={formFieldValue?.parent_id? dayjs(parentEventDetails?.end_datetime):null}
+                            maxDateTime={(formFieldValue?.parent_id ||)? dayjs(parentEventDetails?.end_datetime):null}
                             onChange={(event) => {
 
                                 setFormField(event, "end_datetime");
