@@ -45,33 +45,73 @@ export default function CreateEvent({isEdit, editData}) {
         inherit_from_parent: false,
         status:""
     });
+    const [parentEventDetails,setParentEventDetails]=useState({
+        start_datetime:"",
+        end_datetime:"",
+        level_id: "",
+        location_ids: [],
+        state_obj: [],
+        
+    })
 
     const requiredField = ["start_datetime"];
+
 
     useEffect(() => {
         if (isEdit) {
             (async () => {
-                const {data} = await getEventById(id);
-                if (data?.success) {
-                    setImage(data?.data[0]?.image_url),
+                try {
+                    const {data} = await getEventById(id);
+                    if (data?.success) {
+                        setImage(data?.data[0]?.image_url),
 
-                        setFormFieldValue((prevData) => ({
+                            setFormFieldValue((prevData) => ({
+                                ...prevData,
+                                event_id: data?.data[0]?.id,
+                                event_title: data?.data[0]?.name,
+                                img: data?.data[0]?.image_url,
+                                start_datetime: data?.data[0]?.start_date,
+                                end_datetime: data?.data[0]?.end_date,
+                                level_id: data?.data[0]?.data_level_id,
+                                event_type: data?.data[0]?.event_type,
+                                location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
+                                state_obj: data?.data[0]?.state_ids ?? [],
+                                has_sub_event: data?.data[0]?.has_sub_event,
+                                status: data?.data[0]?.status?.name??"",
+                            }))
+                    }else{
+                        toast?.error('Faild to get event details')
+                    }
+                } catch (e) {
+                     toast.error(e?.message);
+                }
+
+            })();
+        }
+            (async()=>{
+                try {
+                    const {data} = await getEventById(id);
+                    if(data?.success){
+                        setParentEventDetails((prevData) => ({
                             ...prevData,
-                            event_id: data?.data[0]?.id,
-                            event_title: data?.data[0]?.name,
-                            img: data?.data[0]?.image_url,
                             start_datetime: data?.data[0]?.start_date,
                             end_datetime: data?.data[0]?.end_date,
                             level_id: data?.data[0]?.data_level_id,
-                            event_type: data?.data[0]?.event_type,
                             location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
                             state_obj: data?.data[0]?.state_ids ?? [],
-                            has_sub_event: data?.data[0]?.has_sub_event,
-                            status: data?.data[0]?.status?.name??"",
                         }))
+                    }else{
+                        toast?.error('Failed to get parent event details')
+                    }
+
+                } catch (e) {
+                    toast.error(e?.message);
+
                 }
             })();
-        }
+
+
+
         getAllData();
 
         return () => {
@@ -98,7 +138,6 @@ export default function CreateEvent({isEdit, editData}) {
 
 
     const handleImage = (finalImageAfterCropping) => {
-        console.log('final image afeter cropping ', finalImageAfterCropping);
         setFormFieldValue((prevData) => ({
             ...prevData,
             img: finalImageAfterCropping[0]?.un_cropped_file,
@@ -108,7 +147,7 @@ export default function CreateEvent({isEdit, editData}) {
     }
     const getAllData = async () => {
         try {
-            const {data} = await getStates({id});
+            const {data} = await getStates({parent_id:id});
             if (data?.success) {
                 setCountryStates(data?.data ?? []);
             }
@@ -120,10 +159,10 @@ export default function CreateEvent({isEdit, editData}) {
         try {
             const dataLevelResponse = await getDataLevels();
             if (dataLevelResponse?.data?.success) {
-                if (dataLevelResponse?.data?.data?.length > 1 && !isEdit) {
+             /*   if (dataLevelResponse?.data?.data?.length > 1 && !isEdit ) {
                     const defaultId = dataLevelResponse?.data?.data[0]?.id;
                     setFormFieldValue((prevData) => ({...prevData, level_id: defaultId}))
-                }
+                }*/
 
                 setDataLevels(dataLevelResponse?.data?.data);
 
@@ -308,8 +347,9 @@ export default function CreateEvent({isEdit, editData}) {
                                 <span style={{color: 'red'}}>*</span>
             </span>}
                             className="w-49"
-                            minDateTime={dayjs(new Date()).subtract(5, 'minute')}
-                            value={formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
+                            minDateTime={formFieldValue?.parent_id? dayjs(parentEventDetails?.start_datetime) : dayjs(new Date()).subtract(5, 'minute')}
+                            value={ formFieldValue?.inherit_from_parent? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
+                            maxDateTime={dayjs(parentEventDetails?.end_datetime)}
                             onChange={(event) => {
                                 setFormField(event, "start_datetime");
                                 if (formFieldValue.end_datetime) {
@@ -327,8 +367,9 @@ export default function CreateEvent({isEdit, editData}) {
             End data & Time{' '}<span style={{color: 'red'}}>*</span>
                    </span>}
                             className="w-49"
-                            value={formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
+                            value={ formFieldValue?.inherit_from_parent? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
                             minDateTime={dayjs(formFieldValue?.start_datetime)}
+                            maxDateTime={(formFieldValue?.parent_id ||)? dayjs(parentEventDetails?.end_datetime):null}
                             onChange={(event) => {
 
                                 setFormField(event, "end_datetime");
@@ -352,8 +393,8 @@ export default function CreateEvent({isEdit, editData}) {
                         style={{
                             height: "40px",
                             width: "120px",
-                            background: item?.id === formFieldValue?.level_id ? "#163560" : "",
-                            color: item?.id === formFieldValue?.level_id ? "white" : "black",
+                            background:( (formFieldValue?.inherit_from_parent && item?.id=== parentEventDetails?.level_id) || item?.id === formFieldValue?.level_id) ? "#163560" : "",
+                            color: ( (formFieldValue?.inherit_from_parent && item?.id=== parentEventDetails?.level_id) || item?.id === formFieldValue?.level_id) ? "white" : "black",
                         }}
                         onClick={() => setFormFieldValue((prevData) => {
                             return {...prevData, level_id: item?.id};
@@ -365,7 +406,7 @@ export default function CreateEvent({isEdit, editData}) {
                     disabled={isEdit || formFieldValue?.inherit_from_parent}
                     className="w-100"
                     multiple
-                    value={formFieldValue?.state_obj}
+                    value={formFieldValue?.inherit_from_parent? parentEventDetails?.state_obj :formFieldValue?.state_obj}
                     options={countryStates}
                     getOptionLabel={(option) => option.name || ""}
                     onChange={handleStateChange}

@@ -32,6 +32,11 @@ function    App() {
     }
   };
 
+
+  const customToastStyle = {
+    minWidth:"40%",
+    maxWidth:"100%",
+  };
   useEffect(() => {
     toggleNavbar();
   }, [pathname]);
@@ -46,9 +51,7 @@ function    App() {
                       autoClose={3000}
                       closeOnClick
                       pauseOnHover
-
-
-
+                      style={customToastStyle}
       />
     </div>
   );

@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from "react";
 import "./event-details-card.scss";
+import { motion } from "framer-motion";
+
 import {
     CalenderIcon,
     ClockIcon,
@@ -48,13 +50,22 @@ const EventDetailsCard = ({event}) => {
     }
 
 
-    return (
-        <div>
+        const zoomVariants = {
+            initial: { scale: 1 },
+            hover: { scale: 1.02 },
+        };
 
-                <div
-                    className="event-details-list-card"
-                    onClick={() => submissionHandler(event?.id, event?.status?.name?.toLowerCase())}
-                >
+
+    return (
+
+        <motion.div
+            variants={zoomVariants}
+            initial="initial"
+            whileHover="hover"
+            className="event-details-list-card"
+            onClick={() => submissionHandler(event?.id, event?.status?.name?.toLowerCase())}
+        >
+                
                     <div className="event-details-list-first-part">
                         <img
                             className="event-photo"
@@ -111,10 +122,10 @@ const EventDetailsCard = ({event}) => {
                         <div>{RenderEventIcon(event?.event_level)}</div>
 
                     </div>
-                </div>
+        </motion.div>
 
-</div>
-)
+
+    )
 
 };
 
