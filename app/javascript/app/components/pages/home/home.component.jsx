@@ -59,7 +59,7 @@ const HomeComponent = () => {
         level_id: {name: "", id: "", level_class: ""},
         state_id: {name: "", id: ""},
         event_status_id: {name: "", id: ""},
-        event_level:{name:"",id:"1"},
+        event_level:{name:"Parent",id:"1"},
     });
     
     
@@ -132,7 +132,6 @@ const HomeComponent = () => {
         const dateValue = date?.$d;
         if (key === 'endDate') {
             if (filtersFieldValue?.startDate === "" || filtersFieldValue?.startDate === null || filtersFieldValue?.startDate === undefined) {
-                console.log('come inside here')
                 setFiltersFieldValue({...filtersFieldValue, startDate: dateValue, [key]: dateValue});
 
             } else if (new Date(dateValue) < new Date(filtersFieldValue?.startDate)) {
@@ -171,9 +170,9 @@ const HomeComponent = () => {
 
     async function getEventsList() {
         setLoader(true);
-        const params = `search_query=${eventName ?? ""}&start_date=${filtersFieldValue?.startDate !== null && filtersFieldValue?.startDate !== undefined && filtersFieldValue?.startDate !== "" ? moment(filtersFieldValue.startDate).format('DD/MM/YYYY') : ""
+        const params = `search_query=${eventName ?? ""}&start_date=${filtersFieldValue?.startDate !== null && filtersFieldValue?.startDate !== undefined && filtersFieldValue?.startDate !== "" ? filtersFieldValue.startDate : ""
 
-        }&end_date=${filtersFieldValue?.endDate !== null && filtersFieldValue?.endDate !== undefined && filtersFieldValue?.endDate !== "" ? moment(filtersFieldValue.endDate).format('DD/MM/YYYY') : ""
+        }&end_date=${filtersFieldValue?.endDate !== null && filtersFieldValue?.endDate !== undefined && filtersFieldValue?.endDate !== "" ? filtersFieldValue.endDate : ""
 
         }&level_id=${filtersFieldValue.level_id?.id ?? ""}&state_id=${filtersFieldValue.state_id?.id ?? ""}&event_status=${filtersFieldValue.event_status_id?.name ?? ""}&event_level=${filtersFieldValue?.event_level?.name??""}&limit=${itemsPerPage}&offset=${itemsPerPage * (page - 1)}`;
         try {
@@ -368,7 +367,7 @@ const HomeComponent = () => {
                       </span>
                                 </div>
                                 <div className={`${event.status.class_name} active-button`}>
-                                    <span>{event.status.name}</span>
+                                    <span>{<event className="s"></event>tatus.name}</span>
                                 </div>
                                 <div>
                                     {RenderEventIcon(event?.event_level)}
@@ -531,7 +530,7 @@ const HomeComponent = () => {
                     getOptionLabel={(option) => option?.name}
                     value={filtersFieldValue?.event_level}
                     onChange={(e, newVal) => handleAutoComplete(e, newVal, "event_level")}
-                    renderInput={(params) => <TextField {...params} label="Select Event Level"
+                    renderInput={(params) => <TextField {...params} label="Select Event Hierarchy"
                                                         variant="outlined"/>}
                 />
                 <div className="filters-buttons">
