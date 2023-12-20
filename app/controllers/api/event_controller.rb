@@ -157,7 +157,6 @@ class Api::EventController < Api::ApplicationController
     date = DateTime.now
     events = Event.where("end_date >= ?", date).where("start_date <= ?", date).where(published: true)
     events = events.joins(:event_locations).where(event_locations: { state_id: current_user.sso_payload["country_state_id"] })
-    events = events.joins(:event_locations).where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
     total = events.count
     events = events.order(created_at: :desc).limit(limit).offset(offset)
