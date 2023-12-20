@@ -3,11 +3,9 @@ import {UploadIcon,CrossIcon} from '../../../assests/svg/index'
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import './image-cropper.scss'
+import {IconButton} from "@mui/material";
     const ImageCropper = ({handleImage,Initial_image, isEditable=false
-                          , isCard=false}) => {
-/*
-    console.log("Initial image is on the top ",Initial_image)
-*/
+                          , isCard=false,eventStatus}) => {
 
     const [finalImageFile, setFinalImageFile] = useState([])
     const [showInitialImage,setShowInitialImage]=useState(isEditable);
@@ -101,23 +99,29 @@ import './image-cropper.scss'
                     (Array.isArray(finalImageFile) && finalImageFile.length>0) ?
                         finalImageFile.map((image, index) => {
                             return (<div key={index} className="add-post-images-preview">
-                                <CrossIcon onClick={() => handleImagesClose(index)} className="cross-icon"/>
+                                <IconButton disabled={eventStatus==='expired'} className="cross-icon">
+                                    <CrossIcon onClick={() => handleImagesClose(index)}  disabled={true}/>
+
+                                </IconButton>
                                 <img
                                     src={URL.createObjectURL(image.file)}
                                     style={{objectFit: "contain"}}
-                                    alt="preview-image"
+                                    alt="Loading..."
                                     className={"view-image"}
                                 />
                             </div>)
                         }) :
                         showInitialImage?<div  className="add-post-images-preview">
-                    <CrossIcon onClick={() => {
-                        setShowInitialImage(false)
-                        setFinalImageFile   ([])
-                    }} className="cross-icon"/>
+                            <IconButton disabled={eventStatus==='expired'} className="cross-icon">
+                                <CrossIcon onClick={() => {
+                                    setShowInitialImage(false)
+                                    setFinalImageFile   ([])
+                                }} />
+                            </IconButton>
+
             <img
                 src={Initial_image} style={{objectFit: "contain"}}
-                alt="preview-image"
+                alt="Loading..."
                 className={"view-image"}
             />
         </div>:<></>

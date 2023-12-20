@@ -20,7 +20,6 @@ const FormDetails=()=>{
         try {
             const {data}=await  ApiClient.get(`event/user_children`,{params:{id}});
             if(data?.success){
-                console.log('child of event and its data',data);
                 setParentEvent(data?.data);
                 setChildrenEvents(data?.child_data);
                 window.scrollTo({top: 0});
@@ -37,10 +36,7 @@ const FormDetails=()=>{
         setIsLoading(false);
     }
 
-    useEffect(() => {
-        console.log('parent event is ',parentEvent);
-    }, [parentEvent]);
-
+  
     useEffect(() => {
                getEventAndEventChildren();
     }, [id]);

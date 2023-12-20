@@ -25,10 +25,9 @@ const EventDetailsCard = ({event}) => {
 
     const navigate = useNavigate();
    
-    const submissionHandler = (event_id, event_level) => {
+    const submissionHandler = (event_id,event_status) => {
             if (String(id) === String(event_id)) {
-                navigate(`/events/edit/${event_id}`);
-
+                    navigate(`/events/edit/${event_id}`);
             } else {
                 navigate(`/events/${event_id}`);
             }
@@ -54,7 +53,7 @@ const EventDetailsCard = ({event}) => {
 
                 <div
                     className="event-details-list-card"
-                    onClick={() => submissionHandler(event?.id, event?.event_level)}
+                    onClick={() => submissionHandler(event?.id, event?.status?.name?.toLowerCase())}
                 >
                     <div className="event-details-list-first-part">
                         <img

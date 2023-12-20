@@ -61,6 +61,8 @@ const HomeComponent = () => {
         event_status_id: {name: "", id: ""},
         event_level:{name:"Parent",id:"1"},
     });
+    
+    
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [confirmationStatus, setConfirmationStatus] = useState(false);
     const [eventDeleteId, setEventDeleteId] = useState(-1);
@@ -161,7 +163,7 @@ const HomeComponent = () => {
         }
         setFiltersFieldValue({
             date: "", level_id: {id: "", name: ""}, state_id: {id: "", name: ""}, event_status_id: {id: "", name: ""},
-            event_level:{id:1,name:"Parent"}
+            event_level:{id:1,name:""}
         });
         setEventName("");
         setClearFilter(!clearFilter);
@@ -169,9 +171,9 @@ const HomeComponent = () => {
 
     async function getEventsList() {
         setLoader(true);
-        const params = `search_query=${eventName ?? ""}&start_date=${filtersFieldValue?.startDate !== null && filtersFieldValue?.startDate !== undefined && filtersFieldValue?.startDate !== "" ? moment(filtersFieldValue.startDate).format('DD/MM/YYYY') : ""
+        const params = `search_query=${eventName ?? ""}&start_date=${filtersFieldValue?.startDate !== null && filtersFieldValue?.startDate !== undefined && filtersFieldValue?.startDate !== "" ? filtersFieldValue.startDate : ""
 
-        }&end_date=${filtersFieldValue?.endDate !== null && filtersFieldValue?.endDate !== undefined && filtersFieldValue?.endDate !== "" ? moment(filtersFieldValue.endDate).format('DD/MM/YYYY') : ""
+        }&end_date=${filtersFieldValue?.endDate !== null && filtersFieldValue?.endDate !== undefined && filtersFieldValue?.endDate !== "" ? filtersFieldValue.endDate : ""
 
         }&level_id=${filtersFieldValue.level_id?.id ?? ""}&state_id=${filtersFieldValue.state_id?.id ?? ""}&event_status=${filtersFieldValue.event_status_id?.name ?? ""}&event_level=${filtersFieldValue?.event_level?.name??""}&limit=${itemsPerPage}&offset=${itemsPerPage * (page - 1)}`;
         try {
@@ -529,7 +531,7 @@ const HomeComponent = () => {
                     getOptionLabel={(option) => option?.name}
                     value={filtersFieldValue?.event_level}
                     onChange={(e, newVal) => handleAutoComplete(e, newVal, "event_level")}
-                    renderInput={(params) => <TextField {...params} label="Select Event Level"
+                    renderInput={(params) => <TextField {...params} label="Select Event Hierarchy"
                                                         variant="outlined"/>}
                 />
                 <div className="filters-buttons">

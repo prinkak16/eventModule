@@ -189,6 +189,11 @@
         justify-content: center;
         align-items: center;
       }
+      .event-submission-card-action-icon-child[disabled]{
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
     }
 
   }

@@ -4,7 +4,7 @@ import { ApiClient } from "../RestServices/BaseRestServices";
  */
 
 export const getStates = (queryParams) => {
-  return ApiClient.get("/event/states", { params: queryParams });
+  return ApiClient.get("/event/states", { params: queryParams??{} });
 };
 
 /**

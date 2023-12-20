@@ -94,10 +94,11 @@ class Api::EventController < Api::ApplicationController
           event = Event.new
         end
         new_record = event.new_record?
-        inherit_from_parent = params[:inherit_from_parent]
+        inherit_from_parent = params[:inherit_from_parent].downcase == "true" ? true : false
         if params[:parent_id].present? && inherit_from_parent
           parent_event = Event.find_by_id(params[:parent_id])
-          locations = parent_event.event_locations
+          location_ids = EventLocation.where(event_id: params[:parent_id], location_type: "Saral::Locatable::State").pluck(:location_id)
+          locations = Saral::Locatable::State.where(id: location_ids)
         end
 
         if params[:img].present? && !valid_url(params[:img])
@@ -109,6 +110,8 @@ class Api::EventController < Api::ApplicationController
           event.image.attach(io: File.open(cropped_image), filename: file_name)
         end
         event.name = params[:event_title]
+        if new_record
+          event.data_level_id = inherit_from_parent.present? ? parent_event.data_level_id : params[:level_id]
         if new_record && inherit_from_parent
             event.data_level_id = parent_event.data_level_id
             event.start_date = parent_event.start_date
@@ -117,6 +120,11 @@ class Api::EventController < Api::ApplicationController
           event.data_level_id = params[:level_id]
           event.event_type = params[:event_type]
           event.has_sub_event = params[:has_sub_event]
+          event.parent_ id = params[:parent_id] if params[:parent_id].present?
+        end
+        event.end_date = inherit_from_parent.present? ? parent_event.end_date : params[:end_datetime].to_datetime
+        event.start_date = inherit_from_parent.present? ? parent_event.start_date : params[:start_datetime].to_datetime
+        event.created_by_id = current_user&.id
           event.start_date = params[:start_datetime].to_datetime
           event.end_date = params[:end_datetime].to_datetime
         end
