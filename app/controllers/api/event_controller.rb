@@ -111,11 +111,11 @@ class Api::EventController < Api::ApplicationController
           event.data_level_id = (parent_event.present? && inherit_from_parent) ? parent_event.data_level_id : params[:level_id]
           event.event_type = (parent_event.present? && inherit_from_parent) ? parent_event.event_type : params[:event_type]
           event.has_sub_event = params[:has_sub_event]
-          event.parent_id = parent_event.id if parent_event.present?
+          event.parent_id = params[:parent_id] if params[:parent_id].present?
         end
         event.name = params[:event_title]
-        event.start_date = (parent_event.present? && inherit_from_parent) ? parent_event.start_date : params[:start_date].to_datetime
-        event.end_date = (parent_event.present? && inherit_from_parent) ? parent_event.end_date : params[:end_date].to_datetime
+        event.start_date = (parent_event.present? && inherit_from_parent) ? parent_event.start_date : params[:start_datetime].to_datetime
+        event.end_date = (parent_event.present? && inherit_from_parent) ? parent_event.end_date : params[:end_datetime].to_datetime
         event.created_by_id = current_user&.id
         if params[:event_type] == "csv_upload"
           if inherit_from_parent
