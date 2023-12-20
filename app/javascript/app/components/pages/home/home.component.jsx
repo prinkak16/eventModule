@@ -132,6 +132,7 @@ const HomeComponent = () => {
         const dateValue = date?.$d;
         if (key === 'endDate') {
             if (filtersFieldValue?.startDate === "" || filtersFieldValue?.startDate === null || filtersFieldValue?.startDate === undefined) {
+                console.log('come inside here')
                 setFiltersFieldValue({...filtersFieldValue, startDate: dateValue, [key]: dateValue});
 
             } else if (new Date(dateValue) < new Date(filtersFieldValue?.startDate)) {
@@ -367,7 +368,7 @@ const HomeComponent = () => {
                       </span>
                                 </div>
                                 <div className={`${event.status.class_name} active-button`}>
-                                    <span>{<event className="s"></event>tatus.name}</span>
+                                    <span>{event.status.name}</span>
                                 </div>
                                 <div>
                                     {RenderEventIcon(event?.event_level)}
