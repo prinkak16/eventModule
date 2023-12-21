@@ -46,8 +46,8 @@ export default function CreateEvent({isEdit, editData}) {
         status:""
     });
     const [parentEventDetails,setParentEventDetails]=useState({
-        start_datetime:"",
-        end_datetime:"",
+        start_datetime:null,
+        end_datetime:null,
         level_id: "",
         location_ids: [],
         state_obj: [],
@@ -88,10 +88,11 @@ export default function CreateEvent({isEdit, editData}) {
 
             })();
         }
-            (async()=>{
+        if(!isEdit) {
+            (async () => {
                 try {
                     const {data} = await getEventById(id);
-                    if(data?.success){
+                    if (data?.success) {
                         setParentEventDetails((prevData) => ({
                             ...prevData,
                             start_datetime: data?.data[0]?.start_date,
@@ -100,7 +101,7 @@ export default function CreateEvent({isEdit, editData}) {
                             location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
                             state_obj: data?.data[0]?.state_ids ?? [],
                         }))
-                    }else{
+                    } else {
                         toast?.error('Failed to get parent event details')
                     }
 
@@ -109,6 +110,8 @@ export default function CreateEvent({isEdit, editData}) {
 
                 }
             })();
+
+        }
 
 
 
@@ -347,9 +350,9 @@ export default function CreateEvent({isEdit, editData}) {
                                 <span style={{color: 'red'}}>*</span>
             </span>}
                             className="w-49"
-                            minDateTime={formFieldValue?.parent_id? dayjs(parentEventDetails?.start_datetime) : dayjs(new Date()).subtract(5, 'minute')}
+                            minDateTime={formFieldValue?.parent_id ? dayjs(parentEventDetails?.start_datetime) : dayjs(new Date()).subtract(5, 'minute')}
                             value={ formFieldValue?.inherit_from_parent? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
-                            maxDateTime={dayjs(parentEventDetails?.end_datetime)}
+                            maxDateTime={parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime):null}
                             onChange={(event) => {
                                 setFormField(event, "start_datetime");
                                 if (formFieldValue.end_datetime) {
@@ -367,11 +370,10 @@ export default function CreateEvent({isEdit, editData}) {
             End data & Time{' '}<span style={{color: 'red'}}>*</span>
                    </span>}
                             className="w-49"
-                            value={ formFieldValue?.inherit_from_parent? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
+                            value={formFieldValue?.inherit_from_parent? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
                             minDateTime={dayjs(formFieldValue?.start_datetime)}
-                            maxDateTime={formFieldValue?.parent_id? dayjs(parentEventDetails?.end_datetime):null}
+                            maxDateTime={parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime):null}
                             onChange={(event) => {
-
                                 setFormField(event, "end_datetime");
                             }}
                         />
