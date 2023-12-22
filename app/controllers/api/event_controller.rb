@@ -296,7 +296,7 @@ class Api::EventController < Api::ApplicationController
   def user_list_children
     begin
       event = Event.find_by_id(params[:id])
-      child_events = event.children.where.not(has_sub_event: false, published: false).order(start_date: :desc)
+      child_events = event.children.joins(:event_locations).where(event_locations: { state_id: current_user.sso_payload["country_state_id"] }).where.not(has_sub_event: false, published: false).order(start_date: :desc)
       is_child = !event.has_sub_event
       render json: { success: true,
                      data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, current_user: current_user),
