@@ -4,24 +4,33 @@ import { CalenderIcon, ClockIcon, LocationIcon } from "../../../assests/svg";
 import moment from "moment";
 import { ImageNotFound} from "../../../assests/png"
 import { useNavigate } from "react-router";
+import {motion} from 'framer-motion'
 
 
 
 const FormEventCard = ({ event }) => {
 
+  const zoomVariants = {
+    initial: { scale: 1 },
+    hover: { scale: 1.02 },
+  };
+
   const navigate = useNavigate();
   const submissionHandler = (event_id) => {
-    navigate(`/forms/submissions/${event_id}`);
+      navigate(`/forms/${event_id}`);
   };
   return (
-    <div
-      className="form-list-card"
-      onClick={() => submissionHandler(event?.id)}
-    >
+      <motion.div
+          variants={zoomVariants}
+          initial="initial"
+          whileHover="hover"
+          className="form-list-card"
+          onClick={() => submissionHandler(event?.id)}
+   >
       <div className="form-list-fir ">
         <img
           className="form-photo"
-          src={event.image_url ? event.image_url : ImageNotFound}
+          src={event?.image_url ? event?.image_url : ImageNotFound}
         />
       </div>
       <div className="form-list-sec">
@@ -30,11 +39,11 @@ const FormEventCard = ({ event }) => {
           <div className="level-event-container">
             <div>
               <span style={{ color: " #66666699" }}>Level : </span>
-              <span style={{ color: "#FF9559" }}>{event.data_level}</span>
+              <span style={{ color: "#FF9559" }}>{event?.data_level}</span>
             </div>
 
             <div className="heading">
-            {event.name} 
+            {event?.name}
 
              </div>
           </div>
@@ -68,11 +77,11 @@ const FormEventCard = ({ event }) => {
       </div>
 
       <div className="form-list-third">
-        <div className={event.status.class_name}>
-          <span>{event.status.name}</span>
+        <div className={event?.status?.class_name}>
+          <span>{event?.status?.name}</span>
         </div>
       </div>
-    </div>
+      </motion.div>
   );
 };
 

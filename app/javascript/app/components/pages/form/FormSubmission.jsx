@@ -2,13 +2,14 @@ import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import './form-event-submission.scss'
-import {Box, Paper} from "@mui/material";
+import {Box} from "@mui/material";
 import {ImageNotFound} from '../../../assests/png'
 import EventSubmissionCard from "./EventSubmissionCard";
 
 import {EventState} from "../../../EventContext";
 import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
 import ReactLoader from "../../shared/loader/Loader";
+import Button from "@mui/material/Button";
 
 
 const FormSubmission = () => {
@@ -17,23 +18,23 @@ const FormSubmission = () => {
     const [eventSubmissionsData, setEventsubmissionsData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const {event_id} = useParams();
-    const {setEventName,setIsSubmissionPage}=EventState();
-    const [showConfirmationModal,setShowConfirmationModal]=useState(false);
-    const [eventDeleteId,setEventDeleteId]=useState(-1);
-    const [confirmationStatus,setConfirmationStatus]=useState(false);
+    const {id} = useParams();
+    const {setEventName, setIsSubmissionPage} = EventState();
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [eventDeleteId, setEventDeleteId] = useState(-1);
+    const [confirmationStatus, setConfirmationStatus] = useState(false);
 
     useEffect(() => {
 
         (async () => {
             setIsLoading(true)
             try {
-                const {data} = await ApiClient.get(`/user/submissions/${event_id}`);
+                const {data} = await ApiClient.get(`/user/submissions/${id}`);
                 if (data?.success) {
                     setEventDetails(data?.data?.events[0] ?? {})
                     setEventsubmissionsData(data?.data?.submissions)
                     setIsLoading(false)
-                    if(data?.data?.events?.length>0) {
+                    if (data?.data?.events?.length > 0) {
                         setEventName(data?.data?.events[0]?.name);
                     }
 
@@ -47,15 +48,15 @@ const FormSubmission = () => {
 
         })();
 
-        return ()=>{
+        return () => {
             setIsLoading(false)
         }
 
     }, []);
 
-   /* useEffect(() => {
-        console.log('events are ', eventDetails)
-    }, [eventDetails]);*/
+    /* useEffect(() => {
+         console.log('events are ', eventDetails)
+     }, [eventDetails]);*/
 
     useEffect(() => {
         setIsSubmissionPage(true);
@@ -63,7 +64,7 @@ const FormSubmission = () => {
     const reportEventHandler = async () => {
         setIsLoading(true)
         try {
-            const {data} = await ApiClient.get(`user/submit_event/${event_id}`);
+            const {data} = await ApiClient.get(`user/submit_event/${id}`);
             if (data?.success) {
                 setIsLoading(false)
                 window.location.href = data?.data?.redirect_url;
@@ -78,7 +79,7 @@ const FormSubmission = () => {
         try {
             const {data} = await ApiClient.get(`user/destroy/submission/${eventDeleteId}`);
             if (data?.success) {
-                const filteredList = eventSubmissionsData?.filter((item) => item?.id !== eventDeleteId  );
+                const filteredList = eventSubmissionsData?.filter((item) => item?.id !== eventDeleteId);
                 setEventsubmissionsData(filteredList);
             }
             setConfirmationStatus(false);
@@ -90,18 +91,21 @@ const FormSubmission = () => {
     }
 
     useEffect(() => {
-          if(confirmationStatus){
-              deleteEventHandler();
-          }
+        if (confirmationStatus) {
+            deleteEventHandler();
+        }
     }, [confirmationStatus]);
 
 
-    return (<Box className="form-event-submission-container" >
-         <ConfirmationModal message="Are you sure want to delete ?"  showConfirmationModal={showConfirmationModal} setShowConfirmationModal={setShowConfirmationModal}  setConfirmationStatus={setConfirmationStatus} />
+    return (<Box className="form-event-submission-container">
+        <ConfirmationModal message="Are you sure want to delete ?" showConfirmationModal={showConfirmationModal}
+                           setShowConfirmationModal={setShowConfirmationModal}
+                           setConfirmationStatus={setConfirmationStatus}/>
         {isLoading ? <ReactLoader/> : <>
             <div className="event-image-container">
                 <img src={eventDetails?.image_url ? eventDetails?.image_url : ImageNotFound}
                      className="event-image"/>
+
 
             </div>
             <div className="form-event-submissions">
@@ -115,12 +119,15 @@ const FormSubmission = () => {
                                                                                  setIsLoading={setIsLoading}
                                                                                  setEventDeleteId={setEventDeleteId}
 
-                                                                                />)}
+                />)}
             </div>
+            {eventDetails?.status?.name?.toLowerCase() === 'active'&&
             <div className="report-button-container">
-                <button className="report-event-button" onClick={reportEventHandler}>Report Event</button>
+                <Button variant={"contained"} disabled={eventDetails?.status?.name?.toLowerCase() !== 'active'}
+                        className="report-event-button" onClick={reportEventHandler}>Report Event</Button>
 
             </div>
+            }
         </>}
     </Box>);
 }

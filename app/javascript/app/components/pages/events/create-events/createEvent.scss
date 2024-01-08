@@ -3,14 +3,13 @@
 }
 
 .create-event-container {
-  margin-top: 8rem !important;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 .event-create-form-bg {
+  
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -149,7 +148,7 @@
   width: 100%;
 }
 .container-adjust {
-  width: 90%;
+  width: 100%;
   border-radius: 15px;
   display: flex;
   flex-direction: column;

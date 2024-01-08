@@ -10,6 +10,9 @@ import {Navigate} from "react-router";
 
 import ViewEvents from "./components/pages/events/view-events/ViewEvents";
 import ProtectedRoutes from "./ProtectedRoutes";
+import RoutesWithBreadcrumbs from "./RoutesWithBreadcrumbs";
+import EventDetails from "./components/pages/events/event-details/EventDetails";
+import FormDetails from "./components/pages/form/form-details/FormDetails";
 
 const Router=()=>{
     return(
@@ -17,17 +20,24 @@ const Router=()=>{
         <Routes >
             <Route path="/" element={<Navigate  to="/forms" replace={true} />} />
             <Route path="/forms" element={<FormComponent />} />
-            <Route path="/forms/submissions/:event_id" element={<FormSubmission />} />
+            <Route element={<RoutesWithBreadcrumbs/>}>
+                <Route path={"/forms/:id"} element={<FormDetails/>}/>
+{/*
+                <Route path="/forms/submissions/:id" element={<FormSubmission />} />
+*/}
+            </Route>
+
 
 
 
             <Route element={<ProtectedRoutes/>}>
-
                 <Route path="/events" element={ <HomeComponent />} />
-                <Route path="/events/create" element={<CreateEvent />} />
-                <Route path="/events/edit/:id" element={<EditEvent />} />
-                <Route path="/events/view/:id"  element={<ViewEvents/>}/>
-
+                <Route element={<RoutesWithBreadcrumbs/>}>
+                    <Route path="/events/create/:id?" element={<CreateEvent />} />
+                    <Route path="/events/edit/:id" element={<EditEvent />} />
+                    <Route path="/events/view/:id"  element={<ViewEvents/>}/>
+                    <Route path="/events/:id"  element={<EventDetails/>}/>
+                </Route>
             </Route>
        <Route path="/*" element={<Navigate to="/" replace={true}  />} />
         </Routes>

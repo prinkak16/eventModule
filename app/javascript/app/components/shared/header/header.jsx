@@ -22,7 +22,6 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
 
 
     useEffect(() => {
-        console.log('is granted ',JSON.parse(document.getElementById("app").getAttribute("data-create")));
         getUserDetail()
     }, [])                                              
 
@@ -51,7 +50,7 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
             <Toolbar className="header-bg" id="header" >
 
                 <div className="left-header-container">
-                    <Link to="/">
+                    <Link to="/events">
                         <img src={bjpLogo} alt="" className="header-img" />
                         <span className="navbar-header-title"> भारतीय जनता पार्टी </span>
                     </Link>

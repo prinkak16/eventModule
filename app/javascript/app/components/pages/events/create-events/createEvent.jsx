@@ -1,13 +1,12 @@
 import React, {useEffect, useRef, useState} from "react";
 import "./createEvent.scss";
-import {Autocomplete, Box, FormControlLabel, Radio, RadioGroup, TextField,} from "@mui/material";
+import {Autocomplete, Box, FormControlLabel, Radio, RadioGroup, Switch, TextField,} from "@mui/material";
 import dayjs from "dayjs";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import {toast} from "react-toastify";
 import {useNavigate, useParams} from "react-router-dom";
-import MyBreadcrumbs from "../../../shared/breadcrumbs/Breadcrumbs";
 import {createEvent} from "../../../../services/RestServices/Modules/EventServices/CreateEventServices";
 import {getDataLevels, getStates,} from "../../../../services/CommonServices/commonServices";
 import {ApiClient} from "../../../../services/RestServices/BaseRestServices";
@@ -28,7 +27,6 @@ export default function CreateEvent({isEdit, editData}) {
     const [dataLevels, setDataLevels] = useState([]);
     const [countryStates, setCountryStates] = useState([]);
     const [image, setImage] = useState(null);
-    const [startDate, setStartDate] = useState();
 
     const [loader, setLoader] = useState(false);
 
@@ -42,32 +40,81 @@ export default function CreateEvent({isEdit, editData}) {
         img: "",
         crop_data: "",
         state_obj: [],
+        parent_id: !isEdit && id ? id : null,     // here !isEdit is used because in case of edit event {id} from useParams() will be id of that current event which we are editing
+        has_sub_event: false,
+        inherit_from_parent: false,
+        status:""
     });
+    const [parentEventDetails,setParentEventDetails]=useState({
+        start_datetime:null,
+        end_datetime:null,
+        level_id: "",
+        location_ids: [],
+        state_obj: [],
+        
+    })
 
     const requiredField = ["start_datetime"];
+
 
     useEffect(() => {
         if (isEdit) {
             (async () => {
-                const {data} = await getEventById(id);
-                if (data?.success) {
-                    setImage(data?.data[0]?.image_url),
+                try {
+                    const {data} = await getEventById(id);
+                    if (data?.success) {
+                        setImage(data?.data[0]?.image_url),
 
-                        setFormFieldValue((prevData) => ({
+                            setFormFieldValue((prevData) => ({
+                                ...prevData,
+                                event_id: data?.data[0]?.id,
+                                event_title: data?.data[0]?.name,
+                                img: data?.data[0]?.image_url,
+                                start_datetime: data?.data[0]?.start_date,
+                                end_datetime: data?.data[0]?.end_date,
+                                level_id: data?.data[0]?.data_level_id,
+                                event_type: data?.data[0]?.event_type,
+                                location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
+                                state_obj: data?.data[0]?.state_ids ?? [],
+                                has_sub_event: data?.data[0]?.has_sub_event,
+                                status: data?.data[0]?.status?.name??"",
+                            }))
+                    }else{
+                        toast?.error('Faild to get event details')
+                    }
+                } catch (e) {
+                     toast.error(e?.message);
+                }
+
+            })();
+        }
+        if(!isEdit) {
+            (async () => {
+                try {
+                    const {data} = await getEventById(id);
+                    if (data?.success) {
+                        setParentEventDetails((prevData) => ({
                             ...prevData,
-                            event_id: data?.data[0]?.id,
-                            event_title: data?.data[0]?.name,
-                            img: data?.data[0]?.image_url,
                             start_datetime: data?.data[0]?.start_date,
                             end_datetime: data?.data[0]?.end_date,
                             level_id: data?.data[0]?.data_level_id,
-                            event_type: data?.data[0]?.event_type,
                             location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
-                            state_obj: data?.data[0]?.state_ids ?? []
+                            state_obj: data?.data[0]?.state_ids ?? [],
                         }))
+                    } else {
+                        toast?.error('Failed to get parent event details')
+                    }
+
+                } catch (e) {
+                    toast.error(e?.message);
+
                 }
             })();
+
         }
+
+
+
         getAllData();
 
         return () => {
@@ -94,7 +141,6 @@ export default function CreateEvent({isEdit, editData}) {
 
 
     const handleImage = (finalImageAfterCropping) => {
-        console.log('final image afeter cropping ', finalImageAfterCropping);
         setFormFieldValue((prevData) => ({
             ...prevData,
             img: finalImageAfterCropping[0]?.un_cropped_file,
@@ -104,7 +150,7 @@ export default function CreateEvent({isEdit, editData}) {
     }
     const getAllData = async () => {
         try {
-            const {data} = await getStates();
+            const {data} = await getStates({parent_id:id});
             if (data?.success) {
                 setCountryStates(data?.data ?? []);
             }
@@ -116,10 +162,10 @@ export default function CreateEvent({isEdit, editData}) {
         try {
             const dataLevelResponse = await getDataLevels();
             if (dataLevelResponse?.data?.success) {
-                if (dataLevelResponse?.data?.data?.length > 1&&!isEdit) {
+             /*   if (dataLevelResponse?.data?.data?.length > 1 && !isEdit ) {
                     const defaultId = dataLevelResponse?.data?.data[0]?.id;
                     setFormFieldValue((prevData) => ({...prevData, level_id: defaultId}))
-                }
+                }*/
 
                 setDataLevels(dataLevelResponse?.data?.data);
 
@@ -144,27 +190,29 @@ export default function CreateEvent({isEdit, editData}) {
         formData.append("crop_data", formFieldValue?.crop_data ?? "");
 
         formData.append("img", formFieldValue?.img ?? "");
+        formData.append('has_sub_event', formFieldValue?.has_sub_event)
+        formData?.append('inherit_from_parent', formFieldValue?.inherit_from_parent);
+        if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
+            formData.append('parent_id', formFieldValue?.parent_id);
+        }
         try {
             const response = await createEvent(formData, {event_id: id});
-            if (response.data.success) {
+            const eventId = response?.data?.event?.id;
+            if (response?.data?.success) {
                 setLoader(false);
-                if (type === 'go_to_form' || type === 'create') {
-                    window.location.href = response.data.event.create_form_url;
-                } else {
-
-                    toast.success(response.data.message);
-                    navigate('/events')
+                if (type === 'create' || type === 'save') {
+                    toast.success(`Event ${type}d successfully`);
+                    navigate(`/events/${eventId}`);
+                } else if (type === 'go_to_form') {
+                    window.location.href = response?.data?.event?.create_form_url;
                 }
             } else {
                 setLoader(false);
-
-                toast.error(response.data.message);
+                toast.error(response?.data?.message);
             }
 
         } catch (error) {
-
-            toast.error(error);
-
+            toast.error(error?.message);
         }
 
         setLoader(false);
@@ -188,15 +236,6 @@ export default function CreateEvent({isEdit, editData}) {
 
 
     const submit = (type, id) => {
-        for (let i = 0; i < requiredField.length; i++) {
-            const item = formFieldValue[requiredField[i]];
-            if (!item) {
-                toast.error(`Please enter ${requiredField[i]}`, {
-                    autoClose: 2000,
-                });
-                return;
-            }
-        }
         CreateEvents(type, id);
     };
 
@@ -210,10 +249,14 @@ export default function CreateEvent({isEdit, editData}) {
         }
     };
 
+    const switchHandler = (e) => {
+        setFormFieldValue((prevData) => ({...prevData, [e?.target?.name]: e?.target?.checked}))
 
-  /*  useEffect(() => {
+    }
+
+    useEffect(() => {
         console.log("form value s", formFieldValue);
-    }, [formFieldValue]);*/
+    }, [formFieldValue]);
 
 
     useEffect(() => {
@@ -240,10 +283,20 @@ export default function CreateEvent({isEdit, editData}) {
     const isNextButtonDisabled = () => {
 
         for (let key in formFieldValue) {
-            if (isEdit && key === "crop_data") {
+            if(key==="status"){
                 continue;
             }
-            if (key === 'location_ids' || key === 'state_obj') {
+           else if (formFieldValue?.inherit_from_parent && (key === 'start_datetime' || key === 'end_datetime' || key === 'level_id' || key === 'state_obj'||key==="location_ids"))
+            {
+                continue;
+            }
+            else if (isEdit && key === "crop_data") {
+                    continue;
+                }
+            else if (key === 'parent_id' && formFieldValue[key] === null) {
+                continue;
+            }
+           else if (key === 'location_ids' || key === 'state_obj') {
                 if (formFieldValue[key].length === 0) {
                     return true;
                 }
@@ -262,15 +315,18 @@ export default function CreateEvent({isEdit, editData}) {
     return (<div className="create-event-container">
         {loader ? <ReactLoader/> : (<></>)}
         <div className="container-adjust">
-            <div className="event-path">
-                <MyBreadcrumbs/>
-            </div>
             <h3 className="font-weight-300">
-                {isEdit ? "Edit the Event" : "Create an Event"}
+                {isEdit ? "Edit the Event" : "Create the Event"}
             </h3>
             <Box className="event-create-form-bg">
+                {!isEdit && (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) &&
+                    <FormControlLabel control={<Switch name={"inherit_from_parent"} onChange={switchHandler}/>}
+                                      label="Inherit from parent"/>
+
+                }
 
                 <TextField
+                    disabled={isEdit&&formFieldValue?.status?.toLowerCase()==='expired'}
                     id="event_title"
                     onChange={(event) => setFormField(event, "event_title")}
                     variant="outlined"
@@ -285,6 +341,7 @@ export default function CreateEvent({isEdit, editData}) {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <div className="d-flex justify-content-between">
                         <DateTimePicker
+                            disabled={formFieldValue?.inherit_from_parent||(isEdit&&formFieldValue?.status?.toLowerCase()==='expired')}
                             ampm={false}
 
                             required={true}
@@ -293,8 +350,9 @@ export default function CreateEvent({isEdit, editData}) {
                                 <span style={{color: 'red'}}>*</span>
             </span>}
                             className="w-49"
-                            minDateTime={dayjs(new Date()).subtract(10, 'minute')}
-                            value={formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
+                            minDateTime={formFieldValue?.parent_id ? dayjs(parentEventDetails?.start_datetime) : dayjs(new Date()).subtract(5, 'minute')}
+                            value={ formFieldValue?.inherit_from_parent? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
+                            maxDateTime={parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime):null}
                             onChange={(event) => {
                                 setFormField(event, "start_datetime");
                                 if (formFieldValue.end_datetime) {
@@ -307,18 +365,15 @@ export default function CreateEvent({isEdit, editData}) {
                         <DateTimePicker
                             ampm={false}
 
-                            disabled={formFieldValue?.start_datetime === ""}
+                            disabled={formFieldValue?.start_datetime === "" || formFieldValue?.inherit_from_parent}
                             label={<span>
             End data & Time{' '}<span style={{color: 'red'}}>*</span>
                    </span>}
                             className="w-49"
-                            value={formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
-                            minDateTime={dayjs(formFieldValue?.start_datetime).subtract(10, 'minute')}
+                            value={formFieldValue?.inherit_from_parent? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
+                            minDateTime={dayjs(formFieldValue?.start_datetime)}
+                            maxDateTime={parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime):null}
                             onChange={(event) => {
-                                if (formFieldValue.start_datetime && event.$d < formFieldValue.start_datetime) {
-                                    alert("End date cannot be earlier than the start date.");
-                                    return;
-                                }
                                 setFormField(event, "end_datetime");
                             }}
                         />
@@ -326,7 +381,7 @@ export default function CreateEvent({isEdit, editData}) {
                 </LocalizationProvider>
                 <div>
                     <p>Upload Image/ Banner{' '}<span style={{color: "red"}}>*</span> :</p>
-                    <ImageCroper handleImage={handleImage} Initial_image={formFieldValue?.img} isEditable={isEdit}/>
+                    <ImageCroper handleImage={handleImage} Initial_image={formFieldValue?.img} isEditable={isEdit} eventStatus={formFieldValue?.status?.toLowerCase()}/>
                 </div>
 
                 <div className="levels">
@@ -336,12 +391,12 @@ export default function CreateEvent({isEdit, editData}) {
                     {Array.isArray(dataLevels) && dataLevels.map((item, index) => (<button
                         className="level-button"
                         key={index}
-                        disabled={isEdit}
+                        disabled={isEdit || formFieldValue?.inherit_from_parent}
                         style={{
                             height: "40px",
                             width: "120px",
-                            background: item?.id === formFieldValue?.level_id ? "#163560" : "",
-                            color: item?.id === formFieldValue?.level_id ? "white" : "black",
+                            background:( (formFieldValue?.inherit_from_parent && item?.id=== parentEventDetails?.level_id) || item?.id === formFieldValue?.level_id) ? "#163560" : "",
+                            color: ( (formFieldValue?.inherit_from_parent && item?.id=== parentEventDetails?.level_id) || item?.id === formFieldValue?.level_id) ? "white" : "black",
                         }}
                         onClick={() => setFormFieldValue((prevData) => {
                             return {...prevData, level_id: item?.id};
@@ -350,9 +405,10 @@ export default function CreateEvent({isEdit, editData}) {
                 </div>
 
                 <Autocomplete
+                    disabled={isEdit || formFieldValue?.inherit_from_parent}
                     className="w-100"
                     multiple
-                    value={formFieldValue?.state_obj}
+                    value={formFieldValue?.inherit_from_parent? parentEventDetails?.state_obj :formFieldValue?.state_obj}
                     options={countryStates}
                     getOptionLabel={(option) => option.name || ""}
                     onChange={handleStateChange}
@@ -363,9 +419,43 @@ export default function CreateEvent({isEdit, editData}) {
                 />
 
                 <div className="mt-2">
+                    <h6>Allow to create sub-events{' '} <span style={{color: "red"}}>*</span></h6>
+
+                    <RadioGroup
+                        disabled={isEdit}
+                        className="custom-radio-group"
+                        row
+                        value={formFieldValue?.has_sub_event === true ? 'yes' : 'no'}
+                        name="row-radio-buttons-group"
+                        onChange={(event) => {
+                            setFormFieldValue((prevData) => {
+                                return {...prevData, has_sub_event: event.target.value === 'yes' ? true : false};
+                            })
+                        }
+                        }
+                    >
+                        <FormControlLabel
+                            disabled={isEdit}
+                            value='yes'
+                            control={<Radio/>}
+                            label="Yes"
+
+                        />
+                        <FormControlLabel
+                            disabled={isEdit}
+                            value="no"
+                            control={<Radio/>}
+                            label="No"
+
+                        />
+                    </RadioGroup>
+                </div>
+
+                <div className="mt-2">
                     <h6>Reporting Target{' '} <span style={{color: "red"}}>*</span></h6>
 
                     <RadioGroup
+
                         className="custom-radio-group"
                         row
                         value={formFieldValue?.event_type}
@@ -375,6 +465,7 @@ export default function CreateEvent({isEdit, editData}) {
                         })}
                     >
                         <FormControlLabel
+                            disabled={isEdit}
                             value="open_event"
                             control={<Radio/>}
                             label="Open event"
@@ -402,17 +493,17 @@ export default function CreateEvent({isEdit, editData}) {
                     onClick={() => submit('save', id)}
                 > Save Event
                 </button>
+                {(!formFieldValue?.has_sub_event&&formFieldValue?.status?.toLowerCase()!=='expired') &&
+                    <button
+                        disabled={isNextButtonDisabled()}
+                        className="go-to-form-button"
+                        style={{
+                            background: "black", color: "white", height: "40px", width: "150px",
+                        }}
 
-                <button
-                    disabled={isNextButtonDisabled()}
-                    className="go-to-form-button"
-                    style={{
-                        background: "black", color: "white", height: "40px", width: "150px",
-                    }}
-
-                    onClick={() => submit('go_to_form', id)}
-                > Go to form
-                </button>
+                        onClick={() => submit('go_to_form', id)}
+                    > Go to form
+                    </button>}
             </>)}
         </div>
     </div>);

@@ -13,4 +13,10 @@ module ApplicationHelper
     end
   end
 
+  def country_states_with_create_permission
+    client_app_id = ClientApp.find_by(name: ENV['CLIENT_APP'])&.id
+    locations = UserTagLocation.joins("INNER JOIN user_permissions on user_tag_locations.user_tag_id = user_permissions.user_tag_id").where(user_permissions: { user_id: session[:user_id] ,client_app_id: client_app_id}, location_type: "Saral::Locatable::State").pluck(:location_id).uniq
+    Saral::Locatable::State.where(id: locations).select(:id, :name).order(:name)
+  end
+
 end

@@ -12,12 +12,13 @@ body {
   display:flex;
   gap:2.5rem;
   padding: 0 0 4rem 5rem;
-  margin-top: 8rem;
+  margin-top: 2.5rem;
   width: 100%;
   .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar {
     align-items: baseline;
   }
 }
+
 
 .header-and-list-container{
   width: 78%;
@@ -30,6 +31,81 @@ body {
   align-items: center;
   gap: 2rem;
 }
+.home-icon-description{
+  align-self: flex-end;
+  display: flex;
+  gap:10px;
+  justify-content: center;
+  align-items: center;
+  color:#868686;
+  .svg-icon-outermost-container{
+    display: flex;
+    gap:5px;
+    .primary-icon-container{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width:20px;
+      height:20px;
+      background: #4D43DE;
+      border-radius:50%;
+    }
+    .intermediate-icon-container{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width:20px;
+      height:20px;
+      background: #C62828;
+
+      border-radius:50%;
+    }
+    .leaf-icon-container{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width:20px;
+      height:20px;
+      background: #1B8F3A;
+      border-radius:50%;
+      
+    }
+
+
+  }
+
+}
+
+.event-primary-icon-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:24px;
+  height:24px;
+  background: #4D43DE;
+  border-radius:50%;
+}
+.event-intermediate-icon-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:24px;
+  height:24px;
+  background: #C62828;
+
+  border-radius:50%;
+}
+.event-leaf-icon-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:24px;
+  height:24px;
+  background: #1B8F3A;
+  border-radius:50%;
+
+}
+
 
 .event-header {
   flex: 3;

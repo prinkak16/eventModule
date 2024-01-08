@@ -26,6 +26,7 @@ const ViewEvents=({isEdit=true})=>{
         event_type: "",
         img: "",
         state_obj: [],
+        has_sub_event:false
     });
     const [dataLevels, setDataLevels] = useState([]);
     const [countryStates, setCountryStates] = useState([]);
@@ -80,7 +81,8 @@ const ViewEvents=({isEdit=true})=>{
                         location_ids : data?.data[0]?.state_ids?.map(
                             (obj) => obj.id
                         ),
-                        state_obj : data?.data[0]?.state_ids ?? []
+                        state_obj : data?.data[0]?.state_ids ?? [],
+                        has_sub_event:data?.data[0]?.has_sub_event
                     }) )
                 }else{
                     toast.error('Failed to load the data')
@@ -103,13 +105,11 @@ const ViewEvents=({isEdit=true})=>{
    
     return(
         <div className="view-event-container">
-            <div className="event-path">
-                <MyBreadcrumbs />
-            </div>
+      
             {isLoading ? <ReactLoader/> : <div className="form-and-iframe-container">
 
 
-                <Box className="event-create-form-bg" style={{width: "50%"}}>
+                <Box className="event-create-form-bg" >
                     <TextField
                         disabled
                         id="event_title"
@@ -213,9 +213,11 @@ const ViewEvents=({isEdit=true})=>{
                         </RadioGroup>
                     </div>
                 </Box>
+                {!formFieldValue?.has_sub_event&&
                 <div className={"iframe-container"}>
                     <iframe src={iframeUrl} height="100%" width="100%" title="Iframe Example" />
                 </div>
+                }
             </div>
             }
 

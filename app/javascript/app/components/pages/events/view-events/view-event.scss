@@ -1,7 +1,6 @@
 .view-event-container{
-  margin-top: 8rem !important;
-  margin-left: 20px;
-  margin-bottom: 80px;
+ /* margin-left: 20px;
+  margin-bottom: 80px;*/
 
   display: flex;
   flex-direction: column;
@@ -10,14 +9,14 @@
 
   .form-and-iframe-container{
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap:20px;
+
   }
 
   .iframe-container{
     box-shadow: 10px 2px 20px rgba(0, 0, 0, 0.01);
-
-    width: 48%;
-   
+    width: 100%;
   }
 
   .css-1jy569b-MuiFormLabel-root-MuiInputLabel-root.Mui-disabled {
