@@ -8,8 +8,15 @@ import {useLocation} from "react-router";
 import './event-details.scss'
 import {toast} from "react-toastify";
 import ReportEmailModal from "../../../shared/ReportsModel/ReportEmailModal";
+import { DndContext } from "@dnd-kit/core";
+import Droppable from "./Droppable";
+import Draggable from "./Draggable";
+import DraggableList from "./drag-and-drop-components/DraggableList";
+
 
 const EventDetails = () => {
+    const [parent, setParent] = useState(null);
+
     const {pathname} = useLocation();
     const navigate = useNavigate();
     const [parentEvent, setParentEvent] = useState({});
@@ -40,6 +47,25 @@ const EventDetails = () => {
 
     }
 
+
+    // handle drag function
+    const onDragEnd = ({ destination, source }) => {
+        // Dropped outside the list
+        if (!destination) return;
+
+
+        const updatedContainers = [...childEvents];
+        [updatedContainers[source.index], updatedContainers[destination.index]] = [
+            updatedContainers[destination.index],
+            updatedContainers[source.index],
+        ];
+
+        //updating the list of child events
+        setChildEVents(updatedContainers);
+    };
+
+
+
     useEffect(() => {
         getEventDetails();
     }, [pathname]);
@@ -52,6 +78,8 @@ const EventDetails = () => {
         }
     }
 
+
+
     return (
         <div className={"event-details-main-container"}>
             <ReportEmailModal reportModal={reportModal} setReportModal={setReportModal} reportEventId={reportEventId}/>
@@ -62,13 +90,18 @@ const EventDetails = () => {
                     <div className={"add-event-button-container"}>
                         <Button onClick={() => handleClick('create_event')} className={"add-event-button"}
                                 variant={"contained"}>+ Add Sub Event</Button>
-                    </div>}
+                    </div>
+                }
 
                 <div className={"heading"}>Sub Events</div>
-                <div>{childEvents?.length === 0 &&
-                    <h5 className={"no-sub-event-style"}>No sub event is created yet</h5>}</div>
-                <div>{childEvents?.length > 0 && childEvents?.map((childEvent, index) => <EventChildCard
-                    event={childEvent} key={index}/>)}</div>
+                <div>
+                    {childEvents?.length === 0 && <h5 className={"no-sub-event-style"}>No sub event is created yet</h5>}
+                </div>
+
+                {childEvents?.length > 0&&
+                <DraggableList items={childEvents} onDragEnd={onDragEnd} />
+                }
+
             </>
             }
             {!parentEvent?.has_sub_event && <>
