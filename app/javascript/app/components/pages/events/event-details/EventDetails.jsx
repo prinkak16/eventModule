@@ -64,6 +64,17 @@ const EventDetails = () => {
         setChildEVents(updatedContainers);
     };
 
+    const updateChildrenEventsPosition=async (body)=>{
+        console.log('body is ',body)
+        try {
+            const {data}=await ApiClient.post('/event/update/position',body);
+            if(!data?.success){
+                toast.error('Failed during position update')
+            }
+        }catch (e) {
+            toast.error('Failed during position update')
+        }
+    }
 
 
     useEffect(() => {
