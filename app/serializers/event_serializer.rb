@@ -1,6 +1,9 @@
 class EventSerializer < ActiveModel::Serializer
-  attributes :id, :name, :start_date, :end_date, :data_level_id, :event_type, :data_level, :start_datetime, :end_datetime, :status, :states, :image_url, :state_ids, :create_form_url, :preview_url, :event_level, :has_sub_event, :parent_id
+  attributes :id, :translated_title, :start_date, :end_date, :data_level_id, :event_type, :data_level, :start_datetime, :end_datetime, :status, :states, :image_url, :state_ids, :create_form_url, :preview_url, :event_level, :has_sub_event, :parent_id
 
+  def translated_title
+    object.get_title(instance_options[:language_code])
+  end
   def data_level
     object&.data_level&.name
   end

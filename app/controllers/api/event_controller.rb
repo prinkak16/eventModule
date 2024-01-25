@@ -114,6 +114,7 @@ class Api::EventController < Api::ApplicationController
           event.parent_id = params[:parent_id] if params[:parent_id].present?
         end
         event.name = params[:event_title]
+        event.translated_title = params[:translated_title]
         event.start_date = (parent_event.present? && inherit_from_parent) ? parent_event.start_date : params[:start_datetime].to_datetime
         event.end_date = (parent_event.present? && inherit_from_parent) ? parent_event.end_date : params[:end_datetime].to_datetime
         event.created_by_id = current_user&.id
@@ -132,7 +133,7 @@ class Api::EventController < Api::ApplicationController
           EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank? #only leaf event can create form
         end
         event = Event.find(event.id)
-        render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
+        render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, language_code: params[:language_code] ,state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
         raise ActiveRecord::Rollback
@@ -171,7 +172,7 @@ class Api::EventController < Api::ApplicationController
     total = events.size
     events = events.order(created_at: :desc).limit(limit).offset(offset)
     render json: {
-      data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user),
+      data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, language_code: params[:language_code] ,state_id: params[:state_id], current_user: current_user),
       message: ['Event list'],
       success: true,
       total: total
@@ -191,7 +192,7 @@ class Api::EventController < Api::ApplicationController
     total = events.count
     events = events.order(created_at: :desc).limit(limit).offset(offset)
     render json: {
-      data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user),
+      data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, language_code: params[:language_code] ,state_id: params[:state_id], current_user: current_user),
       message: ['Event list'],
       success: true,
       total: total,
@@ -226,7 +227,7 @@ class Api::EventController < Api::ApplicationController
 
   def edit
     event = Event.where(id: params[:id])
-    data = ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: '', current_user: current_user)
+    data = ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, language_code: nil ,state_id: '', current_user: current_user)
     render json: { success: true, data: data, message: "successfull" }, status: :ok
   end
 
@@ -255,8 +256,8 @@ class Api::EventController < Api::ApplicationController
       child_events = event.children
       is_child = !event.has_sub_event
       render json: { success: true,
-                     data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, current_user: current_user),
-                     child_data: ActiveModelSerializers::SerializableResource.new(child_events, each_serializer: EventSerializer, current_user: current_user),
+                     data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, language_code: params[:language_code] ,current_user: current_user),
+                     child_data: ActiveModelSerializers::SerializableResource.new(child_events, each_serializer: EventSerializer, language_code: params[:language_code] ,current_user: current_user),
                      is_child: is_child}, status: :ok
     rescue => e
       puts e.message
@@ -286,7 +287,7 @@ class Api::EventController < Api::ApplicationController
     begin
       events = Event.find_by_id(params[:id]).children
       render json: { success: true,
-                     data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, current_user: current_user) }, status: :ok
+                     data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, language_code: params[:language_code] ,current_user: current_user) }, status: :ok
     rescue => e
       puts e.message
       render json: { success: false, message: e.message }, status: :bad_request
@@ -299,8 +300,8 @@ class Api::EventController < Api::ApplicationController
       child_events = event.children.joins(:event_locations).where(event_locations: { state_id: current_user.sso_payload["country_state_id"] }).where.not(has_sub_event: false, published: false).order(start_date: :desc)
       is_child = !event.has_sub_event
       render json: { success: true,
-                     data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, current_user: current_user),
-                     child_data: ActiveModelSerializers::SerializableResource.new(child_events, each_serializer: EventSerializer, current_user: current_user),
+                     data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, language_code: params[:language_code] ,current_user: current_user),
+                     child_data: ActiveModelSerializers::SerializableResource.new(child_events, each_serializer: EventSerializer, language_code: params[:language_code] ,current_user: current_user),
                      is_child: is_child}, status: :ok
     rescue => e
       puts e.message
