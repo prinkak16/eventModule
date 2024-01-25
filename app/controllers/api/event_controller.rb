@@ -114,7 +114,7 @@ class Api::EventController < Api::ApplicationController
           event.parent_id = params[:parent_id] if params[:parent_id].present?
         end
         event.name = params[:event_title]
-        event.translated_title = params[:translated_title]
+        event.translated_title = params[:translated_title] if params[:translated_title].present?
         event.start_date = (parent_event.present? && inherit_from_parent) ? parent_event.start_date : params[:start_datetime].to_datetime
         event.end_date = (parent_event.present? && inherit_from_parent) ? parent_event.end_date : params[:end_datetime].to_datetime
         event.created_by_id = current_user&.id
