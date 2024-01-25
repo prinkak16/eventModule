@@ -34,4 +34,12 @@ class Event < ApplicationRecord
     Saral::Locatable::State.where(id: self.event_locations.where(location_type: "Saral::Locatable::State").pluck(:location_id)).select(:id, :name).order(:name)
   end
 
+  def get_title(language_key)
+    if self.translated_title.present?
+      self.translated_title[language_key].present? ? self.translated_title[language_key] : self.name
+    else
+      self.name
+    end
+  end
+
 end
