@@ -35,7 +35,7 @@ class Event < ApplicationRecord
   end
 
   def get_title(language_key)
-    if self.translated_title.present?
+    if self.translated_title.present? && language_key.present?
       self.translated_title[language_key].present? ? self.translated_title[language_key] : self.name
     else
       self.name
