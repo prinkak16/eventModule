@@ -13,8 +13,9 @@ import EditButtonIcon from '../svg/editbutton.svg'
 import PrimaryEventIcon from '../svg/primaryEventIcon.svg';
 import IntermediateEventIcon from '../svg/intermediateEventIcon.svg';
 import LeafEventIcon from '../svg/leafEventIcon.svg';
-
+import LanguageIcon from '../svg/languageIcon.svg'
 export { CalenderIcon, GreendotIcon, ClockIcon, LocationIcon ,EditIcon,ViewButtonIcon,EditButtonIcon,
-    DeleteIcon,VerifiedIcon,UploadIcon,CrossIcon,NextIcon,PrimaryEventIcon,IntermediateEventIcon,LeafEventIcon
+    DeleteIcon,VerifiedIcon,UploadIcon,CrossIcon,NextIcon,PrimaryEventIcon,IntermediateEventIcon,LeafEventIcon,
+    LanguageIcon
 
 };

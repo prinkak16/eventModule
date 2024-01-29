@@ -9,9 +9,10 @@ const EventContext=({children})=>{
     const [eventName,setEventName]=useState(null);
     const [isSubmissionPage,setIsSubmissionPage]=useState(false);
     const [eventDeleteId,setEventDeleteId]=useState(-1);
+    const [selectedLanguages,setSelectedLanguages]=useState([]);
 
     return(
-        <Event.Provider value={{eventName,setEventName,isSubmissionPage,setIsSubmissionPage}}>
+        <Event.Provider value={{eventName,setEventName,isSubmissionPage,setIsSubmissionPage,setSelectedLanguages,selectedLanguages}}>
             {children}
         </Event.Provider>
     )

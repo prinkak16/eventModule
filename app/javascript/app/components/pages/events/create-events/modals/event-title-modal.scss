@@ -1,0 +1,44 @@
+.event-title-main-container{
+  display: flex;
+  flex-direction: column;
+  gap:10px;
+  .input-main-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap:10px;
+    .input-inner-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap:10px;
+    }
+
+  }
+  .modal-buttons-container{
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem;
+
+    .no-button{
+      border:none;
+      padding: 4px 25px;
+      border:1px solid #55545E;
+      color:#55545E;
+      border-radius: 7px;
+    }
+    .yes-button{
+      border:none;
+      padding: 4px 25px;
+      background:#55545E;
+      color:white;
+      border-radius: 7px;
+
+
+    }
+
+  }
+
+}
