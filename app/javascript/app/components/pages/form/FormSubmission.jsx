@@ -51,10 +51,7 @@ const FormSubmission = () => {
       
 
     }, []);
-
-    /* useEffect(() => {
-         console.log('events are ', eventDetails)
-     }, [eventDetails]);*/
+    
 
     useEffect(() => {
         setIsSubmissionPage(true);
