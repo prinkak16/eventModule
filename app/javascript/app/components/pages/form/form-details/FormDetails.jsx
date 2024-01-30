@@ -13,7 +13,7 @@ import FormEventMobileCard from "../mobile_view/FormEventMobileCard";
 const FormDetails=()=>{
     const {id}=useParams();
     const [childrenEvents,setChildrenEvents]=useState([]);
-    const [isLoading,setIsLoading]=useState(false);
+    const [isLoading,setIsLoading]=useState(true);
     const [parentEvent,setParentEvent]=useState({});
     const getEventAndEventChildren=async ()=>{
         setIsLoading(true);
@@ -30,40 +30,54 @@ const FormDetails=()=>{
 
         }catch (e) {
             toast.error(e?.message);
+        } finally {
+            setIsLoading(false);
         }
-
-
-        setIsLoading(false);
     }
 
-  
+
     useEffect(() => {
                getEventAndEventChildren();
     }, [id]);
     return(
         <div className={"form-event-details-main-container"}>
-          
-            {isLoading?<ReactLoader/>:!parentEvent?.has_sub_event?<FormSubmission/>: <div className={"form-event-details-inner-container"}>
-                <div className="event-image-container">
-                    <img src={parentEvent?.image_url ? parentEvent?.image_url : ImageNotFound}
-                         className="event-image"/>
-                </div>
 
-                <h5>Sub Events</h5>
-                <div className={"child-card-container"}>
+            {
+                isLoading ?
+                    <ReactLoader/> :
+                    (
+                        (parentEvent&&!parentEvent?.has_sub_event) ?
+                            <FormSubmission/> :
+                            (
+                                <div className={"form-event-details-inner-container"}>
+                                    <div className="event-image-container">
+                                        <img src={
+                                            parentEvent?.image_url ?
+                                                parentEvent?.image_url :
+                                                ImageNotFound
+                                        } className="event-image"/>
+                                    </div>
 
-                    {childrenEvents?.length===0&&<h4>No Sub event found</h4>}
-                    {childrenEvents?.map((item,index) => {
-                        if (innerWidth > 450) {
-                            return <FormEventCard event={item} key={index}/>
-                        } else {
-                            return <FormEventMobileCard event={item} key={index}/>
-                        }
-                    })}
-                </div>
-            </div>}
-
-
+                                    <h5>Sub Events</h5>
+                                    <div className={"child-card-container"}>
+                                        {
+                                            childrenEvents?.length===0 && <h4>No Sub event found</h4>
+                                        }
+                                        {
+                                            childrenEvents?.map(
+                                                (item,index) => {
+                                                    if (innerWidth > 450) {
+                                                        return <FormEventCard event={item} key={index}/>
+                                                    } else {
+                                                        return <FormEventMobileCard event={item} key={index}/>
+                                                    }
+                                                })
+                                        }
+                                    </div>
+                                </div>
+                            )
+                    )
+            }
         </div>
     )
 }

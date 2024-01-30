@@ -16,7 +16,7 @@ const FormSubmission = () => {
     const navigate = useNavigate();
     const [eventDetails, setEventDetails] = useState({});
     const [eventSubmissionsData, setEventsubmissionsData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const {id} = useParams();
     const {setEventName, setIsSubmissionPage} = EventState();
@@ -25,40 +25,33 @@ const FormSubmission = () => {
     const [confirmationStatus, setConfirmationStatus] = useState(false);
 
     useEffect(() => {
-        if(Object.keys(eventDetails)?.length===0){
-            (async () => {
-                setIsLoading(true)
-                try {
-                    const {data} = await ApiClient.get(`/user/submissions/${id}`);
-                    if (data?.success) {
-                        setEventDetails(data?.data?.events[0] ?? {})
-                        setEventsubmissionsData(data?.data?.submissions)
-                        setIsLoading(false)
-                        if (data?.data?.events?.length > 0) {
-                            setEventName(data?.data?.events[0]?.name);
-                        }
 
+        (async () => {
+            setIsLoading(true)
+            try {
+                const {data} = await ApiClient.get(`/user/submissions/${id}`);
+                if (data?.success) {
+                    setEventDetails(data?.data?.events[0] ?? {})
+                    setEventsubmissionsData(data?.data?.submissions)
+                    if (data?.data?.events?.length > 0) {
+                        setEventName(data?.data?.events[0]?.name);
                     }
-                } catch (error) {
-                    setIsLoading(false)
-                    console.log(error)
-                }
 
+                }
+            } catch (error) {
+                console.log(error)
+            } finally {
                 setIsLoading(false);
 
-            })();
-        }
+            }
 
 
-        return () => {
-            setIsLoading(false)
-        }
+        })();
+
+      
 
     }, []);
-
-    /* useEffect(() => {
-         console.log('events are ', eventDetails)
-     }, [eventDetails]);*/
+    
 
     useEffect(() => {
         setIsSubmissionPage(true);
