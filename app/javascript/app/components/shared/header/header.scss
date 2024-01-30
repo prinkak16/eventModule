@@ -64,9 +64,12 @@
     display: flex;
     gap:10px;
     position: absolute;
+    justify-content: center;
+    align-items: center;
+
     right:10px;
     .header-form-create-button{
-      width: 250px;
+      width: 130px;
       height: 40px;
       background: #55545E !important;
       font-weight: 600;

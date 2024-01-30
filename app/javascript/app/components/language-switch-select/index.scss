@@ -1,0 +1,22 @@
+.language-select-main-container{
+  .inner-container{
+    display: flex;
+    gap:5px;
+
+    
+    .language-icon-container{
+      display: flex;
+      background-color:#E3E3E3 ;
+      justify-content: center;
+      align-items: center;
+      border-radius: 5px;
+      padding:5px;
+
+      .language-icon{
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+}
