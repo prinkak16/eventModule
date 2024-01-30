@@ -13,7 +13,7 @@ import FormEventMobileCard from "../mobile_view/FormEventMobileCard";
 const FormDetails=()=>{
     const {id}=useParams();
     const [childrenEvents,setChildrenEvents]=useState([]);
-    const [isLoading,setIsLoading]=useState(false);
+    const [isLoading,setIsLoading]=useState(true);
     const [parentEvent,setParentEvent]=useState({});
     const getEventAndEventChildren=async ()=>{
         setIsLoading(true);
@@ -30,10 +30,9 @@ const FormDetails=()=>{
 
         }catch (e) {
             toast.error(e?.message);
+        } finally {
+            setIsLoading(false);
         }
-
-
-        setIsLoading(false);
     }
 
   
@@ -43,7 +42,9 @@ const FormDetails=()=>{
     return(
         <div className={"form-event-details-main-container"}>
           
-            {isLoading?<ReactLoader/>:!parentEvent?.has_sub_event?<FormSubmission/>: <div className={"form-event-details-inner-container"}>
+            {isLoading?<ReactLoader/>:
+                (parentEvent&&!parentEvent?.has_sub_event) ? <FormSubmission/>:
+                (<div className={"form-event-details-inner-container"}>
                 <div className="event-image-container">
                     <img src={parentEvent?.image_url ? parentEvent?.image_url : ImageNotFound}
                          className="event-image"/>
@@ -61,7 +62,8 @@ const FormDetails=()=>{
                         }
                     })}
                 </div>
-            </div>}
+            </div>)
+            }
 
 
         </div>

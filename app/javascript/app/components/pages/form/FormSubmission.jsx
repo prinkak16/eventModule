@@ -10,13 +10,14 @@ import {EventState} from "../../../EventContext";
 import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
 import ReactLoader from "../../shared/loader/Loader";
 import Button from "@mui/material/Button";
+import {toast} from "react-toastify";
 
 
 const FormSubmission = () => {
     const navigate = useNavigate();
     const [eventDetails, setEventDetails] = useState({});
     const [eventSubmissionsData, setEventsubmissionsData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const {id} = useParams();
     const {setEventName, setIsSubmissionPage} = EventState();
@@ -40,23 +41,16 @@ const FormSubmission = () => {
 
                 }
             } catch (error) {
-                setIsLoading(false)
-                console.log(error)
+                toast.error('Failed to get submission data');
+            } finally {
+                setIsLoading(false);
             }
 
-            setIsLoading(false);
-
         })();
-
-        return () => {
-            setIsLoading(false)
-        }
+        
 
     }, []);
-
-    /* useEffect(() => {
-         console.log('events are ', eventDetails)
-     }, [eventDetails]);*/
+    
 
     useEffect(() => {
         setIsSubmissionPage(true);
