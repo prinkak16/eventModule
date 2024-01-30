@@ -10,6 +10,7 @@ import {EventState} from "../../../EventContext";
 import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
 import ReactLoader from "../../shared/loader/Loader";
 import Button from "@mui/material/Button";
+import {toast} from "react-toastify";
 
 
 const FormSubmission = () => {
@@ -25,6 +26,7 @@ const FormSubmission = () => {
     const [confirmationStatus, setConfirmationStatus] = useState(false);
 
     useEffect(() => {
+        console.log('form submission component mounted');
 
         (async () => {
             setIsLoading(true)
@@ -41,27 +43,27 @@ const FormSubmission = () => {
                 }
             } catch (error) {
                 setIsLoading(false)
-                console.log(error)
+                toast.error('Failed to get user submissions')
             }
 
             setIsLoading(false);
 
         })();
 
+
+
         return () => {
             setIsLoading(false)
         }
-
     }, []);
+    
 
-    /* useEffect(() => {
-         console.log('events are ', eventDetails)
-     }, [eventDetails]);*/
-
+    //managing the global state , to make sure that we are on submission page 
     useEffect(() => {
         setIsSubmissionPage(true);
     }, []);
     const reportEventHandler = async () => {
+
         setIsLoading(true)
         try {
             const {data} = await ApiClient.get(`user/submit_event/${id}`);

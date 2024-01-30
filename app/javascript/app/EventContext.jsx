@@ -10,9 +10,11 @@ const EventContext=({children})=>{
     const [isSubmissionPage,setIsSubmissionPage]=useState(false);
     const [eventDeleteId,setEventDeleteId]=useState(-1);
     const [selectedLanguages,setSelectedLanguages]=useState([]);
+    const [globalSelectedLanguage,setGlobalSelectedLanguage]=useState('en');
+
 
     return(
-        <Event.Provider value={{eventName,setEventName,isSubmissionPage,setIsSubmissionPage,setSelectedLanguages,selectedLanguages}}>
+        <Event.Provider value={{eventName,setEventName,isSubmissionPage,setIsSubmissionPage,setSelectedLanguages,selectedLanguages,globalSelectedLanguage,setGlobalSelectedLanguage}}>
             {children}
         </Event.Provider>
     )

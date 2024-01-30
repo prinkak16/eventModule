@@ -428,7 +428,7 @@ export default function CreateEvent({isEdit, editData}) {
                         onChange={(event) => setFormField(event, "event_title")}
                         variant="outlined"
                         className="w-100"
-                        placeholder="Enter Event Title"
+                        placeholder="Enter Event Title in english"
                         value={formFieldValue.event_title}
                         label={<span>
             Event Title{' '}

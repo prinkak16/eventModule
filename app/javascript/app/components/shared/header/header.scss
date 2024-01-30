@@ -60,21 +60,24 @@
     position: absolute;
     left:10px;
   }
-  .header-form-create-button{
-    display: block;
+  .header-form-button-and-lang-select-container{
+    display: flex;
+    gap:10px;
     position: absolute;
     right:10px;
-    width: 172px;
-    height: 40px;
+    .header-form-create-button{
+      width: 250px;
+      height: 40px;
+      background: #55545E !important;
+      font-weight: 600;
+      color: #ffffff;
+      border: none;
+      border-radius: 100px;
+      align-items: center;
 
-    background: #55545E !important;
-    font-weight: 600;
-    color: #ffffff;
-    border: none;
-    border-radius: 100px;
-    align-items: center;
-
+    }
   }
+
 }
 .header-img{
   height: 75px;

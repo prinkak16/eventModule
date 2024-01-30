@@ -35,7 +35,7 @@ export default function ConfirmationModal({message,showConfirmationModal,setShow
                     </Typography>
                    <div className="confirmation-modal-buttons">
                        <button className="no-button" onClick={handleClose}>No</button>
-                       <button   className="yes-button" onClick={handleConfirmation}>Yes</button>
+                       <button className="yes-button" onClick={handleConfirmation}>Yes</button>
                    </div>
                     </div>
                 </Box>

@@ -14,6 +14,8 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 700,
+    minHeight:300,
+
     bgcolor: 'background.paper',
     boxShadow: 24,
     borderRadius:"10px",
@@ -49,23 +51,23 @@ export default function EventTitleModal({setOpenLanguageModal,openLanguageModal}
             >
                 <Box sx={style} className={'event-title-main-container'}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                       Enter event title in different language
+                       Enter event title in different languages
                     </Typography>
 
                     <div className={"input-main-container"}>
 
                         {
                             languages?.map((language)=><div className={'input-inner-container'}>
-                                <span>{language}</span>
-                                <TextField fullWidth sx={{maxWidth:"80%"}} name={language} onChange={handleChange}/>
+                                <span>{language} title</span>
+                                <TextField multiline fullWidth sx={{maxWidth:"80%"}} name={language} onChange={handleChange}/>
                             </div>)
                         }
 
                     </div>
 
                     <div className="modal-buttons-container">
-                        <button className="no-button" onClick={handleClose}>No</button>
-                        <button className="yes-button">Yes</button>
+                        <Button variant={"outlined"} className="no-button" onClick={handleClose}>No</Button>
+                        <Button className="yes-button">Yes</Button>
                     </div>
                 </Box>
             </Modal>

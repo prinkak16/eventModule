@@ -9,9 +9,13 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Paper from '@mui/material/Paper';
 import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import LangaugeSwitchSelect from "../../language-switch-select";
+import {languages} from "../../pages/events/create-events/createEvent";
 
 
-const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName = 'Ram Avtar' }) => {
+const HeaderBar = ({ isSaralUser = '', language = '', userName = 'Ram Avtar' }) => {
     const bjpLogo = 'https://storage.googleapis.com/public-saral/public_document/BJP-logo.png';
     const [userDetails, setUserDetails] = useState(null)
     const navigate = useNavigate()
@@ -84,9 +88,16 @@ const HeaderBar = ({ isSaralUser = '', language = '', languages = '', userName =
                         </IconButton>
                         }
                     </Tooltip>
-                    <h2 className="event-name-heading">{eventName??"Events"} </h2>
-                    {(JSON.parse(document.getElementById("app").getAttribute("data-create")))&&!isSubmissionPage&&<button className={"header-form-create-button"} onClick={()=>navigate('/events')}>Create Event</button>
+
+
+                    <h2 className="event-name-heading">Events</h2>
+                    <div className={"header-form-button-and-lang-select-container"} >
+
+                    {(JSON.parse(document.getElementById("app").getAttribute("data-create")))&&!isSubmissionPage&&<button className={"header-form-create-button"}  onClick={()=>navigate('/events')}>Create Event</button>
                     }
+                        <LangaugeSwitchSelect supportedLanguages={languages}/>
+                    </div>
+                    
                 </Toolbar>
             }
         </>
