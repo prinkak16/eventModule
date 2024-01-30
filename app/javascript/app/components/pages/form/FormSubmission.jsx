@@ -16,7 +16,7 @@ const FormSubmission = () => {
     const navigate = useNavigate();
     const [eventDetails, setEventDetails] = useState({});
     const [eventSubmissionsData, setEventsubmissionsData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const {id} = useParams();
     const {setEventName, setIsSubmissionPage} = EventState();
@@ -33,24 +33,22 @@ const FormSubmission = () => {
                 if (data?.success) {
                     setEventDetails(data?.data?.events[0] ?? {})
                     setEventsubmissionsData(data?.data?.submissions)
-                    setIsLoading(false)
                     if (data?.data?.events?.length > 0) {
                         setEventName(data?.data?.events[0]?.name);
                     }
 
                 }
             } catch (error) {
-                setIsLoading(false)
                 console.log(error)
+            } finally {
+                setIsLoading(false);
+
             }
 
-            setIsLoading(false);
 
         })();
 
-        return () => {
-            setIsLoading(false)
-        }
+      
 
     }, []);
 
