@@ -5,17 +5,16 @@ import { LanguageContext } from "../../provider/language-provider";*/
 import {EventState} from "../../EventContext";
 import {LanguageIcon} from "../../assests/svg";
 import './index.scss'
+import {useTranslation} from "react-i18next";
+
 
 function LangaugeSwitchSelect({supportedLanguages}) {
+    const {i18n } = useTranslation();
     const {globalSelectedLanguage, setGlobalSelectedLanguage} = EventState();
-    /*const { lang, setLang } = useContext(LanguageContext);
-    if (!supportedLanguages?.length) {
-        return null;
-    }*/
 
     const handleChange = (e) => {
         const {value} = e?.target;
-        console.log('global language is ', value);
+        i18n.changeLanguage(value);
         setGlobalSelectedLanguage(value);
     };
 

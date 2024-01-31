@@ -17,6 +17,7 @@ import {EventState} from "../../../EventContext";
 import ReactLoader from "../../shared/loader/Loader";
 
 const FormComponent = () => {
+
     const imgDefault =
         "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
     const nextBtn =
@@ -31,7 +32,7 @@ const FormComponent = () => {
     const myRef = useRef(null);
     const [innerWidth, setInnerWidth] = useState(window.innerWidth);
     const [isEventChanged, setIsEventChanged] = useState(false);
-    const {setIsSubmissionPage, setEventName} = EventState();
+    const {setIsSubmissionPage, setEventName,globalSelectedLanguage} = EventState();
 
     async function getEventsList() {
         setLoader(true)
@@ -40,6 +41,7 @@ const FormComponent = () => {
             search_query: searchEventName ?? "",
             limit: rowsPerPage,
             offset: rowsPerPage * (page - 1),
+            language_code:globalSelectedLanguage
         };
 
         try {
@@ -72,7 +74,7 @@ const FormComponent = () => {
 
     useEffect(() => {
         getEventsList();
-    }, [page]);
+    }, [page,globalSelectedLanguage]);
 
     //useEffect related to context api
     useEffect(() => {

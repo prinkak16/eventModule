@@ -55,7 +55,6 @@ export const languages = [{
 
 
 export default function CreateEvent({isEdit, editData}) {
-    const {setSelectedLanguages} = EventState();
     const {id} = useParams();
     const urlParams = new URLSearchParams(window.location.search);
     const publishedParamValue = urlParams.get('published');
@@ -232,6 +231,7 @@ export default function CreateEvent({isEdit, editData}) {
         formData.append("img", formFieldValue?.img ?? "");
         formData.append('has_sub_event', formFieldValue?.has_sub_event)
         formData?.append('inherit_from_parent', formFieldValue?.inherit_from_parent);
+        formData?.append('translated_title',JSON.stringify(formFieldValue?.translated_title));
         if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
             formData.append('parent_id', formFieldValue?.parent_id);
         }
@@ -355,7 +355,7 @@ export default function CreateEvent({isEdit, editData}) {
 
 
     return (<div className="create-event-container">
-        <EventTitleModal openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}   languagesMap={formFieldValue?.selected_languages?.filter((language) => language?.lang !== 'en')}/>
+        <EventTitleModal setFormFieldValue={setFormFieldValue} openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}   languagesMap={formFieldValue?.selected_languages?.filter((language) => language?.lang !== 'en')}/>
         {loader ? <ReactLoader/> : (<></>)}
         <div className="container-adjust">
             <h3 className="font-weight-300">

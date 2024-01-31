@@ -6,6 +6,7 @@ import {DeleteIcon, EditIcon} from "../../../assests/svg";
 import {IconButton, Tooltip} from "@mui/material";
 import EllipsesComponent from "../../../utils/EllipsesComponent";
 import {Verified} from "@mui/icons-material";
+import {useTranslation} from "react-i18next";
 
 const EventSubmissionCard = ({
                                  data,
@@ -16,6 +17,8 @@ const EventSubmissionCard = ({
                                  setShowConfirmationModal,
                                  setEventDeleteId
                              }) => {
+    const { t } = useTranslation();
+
 
     const eventEditHandler = async (event_id, submission_id) => {
         setIsLoading(true)
@@ -39,7 +42,7 @@ const EventSubmissionCard = ({
     return (<div className="event-submission-card-container">
             <div className="event-submission-card-details">
                 <div className="report-time-verified-icon-container">
-                    <div className="report-time"> {index + 1}  &nbsp;  Reported on
+                    <div className="report-time"> {index + 1}  &nbsp;  {t("Reported on")} :
                         ({moment(data?.reported_on).format('DD/MM/YYYY')
                         }) {moment(data?.reported_on).format('LT')
                         }</div>
@@ -56,7 +59,7 @@ const EventSubmissionCard = ({
                 </div>
                 <div className="event-location-image-group-container">
                     <div className="event-location">
-                        <div className="event-location-header">Location:&nbsp;({event?.data_level})</div>
+                        <div className="event-location-header">{t("Location")}:&nbsp;({event?.data_level})</div>
                         <Tooltip title={data?.locations?.join(' , ')}>
                             <div className="event-location-data">
                                 <EllipsesComponent text=
@@ -81,7 +84,7 @@ const EventSubmissionCard = ({
                         <IconButton>
                             <EditIcon/>
                         </IconButton>
-                        <div>Edit</div>
+                        <div>{t("Edit")}</div>
 
                     </div>
 
@@ -92,7 +95,7 @@ const EventSubmissionCard = ({
                         <IconButton>
                             <DeleteIcon/>
                         </IconButton>
-                        <div>Delete</div>
+                        <div>{t("Delete")}</div>
 
                     </div>
 

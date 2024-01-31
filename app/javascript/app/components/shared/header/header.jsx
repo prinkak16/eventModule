@@ -10,6 +10,7 @@ import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import LangaugeSwitchSelect from "../../language-switch-select";
 import {languages} from "../../pages/events/create-events/createEvent";
+import {useTranslation} from "react-i18next";
 
 
 const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) => {
@@ -18,6 +19,7 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
     const navigate = useNavigate()
     const {pathname} = useLocation();
     const {eventName, setEventName, isSubmissionPage, setIsSubmissionPage} = EventState();
+    const {t}=useTranslation();
 
 
     useEffect(() => {
@@ -89,8 +91,7 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                     <div className={"header-form-button-and-lang-select-container"}>
 
                         {(JSON.parse(document.getElementById("app").getAttribute("data-create"))) && !isSubmissionPage &&
-                            <button className={"header-form-create-button"} onClick={() => navigate('/events')}>Create
-                                Event</button>
+                            <button className={"header-form-create-button"} onClick={() => navigate('/events')}>{t("Create Event")}</button>
                         }
                         <LangaugeSwitchSelect supportedLanguages={languages}/>
                     </div>

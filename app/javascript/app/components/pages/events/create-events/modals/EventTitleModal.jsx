@@ -23,22 +23,21 @@ const style = {
 };
 
 
-export default function EventTitleModal({setOpenLanguageModal, openLanguageModal}) {
-    const {selectedLanguages, setSelectedLanguages} = EventState();
+export default function EventTitleModal({setOpenLanguageModal, openLanguageModal,languagesMap,setFormFieldValue}) {
     const handleClose = () => setOpenLanguageModal(false);
     const [languages, setLanguages] = useState([]);
     const [inputData, setInputData] = useState({});
 
-    useEffect(() => {
-
-        setLanguages(selectedLanguages)
-    }, [selectedLanguages]);
 
     const handleChange = (e) => {
         const {name, value} = e?.target;
         setInputData((prevData) => ({...prevData, [name]: value}));
     }
 
+    const handleSave=()=>{
+        setFormFieldValue((prevData)=>({...prevData,translated_title:inputData}));
+        setOpenLanguageModal(false);
+    }
     useEffect(() => {
         console.log('input data  is', inputData);
     }, [inputData]);
@@ -55,7 +54,7 @@ export default function EventTitleModal({setOpenLanguageModal, openLanguageModal
                 <div className={"input-main-container"}>
 
                     {
-                        languages?.map((language) => <div className={'input-inner-container'}>
+                        languagesMap?.map((language) => <div className={'input-inner-container'}>
                             <span>{language?.name} title</span>
                             <TextField multiline fullWidth sx={{maxWidth: "80%"}} name={language?.lang}
                                        onChange={handleChange}/>
@@ -66,7 +65,7 @@ export default function EventTitleModal({setOpenLanguageModal, openLanguageModal
 
                 <div className="modal-buttons-container">
                     <Button variant={"outlined"} className="no-button" onClick={handleClose}>No</Button>
-                    <Button className="yes-button">Yes</Button>
+                    <Button className="yes-button" onClick={handleSave}>Yes</Button>
                 </div>
             </Box>
         </Modal>

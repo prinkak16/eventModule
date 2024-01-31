@@ -5,6 +5,7 @@ import {Link, useParams} from "react-router-dom";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import './breadcrumbs.scss'
 import {IntermediateEventIcon, LeafEventIcon, PrimaryEventIcon} from "../../../assests/svg";
+import {EventState} from "../../../EventContext";
 
 export default function MyBreadcrumbs() {
 
@@ -12,6 +13,7 @@ export default function MyBreadcrumbs() {
     const {pathname} = useLocation();
     const [dynamicRoutes, setDynamicRoutes] = useState({});
     let urls = pathname?.split("/").filter(Boolean);
+    const {globalSelectedLanguage} = EventState();
 
 
     function isNumeric(input) {
@@ -24,10 +26,7 @@ export default function MyBreadcrumbs() {
 
 
     const breadcrumbsNames = {
-        events: "Events",
-        create: "Create Event",
-        edit: "Edit Event",
-        view: "View Event "
+        events: "Events", create: "Create Event", edit: "Edit Event", view: "View Event "
     };
 
     const RenderEventIcon = (event_level) => {
@@ -41,17 +40,24 @@ export default function MyBreadcrumbs() {
 
     }
     const getDynamicRoutes = async () => {
-        const {data} = await ApiClient.get(`event/path`, {params: {id}})
-        setDynamicRoutes(data?.data);
+        if (id) {
+            try {
+                const {data} = await ApiClient.get(`event/path`, {params: {id, language_code: globalSelectedLanguage}})
+                setDynamicRoutes(data?.data);
+            } catch (e) {
+                console.log(e?.message);
+            }
+
+        }
+
 
     }
 
     useEffect(() => {
         getDynamicRoutes();
-    }, [pathname]);
+    }, [pathname,globalSelectedLanguage]);
 
-    return (
-        <div className={"breadcrumbs-main-container"}>
+    return (<div className={"breadcrumbs-main-container"}>
             {urls?.length > 0 && <Link to={`/${urls[0]}`}>{urls[0]}</Link>}
             {Object.keys(dynamicRoutes).length > 0 && <span> &nbsp;/&nbsp; </span>}
             {Object.keys(dynamicRoutes)?.map((key, index) => <span key={index} style={{display: "flex"}}>
@@ -59,22 +65,8 @@ export default function MyBreadcrumbs() {
            <span style={{display: "flex", gap: "10px"}}> {RenderEventIcon(dynamicRoutes[key][1])}
                {dynamicRoutes[key][0]}</span>
          </Link>
-                    {index < Object.keys(dynamicRoutes).length - 1 && <span> &nbsp;/&nbsp; </span>}
-      </span>
-            )}
-            {/*{urls?.map((url, index) => (
-        <span key={index}>
-          <Link
-            style={{
-              color: index === urls.length - 1 ? "#000000D9" : "#000000A6",
-            }}
-            to={`/${urls.slice(0, index + 1).join("/")}`}
-          >
-            {breadcrumbsNames[url]??url}
-          </Link>
-          {index < urls.length - 1  && <span> &nbsp;/&nbsp; </span>}
-        </span>
-      ))}*/}
+                {index < Object.keys(dynamicRoutes).length - 1 && <span> &nbsp;/&nbsp; </span>}
+      </span>)}
             {urls.length > 1 && <span> &nbsp;/&nbsp; </span>}
             {urls.length > 1 && <Link
                 style={{
@@ -83,6 +75,5 @@ export default function MyBreadcrumbs() {
             >
                 {urls[urls.length - 1]}
             </Link>}
-        </div>
-    );
+        </div>);
 }

@@ -8,17 +8,18 @@ import {ImageNotFound} from "../../../../assests/png";
 import './form-details.scss'
 import FormSubmission from "../FormSubmission";
 import FormEventMobileCard from "../mobile_view/FormEventMobileCard";
-
+import {EventState} from "../../../../EventContext";
 
 const FormDetails = () => {
     const {id} = useParams();
     const [childrenEvents, setChildrenEvents] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [parentEvent, setParentEvent] = useState({});
+    const {globalSelectedLanguage}=EventState();
     const getEventAndEventChildren = async () => {
         setIsLoading(true);
         try {
-            const {data} = await ApiClient.get(`event/user_children`, {params: {id}});
+            const {data} = await ApiClient.get(`event/user_children`, {params: {id,language_code:globalSelectedLanguage}});
             if (data?.success) {
                 setParentEvent(data?.data);
                 setChildrenEvents(data?.child_data);
@@ -40,7 +41,7 @@ const FormDetails = () => {
     useEffect(() => {
         console.log('form details is mounted')
         getEventAndEventChildren();
-    }, [id]);
+    }, [id,globalSelectedLanguage]);
     return (
         <div className={"form-event-details-main-container"}>
 

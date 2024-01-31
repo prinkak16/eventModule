@@ -11,16 +11,19 @@ import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal"
 import ReactLoader from "../../shared/loader/Loader";
 import Button from "@mui/material/Button";
 import {toast} from "react-toastify";
+import {useTranslation} from "react-i18next";
 
 
 const FormSubmission = () => {
+    const { t } = useTranslation();
+
     const navigate = useNavigate();
     const [eventDetails, setEventDetails] = useState({});
     const [eventSubmissionsData, setEventsubmissionsData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const {id} = useParams();
-    const {setEventName, setIsSubmissionPage} = EventState();
+    const {setEventName, setIsSubmissionPage,globalSelectedLanguage} = EventState();
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [eventDeleteId, setEventDeleteId] = useState(-1);
     const [confirmationStatus, setConfirmationStatus] = useState(false);
@@ -29,9 +32,12 @@ const FormSubmission = () => {
         console.log('form submission component mounted');
 
         (async () => {
+            const startDate =new Date();
             setIsLoading(true)
             try {
-                const {data} = await ApiClient.get(`/user/submissions/${id}`);
+                const {data} = await ApiClient.get(`/user/submissions/${id}`,{params: {language_code:globalSelectedLanguage}});
+                const endDate=new Date();
+                console.log('time difference is ',endTime-startTime);
                 if (data?.success) {
                     setEventDetails(data?.data?.events[0] ?? {})
                     setEventsubmissionsData(data?.data?.submissions)
@@ -54,7 +60,7 @@ const FormSubmission = () => {
         return () => {
             setIsLoading(false)
         }
-    }, []);
+    }, [globalSelectedLanguage]);
 
 
     //managing the global state , to make sure that we are on submission page 
@@ -112,7 +118,7 @@ const FormSubmission = () => {
             <div className="form-event-submissions">
                 {eventSubmissionsData?.length === 0 && <h3>No Event is submitted yet</h3>}
                 {eventSubmissionsData.length > 0 &&
-                    <div className="event-total-report">Total Reported : {eventSubmissionsData.length}</div>}
+                    <div className="event-total-report">{t("Total Reported")} : {eventSubmissionsData.length}</div>}
                 {eventSubmissionsData?.map((item, index) => <EventSubmissionCard index={index} data={item}
                                                                                  setShowConfirmationModal={setShowConfirmationModal}
                                                                                  key={index}
@@ -125,7 +131,7 @@ const FormSubmission = () => {
             {eventDetails?.status?.name?.toLowerCase() === 'active' &&
                 <div className="report-button-container">
                     <Button variant={"contained"} disabled={eventDetails?.status?.name?.toLowerCase() !== 'active'}
-                            className="report-event-button" onClick={reportEventHandler}>Report Event</Button>
+                            className="report-event-button" onClick={reportEventHandler}>{t("Report Event")}</Button>
 
                 </div>
             }

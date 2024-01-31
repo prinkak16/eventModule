@@ -5,8 +5,7 @@ import {createRoot} from "react-dom/client";
 import App from "../app/app";
 import {BrowserRouter} from "react-router-dom";
 import EventContext from "../app/EventContext";
-
-
+import '../app/i18n'
 export default class extends Controller {
     connect() {
         const app = document.getElementById("app");
