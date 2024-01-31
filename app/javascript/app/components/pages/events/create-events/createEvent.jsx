@@ -71,7 +71,9 @@ export default function CreateEvent({isEdit, editData}) {
     const [loader, setLoader] = useState(false);
 
     const [formFieldValue, setFormFieldValue] = useState({
-        selected_languages: ['english'],
+        selected_languages: [{
+            lang: "en", name: "English", value: "",
+        },],
         event_title: "",
         start_datetime: "",
         end_datetime: "",
@@ -84,7 +86,8 @@ export default function CreateEvent({isEdit, editData}) {
         parent_id: !isEdit && id ? id : null,     // here !isEdit is used because in case of edit event {id} from useParams() will be id of that current event which we are editing
         has_sub_event: false,
         inherit_from_parent: false,
-        status: ""
+        status: "",
+        translated_title: {}
     });
     const [openLanguageModal, setOpenLanguageModal] = useState(false);
     const [parentEventDetails, setParentEventDetails] = useState({
@@ -335,16 +338,16 @@ export default function CreateEvent({isEdit, editData}) {
 
     }
 
-    const handleSelectLanguage = (lang) => {
-        const value = lang.toLowerCase();
-        if (formFieldValue?.selected_languages?.includes(value)) {
-            const restSelectedLanguages = formFieldValue?.selected_languages?.filter((language) => language !== value);
+    const handleSelectLanguage = (language) => {
+        const containsIncomingLanguage = formFieldValue?.selected_languages?.some((item) => item?.lang === language?.lang);
+        if (containsIncomingLanguage) {
+            const restSelectedLanguages = formFieldValue?.selected_languages?.filter((item) => item?.lang !== language?.lang);
 
             setFormFieldValue((prevData) => ({...prevData, selected_languages: restSelectedLanguages}));
 
         } else {
             setFormFieldValue((prevData) => ({
-                ...prevData, selected_languages: [...formFieldValue?.selected_languages, value]
+                ...prevData, selected_languages: [...formFieldValue?.selected_languages, language]
             }))
         }
 
@@ -352,7 +355,7 @@ export default function CreateEvent({isEdit, editData}) {
 
 
     return (<div className="create-event-container">
-        <EventTitleModal openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}/>
+        <EventTitleModal openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}   languagesMap={formFieldValue?.selected_languages?.filter((language) => language?.lang !== 'en')}/>
         {loader ? <ReactLoader/> : (<></>)}
         <div className="container-adjust">
             <h3 className="font-weight-300">
@@ -360,12 +363,12 @@ export default function CreateEvent({isEdit, editData}) {
             </h3>
             <Box className="event-create-form-bg">
                 <div className={"language-select-container"}>
-                    {languages?.map((language) => <Chip onClick={() => handleSelectLanguage(language?.name)}
+                    {languages?.map((language) => <Chip onClick={() => handleSelectLanguage(language)}
                                                         label={language?.name} clickable className={"item"} style={{
                         height: "40px",
                         minWidth: "100px",
-                        background: (formFieldValue?.selected_languages?.includes(language?.name.toLowerCase())) ? "#163560" : "",
-                        color: (formFieldValue?.selected_languages?.includes(language?.name.toLowerCase())) ? "white" : "black",
+                        background: (formFieldValue?.selected_languages?.some((item) => item?.lang === language?.lang)) ? "#163560" : "",
+                        color: (formFieldValue?.selected_languages?.some((item) => item?.lang === language?.lang)) ? "white" : "black",
                     }}/>)}
                 </div>
                 {!isEdit && (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) &&
@@ -389,14 +392,14 @@ export default function CreateEvent({isEdit, editData}) {
                             <span style={{color: 'red'}}>*</span>
           </span>}
                     />
-                    {formFieldValue?.selected_languages?.filter((item)=>item!=='english')?.length > 0 && <IconButton onClick={() => {
-                        //removing english , because event title in english is already filled
-                        const arr = formFieldValue?.selected_languages?.filter((lang) => lang !== 'english')
-                        setSelectedLanguages(arr)
-                        setOpenLanguageModal(true)
-                    }} className={"language-button-container"}>
-                        <LanguageIcon className={"icon-button"}/>
-                    </IconButton>}
+                    {formFieldValue?.selected_languages?.filter((item) => item?.lang !== 'en')?.length > 0 &&
+                        <IconButton onClick={() => {
+                            //removing english , because event title in english is already filled
+
+                            setOpenLanguageModal(true)
+                        }} className={"language-button-container"}>
+                            <LanguageIcon className={"icon-button"}/>
+                        </IconButton>}
                 </div>
 
                 <LocalizationProvider dateAdapter={AdapterDayjs}>

@@ -46,8 +46,6 @@ export default function EventTitleModal({setOpenLanguageModal, openLanguageModal
     return (
         <Modal
             open={openLanguageModal}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
         >
             <Box sx={style} className={'event-title-main-container'}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
@@ -58,8 +56,8 @@ export default function EventTitleModal({setOpenLanguageModal, openLanguageModal
 
                     {
                         languages?.map((language) => <div className={'input-inner-container'}>
-                            <span>{language} title</span>
-                            <TextField multiline fullWidth sx={{maxWidth: "80%"}} name={language}
+                            <span>{language?.name} title</span>
+                            <TextField multiline fullWidth sx={{maxWidth: "80%"}} name={language?.lang}
                                        onChange={handleChange}/>
                         </div>)
                     }
