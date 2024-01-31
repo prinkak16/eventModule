@@ -1,21 +1,24 @@
-.event-title-main-container{
+.event-title-main-container {
   display: flex;
   flex-direction: column;
-  gap:10px;
-  .input-main-container{
-    flex:1;
+  gap: 10px;
+
+  .input-main-container {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap:10px;
+    gap: 10px;
+
     .input-inner-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap:10px;
+      gap: 10px;
     }
 
   }
-  .modal-buttons-container{
+
+  .modal-buttons-container {
     display: flex;
     width: 100%;
     justify-content: flex-end;
@@ -23,18 +26,19 @@
     gap: 0.5rem;
     align-self: flex-end;
 
-    .no-button{
-      border:none;
+    .no-button {
+      border: none;
       padding: 4px 25px;
-      border:1px solid #55545E;
-      color:#55545E;
+      border: 1px solid #55545E;
+      color: #55545E;
       border-radius: 7px;
     }
-    .yes-button{
-      border:none;
+
+    .yes-button {
+      border: none;
       padding: 4px 25px;
-      background:#55545E;
-      color:white;
+      background: #55545E;
+      color: white;
       border-radius: 7px;
 
 

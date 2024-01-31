@@ -1,18 +1,21 @@
-.event-details-main-container{
+.event-details-main-container {
   display: flex;
   flex-direction: column;
-  gap:20px;
-  .heading  {
+  gap: 20px;
+
+  .heading {
     font-family: Roboto;
     font-size: 24px;
     font-weight: 400;
-    color:#000000;
+    color: #000000;
   }
-  .add-event-button-container{
+
+  .add-event-button-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    .add-event-button{
+
+    .add-event-button {
       background-color: #2F2F2F;
       width: 235.44px;
       height: 50px;
@@ -21,12 +24,13 @@
 
     }
   }
-  .iframe-container{
+
+  .iframe-container {
     box-shadow: 10px 2px 20px rgba(0, 0, 0, 0.01);
 
     width: 100%;
 
   }
 
-  
+
 }

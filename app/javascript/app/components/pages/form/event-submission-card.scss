@@ -1,6 +1,7 @@
-.event-submission-card-container{
+.event-submission-card-container {
   display: flex;
-  .event-submission-card-details{
+
+  .event-submission-card-details {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -9,9 +10,11 @@
     height: 145px;
     border-radius: 10px;
     padding: 16px;
+
     .report-time-verified-icon-container {
       display: flex;
       justify-content: space-between;
+
       .report-time {
         font-family: Quicksand;
         font-size: 14px;
@@ -20,29 +23,33 @@
         color: #A19D9D;
 
       }
-      .verified-icon-container{
+
+      .verified-icon-container {
         width: 31.67px;
         height: 31.64px;
 
 
-        .verified-icon{
+        .verified-icon {
           width: 31.67px;
           height: 31.64px;
         }
       }
     }
-    .event-name{
+
+    .event-name {
       font-family: Quicksand;
       font-size: 24px;
       font-weight: 600;
 
 
     }
+
     .event-location-image-group-container {
       display: flex;
       justify-content: space-between;
+
       .event-location {
-        width:50%;
+        width: 50%;
 
         font-family: Quicksand;
         font-size: 16px;
@@ -68,7 +75,7 @@
           width: 50px;
           height: 50px;
           border-radius: 50%;
-          margin:0 3px;
+          margin: 0 3px;
           border: 1px solid #cfcdcd;
 
           .submission-image {
@@ -82,13 +89,14 @@
       }
     }
   }
-  .event-submission-card-action-icon{
+
+  .event-submission-card-action-icon {
     width: 210px;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
 
-    .event-submission-card-action-icon-child{
+    .event-submission-card-action-icon-child {
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -97,19 +105,19 @@
   }
 
 }
+
 @media screen and (max-width: 480px) {
 
-  .event-submission-card-container{
+  .event-submission-card-container {
     max-width: 100%;
     display: flex;
     flex-direction: column;
     background: #F7F7F7;
-    border-radius:10px;
-    padding:12px 16px;
+    border-radius: 10px;
+    padding: 12px 16px;
 
 
-
-    .event-submission-card-details{
+    .event-submission-card-details {
 
       display: flex;
       flex-direction: column;
@@ -117,27 +125,30 @@
       max-width: 100%;
       max-height: 170px;
       border-radius: 10px;
-      padding:0;
+      padding: 0;
       padding-bottom: 10px;
-      .report-time{
+
+      .report-time {
         font-family: Quicksand;
         font-size: 14px;
         font-weight: 400;
 
 
       }
-      .event-name{
+
+      .event-name {
         font-family: Quicksand;
         font-size: 24px;
         font-weight: 600;
 
 
       }
+
       .event-location-image-group-container {
         display: flex;
 
         .event-location {
-          width:50%;
+          width: 50%;
           font-family: Quicksand;
           font-size: 13px;
           font-weight: 500;
@@ -174,22 +185,24 @@
         }
       }
 
-      border-bottom:1px dotted #E8E6E6;
+      border-bottom: 1px dotted #E8E6E6;
 
     }
-    .event-submission-card-action-icon{
+
+    .event-submission-card-action-icon {
       width: 100%;
       display: flex;
       justify-content: space-around;
       align-items: center;
 
-      .event-submission-card-action-icon-child{
+      .event-submission-card-action-icon-child {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
       }
-      .event-submission-card-action-icon-child[disabled]{
+
+      .event-submission-card-action-icon-child[disabled] {
         opacity: 0.5;
         cursor: not-allowed;
       }

@@ -1,4 +1,4 @@
-import { ApiClient } from "../../BaseRestServices";
+import {ApiClient} from "../../BaseRestServices";
 
 /**
  * creates event
@@ -8,5 +8,5 @@ import { ApiClient } from "../../BaseRestServices";
  */
 
 export const createEvent = (body: any, params: object) => {
-  return ApiClient.post("/event/create", body, { params: params });
+    return ApiClient.post("/event/create", body, {params: params});
 };

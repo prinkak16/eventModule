@@ -1,14 +1,17 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {UploadIcon,CrossIcon} from '../../../assests/svg/index'
+import {CrossIcon, UploadIcon} from '../../../assests/svg/index'
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import './image-cropper.scss'
 import {IconButton} from "@mui/material";
-    const ImageCropper = ({handleImage,Initial_image, isEditable=false
-                          , isCard=false,eventStatus}) => {
+
+const ImageCropper = ({
+                          handleImage, Initial_image, isEditable = false
+                          , isCard = false, eventStatus
+                      }) => {
 
     const [finalImageFile, setFinalImageFile] = useState([])
-    const [showInitialImage,setShowInitialImage]=useState(isEditable);
+    const [showInitialImage, setShowInitialImage] = useState(isEditable);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isViewerOpen, setIsViewerOpen] = useState(false);
     const [imageToBeCropped, setImageToBeCropped] = useState(null);
@@ -69,9 +72,9 @@ import {IconButton} from "@mui/material";
             const widthFactor = canvasData.naturalWidth / canvasData.width;
             const heightFactor = canvasData.naturalHeight / canvasData.height;
             const cropData = `${cropBoxData.width * widthFactor}x${cropBoxData.height * heightFactor}+${(cropBoxData.left - cropBoxData.minLeft) * widthFactor}+${(cropBoxData.top - cropBoxData.minTop) * heightFactor}`
-           
-            console.log('file size ',file.size,' uncropped file size',pickedImage?.current.size );
-            setFinalImageFile   ([ {
+
+            console.log('file size ', file.size, ' uncropped file size', pickedImage?.current.size);
+            setFinalImageFile([{
                 file: file,
                 un_cropped_file: pickedImage.current,
                 aspect_ratio: aspectRatio,
@@ -88,19 +91,19 @@ import {IconButton} from "@mui/material";
     }
 
     useEffect(() => {
-            handleImage(finalImageFile)
-        
+        handleImage(finalImageFile)
+
     }, [finalImageFile])
 
     return (
         <div className={"image-cropper-container"}>
             <div>
                 {
-                    (Array.isArray(finalImageFile) && finalImageFile.length>0) ?
+                    (Array.isArray(finalImageFile) && finalImageFile.length > 0) ?
                         finalImageFile.map((image, index) => {
                             return (<div key={index} className="add-post-images-preview">
-                                <IconButton disabled={eventStatus==='expired'} className="cross-icon">
-                                    <CrossIcon onClick={() => handleImagesClose(index)}  disabled={true}/>
+                                <IconButton disabled={eventStatus === 'expired'} className="cross-icon">
+                                    <CrossIcon onClick={() => handleImagesClose(index)} disabled={true}/>
 
                                 </IconButton>
                                 <img
@@ -111,28 +114,27 @@ import {IconButton} from "@mui/material";
                                 />
                             </div>)
                         }) :
-                        showInitialImage?<div  className="add-post-images-preview">
-                            <IconButton disabled={eventStatus==='expired'} className="cross-icon">
+                        showInitialImage ? <div className="add-post-images-preview">
+                            <IconButton disabled={eventStatus === 'expired'} className="cross-icon">
                                 <CrossIcon onClick={() => {
                                     setShowInitialImage(false)
-                                    setFinalImageFile   ([])
-                                }} />
+                                    setFinalImageFile([])
+                                }}/>
                             </IconButton>
 
-            <img
-                src={Initial_image} style={{objectFit: "contain"}}
-                alt="Loading..."
-                className={"view-image"}
-            />
-        </div>:<></>
-    
-                        }
+                            <img
+                                src={Initial_image} style={{objectFit: "contain"}}
+                                alt="Loading..."
+                                className={"view-image"}
+                            />
+                        </div> : <></>
+
+                }
 
 
-
-                {!showInitialImage &&(finalImageFile.length < 1)&&<label htmlFor="image-input">
+                {!showInitialImage && (finalImageFile.length < 1) && <label htmlFor="image-input">
                     <div className='add-post-image-upload'>
-                        <UploadIcon className={"icon-style"} />
+                        <UploadIcon className={"icon-style"}/>
                     </div>
                 </label>
 
@@ -146,8 +148,10 @@ import {IconButton} from "@mui/material";
                 <div className={"cropperContainer"}>
                     <Cropper
                         src={imageToBeCropped}
-                        style={{flex: 1,     width: "600px",
-                            height: "300px"}}
+                        style={{
+                            flex: 1, width: "600px",
+                            height: "300px"
+                        }}
                         aspectRatio={aspectRatio.width / aspectRatio.height}
                         guides={false}
                         autoCrop={true}
@@ -161,7 +165,7 @@ import {IconButton} from "@mui/material";
 
                     <div className={"cropperActionsContainer"}>
 
-                       
+
                         <button type="button" className={"button btn-crop-image"} onClick={getCropData}>
                             Crop Image
                         </button>

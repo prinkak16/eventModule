@@ -51,12 +51,11 @@ const FormSubmission = () => {
         })();
 
 
-
         return () => {
             setIsLoading(false)
         }
     }, []);
-    
+
 
     //managing the global state , to make sure that we are on submission page 
     useEffect(() => {
@@ -123,12 +122,12 @@ const FormSubmission = () => {
 
                 />)}
             </div>
-            {eventDetails?.status?.name?.toLowerCase() === 'active'&&
-            <div className="report-button-container">
-                <Button variant={"contained"} disabled={eventDetails?.status?.name?.toLowerCase() !== 'active'}
-                        className="report-event-button" onClick={reportEventHandler}>Report Event</Button>
+            {eventDetails?.status?.name?.toLowerCase() === 'active' &&
+                <div className="report-button-container">
+                    <Button variant={"contained"} disabled={eventDetails?.status?.name?.toLowerCase() !== 'active'}
+                            className="report-event-button" onClick={reportEventHandler}>Report Event</Button>
 
-            </div>
+                </div>
             }
         </>}
     </Box>);

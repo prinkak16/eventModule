@@ -1,39 +1,41 @@
- .confirmation-modal-main-container{
-   position: absolute;
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
-   width: 400px;
-   border: none;
-   boxShadow: 24px;
-   background:white;
-   padding: 15px;
-   border-radius:15px;
+.confirmation-modal-main-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  border: none;
+  boxShadow: 24px;
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
 
- }
- 
-.confirmation-modal-container{
+}
+
+.confirmation-modal-container {
   display: flex;
- 
+
   flex-direction: column;
-  gap:50px;
-  .confirmation-modal-buttons{
+  gap: 50px;
+
+  .confirmation-modal-buttons {
     display: flex;
     width: 100%;
     justify-content: flex-end;
     align-items: center;
     gap: 0.5rem;
 
-    .no-button{
-      border:none;
-      border:1px solid #55545E;
-      color:#55545E;
+    .no-button {
+      border: none;
+      border: 1px solid #55545E;
+      color: #55545E;
       border-radius: 7px;
     }
-    .yes-button{
-      border:none;
-      background:#55545E;
-      color:white;
+
+    .yes-button {
+      border: none;
+      background: #55545E;
+      color: white;
       border-radius: 7px;
 
 
@@ -45,9 +47,9 @@
 
 
 @media screen and (max-width: 450px) {
-  .confirmation-modal-main-container{
-   width:300px;
+  .confirmation-modal-main-container {
+    width: 300px;
 
   }
-  
+
 }

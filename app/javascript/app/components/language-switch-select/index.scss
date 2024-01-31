@@ -1,18 +1,25 @@
-.language-select-main-container{
-  .inner-container{
+.language-select-main-container {
+  border:1px solid #cecece;
+  padding:4px;
+  border-radius: 8px;
+  .inner-container {
     display: flex;
-    gap:5px;
+    gap: 5px;
+    .select-styles{
+      outline: none;
+      border: none;
+      background: white;
+    }
 
-    
-    .language-icon-container{
+    .language-icon-container {
       display: flex;
-      background-color:#E3E3E3 ;
+      background-color: #E3E3E3;
       justify-content: center;
       align-items: center;
       border-radius: 5px;
-      padding:5px;
+      padding: 5px;
 
-      .language-icon{
+      .language-icon {
         width: 18px;
         height: 18px;
       }

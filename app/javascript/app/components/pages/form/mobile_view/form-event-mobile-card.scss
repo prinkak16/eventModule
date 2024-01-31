@@ -1,152 +1,162 @@
-.form-event-mobile-card-container{
+.form-event-mobile-card-container {
   max-width: 400px;
-  min-height:230px;
-  max-height:230px;
+  min-height: 230px;
+  max-height: 230px;
   background: #F7F7F7;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap:25px;
+  gap: 25px;
   border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3)  ;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 
 
-
-  .background-image-container{
+  .background-image-container {
     width: 100%;
     min-height: 230px;
     max-height: 230px;
-    border-radius:15px ;
+    border-radius: 15px;
 
 
-
-    .background-image{
+    .background-image {
       width: 100%;
       min-height: 230px;
       max-height: 230px;
 
-      border-radius:15px ;
+      border-radius: 15px;
 
 
     }
   }
-  .form-event-mobile-card{
+
+  .form-event-mobile-card {
 
     display: flex;
     flex-direction: column;
-    gap:5px;
-    min-width:95%;
+    gap: 5px;
+    min-width: 95%;
     max-width: 95%;
     max-height: 80px;
     min-height: 80px;
-    padding:8px;
+    padding: 8px;
     position: absolute;
-    top:60%;
-    background:white;
-    border-radius:12px;
+    top: 60%;
+    background: white;
+    border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: Quicksand;
     font-size: 14px;
     font-weight: 600;
-   
 
 
-
-    .form-event-name-location-container{
-        display: flex;
-        justify-content: space-between;
+    .form-event-name-location-container {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      .states-name{
-         display: flex;
-         align-items: center;
-        gap:0.4rem;
-         font-weight: 500;
-         font-size:10px;
-        .location-icon-container{
-          width:10px;
+
+      .states-name {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 500;
+        font-size: 10px;
+
+        .location-icon-container {
+          width: 10px;
           height: 15px;
-          color:#2F2F2F;
-;
+          color: #2F2F2F;;
         }
       }
-      .event-name{
-        
+
+      .event-name {
+
         font-family: Quicksand;
         font-weight: 600;
 
         font-size: 14px;
-         width: 45%;
+        width: 45%;
 
 
       }
     }
-    .form-event-level-date-time-container{
-      display:  flex;
-      .form-event-level-container{
+
+    .form-event-level-date-time-container {
+      display: flex;
+
+      .form-event-level-container {
         flex-grow: 2;
-        display:  flex;
+        display: flex;
         flex-direction: column;
         border-right: 1px solid #454444;
-        padding-right:8px;
-        .title {
-             text-align: center;
-             font-weight: 400;
-             font-size:10px;
-        }
-        .data{
-          text-align: center;
+        padding-right: 8px;
 
-          font-size:12px;
-        }
-
-      }
-      .form-event-date-container{
-        flex-grow: 2;
-        display:  flex;
-        flex-direction: column;
-        border-right: 1px solid #454444;
-        padding:0 5px;
         .title {
           text-align: center;
-
           font-weight: 400;
-          font-size:10px;
+          font-size: 10px;
         }
-        .data{
+
+        .data {
           text-align: center;
 
-          font-size:12px;
+          font-size: 12px;
         }
 
       }
-      .form-event-time-container{
+
+      .form-event-date-container {
         flex-grow: 2;
-        display:  flex;
+        display: flex;
         flex-direction: column;
-        padding:0 5px;
+        border-right: 1px solid #454444;
+        padding: 0 5px;
 
         .title {
           text-align: center;
 
           font-weight: 400;
-          font-size:10px;
+          font-size: 10px;
         }
-        .data{
+
+        .data {
           text-align: center;
 
-          font-size:12px;
+          font-size: 12px;
+        }
+
+      }
+
+      .form-event-time-container {
+        flex-grow: 2;
+        display: flex;
+        flex-direction: column;
+        padding: 0 5px;
+
+        .title {
+          text-align: center;
+
+          font-weight: 400;
+          font-size: 10px;
+        }
+
+        .data {
+          text-align: center;
+
+          font-size: 12px;
         }
       }
-      .form-event-status{
-        
+
+      .form-event-status {
+
       }
 
     }
-    .form-event-status{
-      margin:0;
+
+    .form-event-status {
+      margin: 0;
       padding: 0;
-      
+
     }
   }
 

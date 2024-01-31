@@ -1,38 +1,40 @@
-.routes-with-breadcrumbs-main-container{
-  padding:3rem  4rem;
+.routes-with-breadcrumbs-main-container {
+  padding: 3rem 4rem;
   box-sizing: border-box;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  .inner-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .inner-container {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap:30px;
+    gap: 30px;
   }
 
 }
 
 @media only screen and (max-width: 900px) {
-  .routes-with-breadcrumbs-main-container{
-    padding:2rem;
-    .inner-container{
+  .routes-with-breadcrumbs-main-container {
+    padding: 2rem;
+
+    .inner-container {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap:20px;
+      gap: 20px;
     }
 
   }
 }
 
 @media only screen and (max-width: 480px) {
-  .routes-with-breadcrumbs-main-container{
-    .inner-container{
+  .routes-with-breadcrumbs-main-container {
+    .inner-container {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap:20px;
+      gap: 20px;
     }
 
   }

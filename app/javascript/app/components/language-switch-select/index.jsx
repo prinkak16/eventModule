@@ -6,16 +6,16 @@ import {EventState} from "../../EventContext";
 import {LanguageIcon} from "../../assests/svg";
 import './index.scss'
 
-function LangaugeSwitchSelect({ supportedLanguages }) {
-    const {globalSelectedLanguage,setGlobalSelectedLanguage}=EventState();
+function LangaugeSwitchSelect({supportedLanguages}) {
+    const {globalSelectedLanguage, setGlobalSelectedLanguage} = EventState();
     /*const { lang, setLang } = useContext(LanguageContext);
     if (!supportedLanguages?.length) {
         return null;
     }*/
 
     const handleChange = (e) => {
-        const {value}=e?.target;
-        console.log('global language is ',value);
+        const {value} = e?.target;
+        console.log('global language is ', value);
         setGlobalSelectedLanguage(value);
     };
 
@@ -25,19 +25,19 @@ function LangaugeSwitchSelect({ supportedLanguages }) {
                 htmlFor="language"
                 className={"inner-container"}
             >
-                <div className={"language-icon-container"} >
-                    <LanguageIcon className={"language-icon"}/>
-
+                <div className={"language-icon-container"} id={"language"}>
+                    <LanguageIcon className={"language-icon"} id={"language"}/>
                 </div>
                 <select
                     id="language"
                     onChange={handleChange}
                     value={globalSelectedLanguage}
+                    className={'select-styles'}
                 >
                     {supportedLanguages?.map((lang) =>
-                            <option value={lang?.lang} key={lang?.lang}>
-                                {(lang?.name ?? "").toUpperCase()}
-                            </option>
+                        <option value={lang?.lang} key={lang?.lang}>
+                            {(lang?.name ?? "").toUpperCase()}
+                        </option>
                     )}
                 </select>
             </label>

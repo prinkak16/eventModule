@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import "./createEvent.scss";
 import {
     Autocomplete,
@@ -27,72 +27,35 @@ import ReactLoader from "../../../shared/loader/Loader";
 import EventTitleModal from "./modals/EventTitleModal";
 import {EventState} from "../../../../EventContext";
 
-export const languages = [
-    {
-        lang: "en",
-        name: "English",
-        value: "",
-    },
-    {
-        lang: "hn",
-        name: "Hindi",
-        value: "",
-    },
-    {
-        lang: "mr",
-        name: "Marathi",
-        value: "",
-    },
-    {
-        lang: "te",
-        name: "Telugu",
-        value: "",
-    },
-    {
-        lang: "kn",
-        name: "Kannada",
-        value: "",
-    },
-    {
-        lang: "ta",
-        name: "Tamil",
-        value: "",
-    },
-    {
-        lang: "bn",
-        name: "Bengali",
-        value: "",
-    },
-    {
-        lang: "or",
-        name: "Odia",
-        value: "",
-    },
-    {
-        lang: "gu",
-        name: "Gujarati",
-        value: "",
-    },
-    {
-        lang: "pa",
-        name: "Punjabi",
-        value: "",
-    },
-    {
-        lang: "ml",
-        name: "Malayalam",
-        value: "",
-    },
-    {
-        lang: "as",
-        name: "Assamese",
-        value: "",
-    },
-];
+export const languages = [{
+    lang: "en", name: "English", value: "",
+}, {
+    lang: "hn", name: "Hindi", value: "",
+}, {
+    lang: "mr", name: "Marathi", value: "",
+}, {
+    lang: "te", name: "Telugu", value: "",
+}, {
+    lang: "kn", name: "Kannada", value: "",
+}, {
+    lang: "ta", name: "Tamil", value: "",
+}, {
+    lang: "bn", name: "Bengali", value: "",
+}, {
+    lang: "or", name: "Odia", value: "",
+}, {
+    lang: "gu", name: "Gujarati", value: "",
+}, {
+    lang: "pa", name: "Punjabi", value: "",
+}, {
+    lang: "ml", name: "Malayalam", value: "",
+}, {
+    lang: "as", name: "Assamese", value: "",
+},];
 
 
 export default function CreateEvent({isEdit, editData}) {
-    const {setSelectedLanguages}=EventState();
+    const {setSelectedLanguages} = EventState();
     const {id} = useParams();
     const urlParams = new URLSearchParams(window.location.search);
     const publishedParamValue = urlParams.get('published');
@@ -108,7 +71,7 @@ export default function CreateEvent({isEdit, editData}) {
     const [loader, setLoader] = useState(false);
 
     const [formFieldValue, setFormFieldValue] = useState({
-        selected_languages:['english'],
+        selected_languages: ['english'],
         event_title: "",
         start_datetime: "",
         end_datetime: "",
@@ -121,16 +84,12 @@ export default function CreateEvent({isEdit, editData}) {
         parent_id: !isEdit && id ? id : null,     // here !isEdit is used because in case of edit event {id} from useParams() will be id of that current event which we are editing
         has_sub_event: false,
         inherit_from_parent: false,
-        status:""
+        status: ""
     });
-    const [openLanguageModal,setOpenLanguageModal]=useState(false);
-    const [parentEventDetails,setParentEventDetails]=useState({
-        start_datetime:null,
-        end_datetime:null,
-        level_id: "",
-        location_ids: [],
-        state_obj: [],
-        
+    const [openLanguageModal, setOpenLanguageModal] = useState(false);
+    const [parentEventDetails, setParentEventDetails] = useState({
+        start_datetime: null, end_datetime: null, level_id: "", location_ids: [], state_obj: [],
+
     })
 
     const requiredField = ["start_datetime"];
@@ -156,18 +115,18 @@ export default function CreateEvent({isEdit, editData}) {
                                 location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
                                 state_obj: data?.data[0]?.state_ids ?? [],
                                 has_sub_event: data?.data[0]?.has_sub_event,
-                                status: data?.data[0]?.status?.name??"",
+                                status: data?.data[0]?.status?.name ?? "",
                             }))
-                    }else{
+                    } else {
                         toast?.error('Faild to get event details')
                     }
                 } catch (e) {
-                     toast.error(e?.message);
+                    toast.error(e?.message);
                 }
 
             })();
         }
-        if(!isEdit) {
+        if (!isEdit) {
             (async () => {
                 try {
                     const {data} = await getEventById(id);
@@ -191,7 +150,6 @@ export default function CreateEvent({isEdit, editData}) {
             })();
 
         }
-
 
 
         getAllData();
@@ -229,7 +187,7 @@ export default function CreateEvent({isEdit, editData}) {
     }
     const getAllData = async () => {
         try {
-            const {data} = await getStates({parent_id:id});
+            const {data} = await getStates({parent_id: id});
             if (data?.success) {
                 setCountryStates(data?.data ?? []);
             }
@@ -241,10 +199,10 @@ export default function CreateEvent({isEdit, editData}) {
         try {
             const dataLevelResponse = await getDataLevels();
             if (dataLevelResponse?.data?.success) {
-             /*   if (dataLevelResponse?.data?.data?.length > 1 && !isEdit ) {
-                    const defaultId = dataLevelResponse?.data?.data[0]?.id;
-                    setFormFieldValue((prevData) => ({...prevData, level_id: defaultId}))
-                }*/
+                /*   if (dataLevelResponse?.data?.data?.length > 1 && !isEdit ) {
+                       const defaultId = dataLevelResponse?.data?.data[0]?.id;
+                       setFormFieldValue((prevData) => ({...prevData, level_id: defaultId}))
+                   }*/
 
                 setDataLevels(dataLevelResponse?.data?.data);
 
@@ -319,7 +277,6 @@ export default function CreateEvent({isEdit, editData}) {
     };
 
 
-
     const switchHandler = (e) => {
         setFormFieldValue((prevData) => ({...prevData, [e?.target?.name]: e?.target?.checked}))
 
@@ -354,20 +311,15 @@ export default function CreateEvent({isEdit, editData}) {
     const isNextButtonDisabled = () => {
 
         for (let key in formFieldValue) {
-            if(key==="status"){
-                continue;
-            }
-           else if (formFieldValue?.inherit_from_parent && (key === 'start_datetime' || key === 'end_datetime' || key === 'level_id' || key === 'state_obj'||key==="location_ids"))
-            {
-                continue;
-            }
-            else if (isEdit && key === "crop_data") {
-                    continue;
-                }
-            else if (key === 'parent_id' && formFieldValue[key] === null) {
-                continue;
-            }
-           else if (key === 'location_ids' || key === 'state_obj') {
+            if (key === "status") {
+
+            } else if (formFieldValue?.inherit_from_parent && (key === 'start_datetime' || key === 'end_datetime' || key === 'level_id' || key === 'state_obj' || key === "location_ids")) {
+
+            } else if (isEdit && key === "crop_data") {
+
+            } else if (key === 'parent_id' && formFieldValue[key] === null) {
+
+            } else if (key === 'location_ids' || key === 'state_obj') {
                 if (formFieldValue[key].length === 0) {
                     return true;
                 }
@@ -383,22 +335,24 @@ export default function CreateEvent({isEdit, editData}) {
 
     }
 
-    const handleSelectLanguage=(lang)=>{
-        const value=lang.toLowerCase();
-        if(formFieldValue?.selected_languages?.includes(value)){
-            const restSelectedLanguages=formFieldValue?.selected_languages?.filter((language)=>language!==value)   ;
+    const handleSelectLanguage = (lang) => {
+        const value = lang.toLowerCase();
+        if (formFieldValue?.selected_languages?.includes(value)) {
+            const restSelectedLanguages = formFieldValue?.selected_languages?.filter((language) => language !== value);
 
-            setFormFieldValue((prevData)=>({...prevData,selected_languages: restSelectedLanguages}));
+            setFormFieldValue((prevData) => ({...prevData, selected_languages: restSelectedLanguages}));
 
-        }else{
-            setFormFieldValue((prevData)=>({...prevData,selected_languages: [...formFieldValue?.selected_languages,value]}))
+        } else {
+            setFormFieldValue((prevData) => ({
+                ...prevData, selected_languages: [...formFieldValue?.selected_languages, value]
+            }))
         }
-        
+
     }
 
 
     return (<div className="create-event-container">
-        <EventTitleModal openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal} />
+        <EventTitleModal openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}/>
         {loader ? <ReactLoader/> : (<></>)}
         <div className="container-adjust">
             <h3 className="font-weight-300">
@@ -435,16 +389,14 @@ export default function CreateEvent({isEdit, editData}) {
                             <span style={{color: 'red'}}>*</span>
           </span>}
                     />
-                    {formFieldValue?.selected_languages?.length>1&&
-                        <IconButton onClick={()=> {
-                            //removing english , because event title in english is already filled
-                            const arr=formFieldValue?.selected_languages?.filter((lang)=>lang!=='english')
-                            setSelectedLanguages(arr)
-                            setOpenLanguageModal(true)
-                        }} className={"language-button-container"}>
-                            <LanguageIcon className={"icon-button"}/>
-                        </IconButton>
-                    }
+                    {formFieldValue?.selected_languages?.filter((item)=>item!=='english')?.length > 0 && <IconButton onClick={() => {
+                        //removing english , because event title in english is already filled
+                        const arr = formFieldValue?.selected_languages?.filter((lang) => lang !== 'english')
+                        setSelectedLanguages(arr)
+                        setOpenLanguageModal(true)
+                    }} className={"language-button-container"}>
+                        <LanguageIcon className={"icon-button"}/>
+                    </IconButton>}
                 </div>
 
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -500,8 +452,7 @@ export default function CreateEvent({isEdit, editData}) {
                     </h6>
                     {Array.isArray(dataLevels) && dataLevels.map((item, index) => (<button
                         className="level-button"
-                        key={index}
-                        disabled={isEdit || formFieldValue?.inherit_from_parent}
+                        key={index} disabled={isEdit || formFieldValue?.inherit_from_parent}
                         style={{
                             height: "40px",
                             width: "120px",
@@ -541,8 +492,7 @@ export default function CreateEvent({isEdit, editData}) {
                             setFormFieldValue((prevData) => {
                                 return {...prevData, has_sub_event: event.target.value === 'yes' ? true : false};
                             })
-                        }
-                        }
+                        }}
                     >
                         <FormControlLabel
                             disabled={isEdit}
@@ -603,17 +553,16 @@ export default function CreateEvent({isEdit, editData}) {
                     onClick={() => submit('save', id)}
                 > Save Event
                 </button>
-                {(!formFieldValue?.has_sub_event&&formFieldValue?.status?.toLowerCase()!=='expired') &&
-                    <button
-                        disabled={isNextButtonDisabled()}
-                        className="go-to-form-button"
-                        style={{
-                            background: "black", color: "white", height: "40px", width: "150px",
-                        }}
+                {(!formFieldValue?.has_sub_event && formFieldValue?.status?.toLowerCase() !== 'expired') && <button
+                    disabled={isNextButtonDisabled()}
+                    className="go-to-form-button"
+                    style={{
+                        background: "black", color: "white", height: "40px", width: "150px",
+                    }}
 
-                        onClick={() => submit('go_to_form', id)}
-                    > Go to form
-                    </button>}
+                    onClick={() => submit('go_to_form', id)}
+                > Go to form
+                </button>}
             </>)}
         </div>
     </div>);
