@@ -3,7 +3,7 @@ export const baseUrl = window.location.origin;
 
 export const ApiClient = axios.create({
   baseURL: `${baseUrl}/api/`,
-  timeout: 4000,
+  timeout: 30000,
   headers:{
     'Cache-Control': 'no-cache',
     'Pragma': 'no-cache',
