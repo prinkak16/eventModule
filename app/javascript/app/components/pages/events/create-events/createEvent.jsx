@@ -125,7 +125,7 @@ export default function CreateEvent({isEdit, editData}) {
                     const {data} = await getEventById(id);
                     if (data?.success) {
                         setImage(data?.data[0]?.image_url)
-                        // const keysarr=Object.keys(JSON.parse(data?.data?.[0]?.translated_title??{})??{});
+                         const keysarr=Object.keys(JSON.parse(data?.data?.[0]?.translated_title)??{});
                         // const newarr=allLanguages?.filter((item)=>keysarr.includes(item?.lang));
                         //     debugger;
                         setFormFieldValue((prevData) => ({
@@ -141,7 +141,7 @@ export default function CreateEvent({isEdit, editData}) {
                                 state_obj: data?.data[0]?.state_ids ?? [],
                                 has_sub_event: data?.data[0]?.has_sub_event,
                                 status: data?.data[0]?.status?.name ?? "",
-                                selected_languages: [...prevData?.selected_languages,...JSON.parse(data?.selected_languages)??[]],
+                                selected_languages: [...prevData?.selected_languages,...keysarr],
                                 translated_title: JSON.parse(data?.data[0]?.translated_title)??{}
                             }))
                     } else {
@@ -263,7 +263,6 @@ export default function CreateEvent({isEdit, editData}) {
         formData.append('has_sub_event', formFieldValue?.has_sub_event)
         formData?.append('inherit_from_parent', formFieldValue?.inherit_from_parent);
         formData?.append('translated_title',JSON.stringify(formFieldValue?.translated_title));
-        formData?.append('selected_languages',JSON.stringify(formFieldValue?.selected_languages));
         if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
             formData.append('parent_id', formFieldValue?.parent_id);
         }
@@ -355,7 +354,7 @@ export default function CreateEvent({isEdit, editData}) {
                 //if there are equal it means all respective event name is filled
 
                 // if length are equal , we will return false, so that save button can be enabled
-             return   Object.values(formFieldValue?.translated_title).filter(item=>Boolean(item)).length!==formFieldValue?.selected_languages?.filter(item=>item.lang!=='en')?.length;
+             return   Object.values(formFieldValue?.translated_title).filter(item=>Boolean(item)).length!==formFieldValue?.selected_languages?.filter(item=>item!=='en')?.length;
             }
             else if (isEdit && key === "crop_data") {
 
@@ -396,7 +395,7 @@ export default function CreateEvent({isEdit, editData}) {
 
 
     return (<div className="create-event-container">
-        <EventTitleModal setFormFieldValue={setFormFieldValue} openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}  translated_title={formFieldValue?.translated_title}   languagesMap={formFieldValue?.selected_languages?.filter((language) => language?.lang !== 'en')}/>
+        <EventTitleModal allLanguages={allLanguages} setFormFieldValue={setFormFieldValue} openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}  translated_title={formFieldValue?.translated_title}   languagesMap={formFieldValue?.selected_languages?.filter((language) => language !== 'en')} />
         {loader ? <ReactLoader/> : (<></>)}
         <div className="container-adjust">
             <h3 className="font-weight-300">

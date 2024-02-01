@@ -23,8 +23,9 @@ const style = {
 };
 
 
-export default function EventTitleModal({translated_title,setOpenLanguageModal, openLanguageModal,languagesMap,setFormFieldValue}) {
+export default function EventTitleModal({allLanguages,translated_title,setOpenLanguageModal, openLanguageModal,languagesMap,setFormFieldValue}) {
     const [inputData, setInputData] = useState(translated_title??{});
+    const [languageCodeMap,setLanguageCodeMap]=useState(new Map());
 
     const handleClose = () => {
         setFormFieldValue((prevData)=>({...prevData,translated_title:inputData}));
@@ -34,7 +35,20 @@ export default function EventTitleModal({translated_title,setOpenLanguageModal, 
 
    useEffect(()=>{
        setInputData(translated_title??{});
+
    },[translated_title])
+
+    useEffect(() => {
+        const newobj=new Map(languageCodeMap);
+        allLanguages?.forEach((item)=>{
+            if(languagesMap.includes(item?.lang)){
+                if(!newobj.has(item?.lang)) {
+                    newobj.set(item?.lang, item?.name);
+                }
+            }
+        })
+        setLanguageCodeMap(newobj)
+    }, [languagesMap]);
     const handleChange = (e) => {
         const {name, value} = e?.target;
         setInputData((prevData) => ({...prevData, [name]: value}));
@@ -66,8 +80,8 @@ export default function EventTitleModal({translated_title,setOpenLanguageModal, 
 
                     {
                         languagesMap?.map((language) => <div className={'input-inner-container'}>
-                            <span>{language?.name} title</span>
-                            <TextField multiline fullWidth sx={{maxWidth: "80%"}} value={inputData[language?.lang]} name={language?.lang}
+                            <span>{languageCodeMap.get(language)} title</span>
+                            <TextField multiline fullWidth sx={{maxWidth: "80%"}} value={inputData[language]} name={language}
                                        onChange={handleChange}/>
                         </div>)
                     }
