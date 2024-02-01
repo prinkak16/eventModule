@@ -118,7 +118,7 @@ const FormSubmission = () => {
             <div className="form-event-submissions">
                 {eventSubmissionsData?.length === 0 && <h3>No Event is submitted yet</h3>}
                 {eventSubmissionsData.length > 0 &&
-                    <div className="event-total-report">{t("Total Reported")} : {eventSubmissionsData.length}</div>}
+                    <div className="event-total-report">Total Reported : {eventSubmissionsData.length}</div>}
                 {eventSubmissionsData?.map((item, index) => <EventSubmissionCard index={index} data={item}
                                                                                  setShowConfirmationModal={setShowConfirmationModal}
                                                                                  key={index}
@@ -128,12 +128,12 @@ const FormSubmission = () => {
 
                 />)}
             </div>
-            {eventDetails?.status?.name?.toLowerCase() === 'active' &&
-                <div className="report-button-container">
-                    <Button variant={"contained"} disabled={eventDetails?.status?.name?.toLowerCase() !== 'active'}
-                            className="report-event-button" onClick={reportEventHandler}>{t("Report Event")}</Button>
+            {eventDetails?.status?.name?.toLowerCase() === 'active'&&
+            <div className="report-button-container">
+                <Button variant={"contained"} disabled={eventDetails?.status?.name?.toLowerCase() !== 'active'}
+                        className="report-event-button" onClick={reportEventHandler}>Report Event</Button>
 
-                </div>
+            </div>
             }
         </>}
     </Box>);
