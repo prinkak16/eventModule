@@ -3,6 +3,11 @@ class Api::TranslationController < ApplicationController
   def fetch_languages
     begin
       languages = [{
+                     "lang": "en",
+                     "name": "English",
+                     "value": ""
+                   },
+                   {
                      "lang": "hn",
                      "name": "Hindi",
                      "value": ""
