@@ -3,6 +3,7 @@ import "./createEvent.scss";
 import {
     Autocomplete,
     Box,
+    Button,
     Chip,
     FormControlLabel,
     IconButton,
@@ -11,6 +12,8 @@ import {
     Switch,
     TextField, Tooltip,
 } from "@mui/material";
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import dayjs from "dayjs";
 import InfoIcon from '@mui/icons-material/Info';
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
@@ -22,11 +25,25 @@ import {createEvent} from "../../../../services/RestServices/Modules/EventServic
 import {getAllLanguages, getDataLevels, getStates,} from "../../../../services/CommonServices/commonServices";
 import {ApiClient} from "../../../../services/RestServices/BaseRestServices";
 import {getEventById} from "../../../../services/RestServices/Modules/EventServices/EventsServices";
-import {LanguageIcon, NextIcon} from '../../../../assests/svg/index'
+import {LanguageIcon, LocationIconInfo, NextIcon} from '../../../../assests/svg/index'
 import ImageCroper from "../../../shared/image-croper/ImageCroper";
 import ReactLoader from "../../../shared/loader/Loader";
 import EventTitleModal from "./modals/EventTitleModal";
+import  { tooltipClasses } from '@mui/material/Tooltip';
+
 import {EventState} from "../../../../EventContext";
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+        backgroundColor: '#f5f5f9',
+        color: 'rgba(0, 0, 0, 0.87)',
+        minWidth:"100%",
+        fontSize: theme.typography.pxToRem(12),
+        border: '1px solid #dadde9',
+    },
+}));
 
 export const languages = [{
     lang: "en", name: "English", value: "",
@@ -96,6 +113,10 @@ export default function CreateEvent({isEdit, editData}) {
 
     })
 
+
+
+
+
     const requiredField = ["start_datetime"];
 
 
@@ -106,7 +127,10 @@ export default function CreateEvent({isEdit, editData}) {
                     const {data} = await getEventById(id);
                     if (data?.success) {
                         setImage(data?.data[0]?.image_url)
-                            setFormFieldValue((prevData) => ({
+                        // const keysarr=Object.keys(JSON.parse(data?.data?.[0]?.translated_title??{})??{});
+                        // const newarr=allLanguages?.filter((item)=>keysarr.includes(item?.lang));
+                        //     debugger;
+                        setFormFieldValue((prevData) => ({
                                 ...prevData,
                                 event_id: data?.data[0]?.id,
                                 event_title: data?.data[0]?.name,
@@ -387,12 +411,21 @@ export default function CreateEvent({isEdit, editData}) {
                         color: (formFieldValue?.selected_languages?.some((item) => item?.lang === language?.lang)) ? "white" : "black",
                     }}/>)}
                     {
-                        formFieldValue?.selected_languages?.filter((item) => item?.lang !== 'en')?.length > 0 &&  <Tooltip title="Please click on language icon to enter event name in other languages">
+                        formFieldValue?.selected_languages?.filter((item) => item?.lang !== 'en')?.length > 0 &&  <HtmlTooltip
+                            title={
+                                <React.Fragment>
+                                    <LocationIconInfo/>
+                                </React.Fragment>
+                            }
+                        >
                             <IconButton>
                                 <InfoIcon className={"info-icon"}/>
                             </IconButton>
-                        </Tooltip>
+                        </HtmlTooltip>
+
+
                     }
+
                 </div>
                 {!isEdit && (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) &&
                     <FormControlLabel control={<Switch name={"inherit_from_parent"} onChange={switchHandler}/>}

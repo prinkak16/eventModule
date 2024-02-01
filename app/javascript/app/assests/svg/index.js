@@ -14,10 +14,11 @@ import PrimaryEventIcon from '../svg/primaryEventIcon.svg';
 import IntermediateEventIcon from '../svg/intermediateEventIcon.svg';
 import LeafEventIcon from '../svg/leafEventIcon.svg';
 import LanguageIcon from '../svg/languageIcon.svg'
+import LocationIconInfo from '../svg/locationIconInfo.svg'
 
 export {
     CalenderIcon, GreendotIcon, ClockIcon, LocationIcon, EditIcon, ViewButtonIcon, EditButtonIcon,
     DeleteIcon, VerifiedIcon, UploadIcon, CrossIcon, NextIcon, PrimaryEventIcon, IntermediateEventIcon, LeafEventIcon,
-    LanguageIcon
+    LanguageIcon,LocationIconInfo
 
 };
