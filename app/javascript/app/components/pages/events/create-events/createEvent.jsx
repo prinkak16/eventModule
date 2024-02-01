@@ -69,6 +69,7 @@ export default function CreateEvent({isEdit, editData}) {
     const [image, setImage] = useState(null);
 
     const [loader, setLoader] = useState(false);
+    const [allLanguages,setAllLanguages]=useState([]);
 
     const [formFieldValue, setFormFieldValue] = useState({
         selected_languages: [{
@@ -188,7 +189,7 @@ export default function CreateEvent({isEdit, editData}) {
     const getLanguages=async ()=>{
         try{
             const {data}= await  getAllLanguages();
-            console.log('data of lang ',data);
+            setAllLanguages(data?.data);
         }catch (e) {
             console.log(e?.message);
         }
@@ -378,7 +379,7 @@ export default function CreateEvent({isEdit, editData}) {
             </h3>
             <Box className="event-create-form-bg">
                 <div className={"language-select-container"}>
-                    {languages?.map((language) => <Chip onClick={() => handleSelectLanguage(language)}
+                    {allLanguages?.map((language) => <Chip onClick={() => handleSelectLanguage(language)}
                                                         label={language?.name} clickable className={"item"} style={{
                         height: "40px",
                         minWidth: "100px",
