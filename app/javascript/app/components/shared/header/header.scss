@@ -1,11 +1,12 @@
 /* Header Container Start 🔥 */
-.navbar-container{
-  margin-left:auto;
+.navbar-container {
+  margin-left: auto;
   margin-right: auto;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .app-custom-header {
   background: #FFFFFF !important;
   display: flex;
@@ -14,6 +15,7 @@
   z-index: 100;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
 }
+
 .header-bg {
   box-shadow: 0 2px 20px rgb(0 0 0 / 15%);
   display: flex !important;
@@ -25,13 +27,15 @@
   width: 100%;
   z-index: 100;
 }
-.header-form-button-logout-container{
+
+.header-form-button-logout-container {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
 }
-.header-form-button{
+
+.header-form-button {
   display: flex !important;
   width: 152px;
   height: 40px;
@@ -44,8 +48,9 @@
   border: none;
   align-items: center;
 }
+
 .header-form-bg {
-  width: 100% !important ;
+  width: 100% !important;
   box-shadow: 0 2px 20px rgb(0 0 0 / 15%);
   display: flex !important;
   background-color: white !important;
@@ -54,34 +59,44 @@
   align-items: center;
   justify-content: center;
   position: sticky !important;
-  top:0;
+  top: 0;
 
-  .header-form-back-button{
+  .header-form-back-button {
     position: absolute;
-    left:10px;
+    left: 10px;
   }
-  .header-form-create-button{
-    display: block;
-    position: absolute;
-    right:10px;
-    width: 172px;
-    height: 40px;
 
-    background: #55545E !important;
-    font-weight: 600;
-    color: #ffffff;
-    border: none;
-    border-radius: 100px;
+  .header-form-button-and-lang-select-container {
+    display: flex;
+    gap: 10px;
+    position: absolute;
+    justify-content: center;
     align-items: center;
 
+    right: 10px;
+
+    .header-form-create-button {
+      padding: 8px 15px;
+      height: 40px;
+      background: #55545E !important;
+      font-weight: 500;
+      color: #ffffff;
+      border: none;
+      border-radius: 100px;
+      align-items: center;
+
+    }
   }
+
 }
-.header-img{
+
+.header-img {
   height: 75px;
   width: 75px;
   padding: 6px;
 }
-.user-header-image{
+
+.user-header-image {
   height: 30px;
   width: 30px;
   margin-left: 5px;
@@ -265,8 +280,7 @@
 
 
 /* Media Query Start */
-@media only screen and (min-width: 300px) and (max-width: 765px)
-and (-webkit-min-device-pixel-ratio: 1.5) {
+@media only screen and (min-width: 300px) and (max-width: 765px) and (-webkit-min-device-pixel-ratio: 1.5) {
   /*.navbar-header-icon {*/
   /*  display: none;*/
   /*}*/
@@ -288,8 +302,7 @@ and (-webkit-min-device-pixel-ratio: 1.5) {
   }
 }
 
-@media only screen and (min-width: 765px) and (max-width: 1042px)
-and (-webkit-min-device-pixel-ratio: 1.5) {
+@media only screen and (min-width: 765px) and (max-width: 1042px) and (-webkit-min-device-pixel-ratio: 1.5) {
   .language-setting-container {
     display: none;
   }
@@ -309,7 +322,8 @@ and (-webkit-min-device-pixel-ratio: 1.5) {
   pointer-events: none;
   opacity: 0.4;
 }
-.log-out{
+
+.log-out {
   font-family: Montserrat;
   font-style: normal;
   font-weight: 600;
@@ -321,7 +335,7 @@ and (-webkit-min-device-pixel-ratio: 1.5) {
 
 @media (width <=480px) {
   .header-form-bg {
-    .header-form-create-button{
+    .header-form-create-button {
       display: none;
 
     }

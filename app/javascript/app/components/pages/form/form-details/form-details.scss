@@ -1,15 +1,18 @@
-.form-event-details-main-container{
+.form-event-details-main-container {
   display: flex;
   flex-direction: column;
-  gap:20px;
-  .form-event-details-inner-container{
+  gap: 20px;
+
+  .form-event-details-inner-container {
     display: flex;
     flex-direction: column;
-    gap:20px;
-    .event-image-container{
+    gap: 20px;
+
+    .event-image-container {
       width: 100%;
       height: 310px;
-      .event-image{
+
+      .event-image {
         width: 100%;
         height: 100%;
         object-fit: contain;
@@ -17,7 +20,8 @@
 
       }
     }
-    .child-card-container{
+
+    .child-card-container {
       display: flex;
       flex-direction: column;
       align-items: center;

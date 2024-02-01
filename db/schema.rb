@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_07_064008) do
+ActiveRecord::Schema[7.0].define(version: 2024_01_25_083637) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -112,9 +112,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_07_064008) do
     t.bigint "created_by_id", null: false
     t.datetime "deleted_at"
     t.boolean "published", default: false
+    t.integer "parent_id"
+    t.boolean "has_sub_event", default: false
+    t.jsonb "translated_title"
     t.index ["created_by_id"], name: "index_events_on_created_by_id"
     t.index ["data_level_id"], name: "index_events_on_data_level_id"
     t.index ["deleted_at"], name: "index_events_on_deleted_at"
+    t.index ["translated_title"], name: "index_events_on_translated_title", using: :gin
   end
 
   create_table "saral_locatable_ad_ac_mappings", id: :bigint, default: -> { "nextval('saral_locatable_administrative_district_assembly_constit_id_seq'::regclass)" }, force: :cascade do |t|

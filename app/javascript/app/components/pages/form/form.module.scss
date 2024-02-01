@@ -12,34 +12,42 @@ body {
 
 
   padding-bottom: 100px;
+
   .MuiTablePagination-root {
     font-size: 20px;
   }
+
   .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar {
     align-items: baseline;
   }
 }
 
 .form-list-container {
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
+
 .list-name {
   display: flex;
   gap: 10px;
 }
+
 .svg-icon {
   width: 15px;
   height: 20px;
 }
+
 .date-time-location-container {
   flex-grow: 2;
   display: flex;
   gap: 15px;
 }
+
 .list-date {
 }
+
 .green-line {
   background: #61be7a;
   width: 2.63px;
@@ -47,13 +55,15 @@ body {
 
   border-radius: 3.16px;
 }
+
 .level-event-container {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  flex:1;
-  width:100%;
+  flex: 1;
+  width: 100%;
 }
+
 .home-search-div {
   display: flex;
   align-items: center;
@@ -75,6 +85,7 @@ body {
   border-radius: 8px;
   padding-left: 0.5rem;
   transition: none !important;
+
   .css-1q6at85-MuiInputBase-root-MuiOutlinedInput-root {
     font-family: Quicksand;
     font-size: 14px;
@@ -85,6 +96,7 @@ body {
   }
 
 }
+
 .css-1q6at85-MuiInputBase-root-MuiOutlinedInput-root {
   height: 40px;
 }
@@ -99,16 +111,15 @@ body {
 }
 
 
-
 .filters-container-main {
   width: 18%;
   background: #ffffff;
   border-radius: 1rem;
   position: fixed;
   right: 0;
-  height:80vh;
+  height: 80vh;
 
- 
+
 }
 
 .filters-container {
@@ -125,23 +136,26 @@ body {
 
 .filters-buttons {
   display: flex;
-  gap:0.5rem;
+  gap: 0.5rem;
   justify-content: space-between;
   align-items: center;
-  .clear-button{
-    width:119px;
-    height:32px;
-    color:#55545E;
-    border:1px solid #55545E;
-    border-radius:15px;
+
+  .clear-button {
+    width: 119px;
+    height: 32px;
+    color: #55545E;
+    border: 1px solid #55545E;
+    border-radius: 15px;
 
   }
-  .apply-button{
-    width:119px;
-    height:32px;
+
+  .apply-button {
+    width: 119px;
+    height: 32px;
     background-color: #55545E;
-    border-radius:15px;
-    color:white;
+    border-radius: 15px;
+    color: white;
+
     &:hover {
       background-color: #55545E;
       color: white;
@@ -203,6 +217,7 @@ body {
   letter-spacing: 0em;
 
 }
+
 .event-status-heading {
   display: block;
   text-align: center;
@@ -242,7 +257,8 @@ body {
 
 
 }
-.any-ellipsis{
+
+.any-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -257,12 +273,14 @@ body {
   height: 80px;
   box-shadow: 5px 2px 15px #e9e3e3;
   z-index: 55;
-  .form-event-back-button{
-       position: absolute;
-      left:0;
+
+  .form-event-back-button {
+    position: absolute;
+    left: 0;
   }
-  .form-event-name{
-    flex-grow: 2  ;
+
+  .form-event-name {
+    flex-grow: 2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -277,19 +295,21 @@ body {
   font-family: Quicksand;
   font-size: 14px;
   font-weight: 500;
- 
+
   text-align: center;
 
- .search-input .css-1d3z3hw-MuiOutlinedInput-notchedOutline{
+  .search-input .css-1d3z3hw-MuiOutlinedInput-notchedOutline {
     border: none !important;
     background: #f1f1f1;
     border-radius: 10px;
   }
+
   .search-input .css-i4bv87-MuiSvgIcon-root {
-    z-index:55;
+    z-index: 55;
   }
-  .search-input .css-1o9s3wi-MuiInputBase-input-MuiOutlinedInput-input   {
-    z-index:55;
+
+  .search-input .css-1o9s3wi-MuiInputBase-input-MuiOutlinedInput-input {
+    z-index: 55;
   }
 
 
@@ -323,11 +343,11 @@ body {
   display: flex;
   flex-direction: column;
   font-family: Quicksand;
-  font-size:0.625rem;
+  font-size: 0.625rem;
   font-weight: 500;
-  padding:1rem 0;
-  flex:1;
- 
+  padding: 1rem 0;
+  flex: 1;
+
   min-width: 40%;
 
 
@@ -341,8 +361,9 @@ body {
     text-overflow: ellipsis;
   }
 }
+
 .form-list-third {
-  padding:1rem 0;
+  padding: 1rem 0;
   margin-right: 15px;
 }
 
@@ -351,13 +372,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction:column;
+  flex-direction: column;
   text-align: center;
-  .event-list-icon{
+
+  .event-list-icon {
     width: 48px;
-    height:48px;
+    height: 48px;
   }
-  
+
 }
 
 .edit-bar-imgage {
@@ -378,12 +400,15 @@ body {
   font-size: 2rem;
   font-family: revert;
 }
+
 .active-bg {
   background-color: #caf5d6;
 }
+
 .upcoming-bg {
   background-color: #dbe4ff;
 }
+
 .expired-bg {
   background-color: #ffc3c3;
 }
@@ -391,12 +416,15 @@ body {
 .active-text {
   color: #1d6b32;
 }
+
 .upcoming-text {
   color: #294188;
 }
+
 .expired-text {
   color: #a82a2a;
 }
+
 .pagination {
   display: flex;
   align-items: baseline;

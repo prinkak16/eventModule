@@ -8,7 +8,6 @@ import {
     LocationIcon,
     PrimaryEventIcon
 } from "../../../../../../assests/svg";
-import {motion} from 'framer-motion'
 import moment from "moment";
 import {ImageNotFound} from "../../../../../../assests/png"
 import {useNavigate} from "react-router";

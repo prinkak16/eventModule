@@ -1,22 +1,20 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
-import {useNavigate,useLocation} from "react-router";
+import {useLocation, useNavigate} from "react-router";
 
-import {useEffect} from "react";
-
-const RedirectionComponent=()=>{
-     const navigate=useNavigate();
-     const {pathname}=useLocation();
+const RedirectionComponent = () => {
+    const navigate = useNavigate();
+    const {pathname} = useLocation();
 
 
     useEffect(() => {
         navigate('/forms')
     }, []);
-        return(
-            <div>
-                
-            </div>
-        )
+    return (
+        <div>
+
+        </div>
+    )
 }
 
-export  default  RedirectionComponent;
+export default RedirectionComponent;

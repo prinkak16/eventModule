@@ -10,53 +10,57 @@ import {EventState} from "../../../EventContext";
 import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
 import ReactLoader from "../../shared/loader/Loader";
 import Button from "@mui/material/Button";
+import {toast} from "react-toastify";
+import {useTranslation} from "react-i18next";
 
 
 const FormSubmission = () => {
+    const { t } = useTranslation();
+
     const navigate = useNavigate();
     const [eventDetails, setEventDetails] = useState({});
     const [eventSubmissionsData, setEventsubmissionsData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const {id} = useParams();
-    const {setEventName, setIsSubmissionPage} = EventState();
+    const {setEventName, setIsSubmissionPage,globalSelectedLanguage} = EventState();
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [eventDeleteId, setEventDeleteId] = useState(-1);
     const [confirmationStatus, setConfirmationStatus] = useState(false);
 
     useEffect(() => {
-
         (async () => {
+            const startDate =new Date();
             setIsLoading(true)
             try {
                 const {data} = await ApiClient.get(`/user/submissions/${id}`);
+                const endDate=new Date();
                 if (data?.success) {
                     setEventDetails(data?.data?.events[0] ?? {})
                     setEventsubmissionsData(data?.data?.submissions)
+                    setIsLoading(false)
                     if (data?.data?.events?.length > 0) {
                         setEventName(data?.data?.events[0]?.name);
                     }
 
                 }
+                console.log(`time to get data from submission api  is ${(endDate-startDate)/1000} sec`);
+
             } catch (error) {
-                console.log(error)
-            } finally {
+                toast.error('Failed to get user submissions')
+            }finally {
                 setIsLoading(false);
-
             }
-
-
         })();
-
-      
-
     }, []);
-    
 
+
+    //managing the global state , to make sure that we are on submission page 
     useEffect(() => {
         setIsSubmissionPage(true);
     }, []);
     const reportEventHandler = async () => {
+
         setIsLoading(true)
         try {
             const {data} = await ApiClient.get(`user/submit_event/${id}`);
@@ -106,12 +110,12 @@ const FormSubmission = () => {
             <div className="form-event-submissions">
                 {eventSubmissionsData?.length === 0 && <h3>No Event is submitted yet</h3>}
                 {eventSubmissionsData.length > 0 &&
-                    <div className="event-total-report">Total Reported : {eventSubmissionsData.length}</div>}
+                    <div className="event-total-report">{t("Total Reported")} : {eventSubmissionsData.length}</div>}
                 {eventSubmissionsData?.map((item, index) => <EventSubmissionCard index={index} data={item}
                                                                                  setShowConfirmationModal={setShowConfirmationModal}
                                                                                  key={index}
                                                                                  event={eventDetails}
-                                                                                 setIsLoading={setIsLoading}
+                                                                                  setIsLoading={setIsLoading}
                                                                                  setEventDeleteId={setEventDeleteId}
 
                 />)}
@@ -119,7 +123,7 @@ const FormSubmission = () => {
             {eventDetails?.status?.name?.toLowerCase() === 'active'&&
             <div className="report-button-container">
                 <Button variant={"contained"} disabled={eventDetails?.status?.name?.toLowerCase() !== 'active'}
-                        className="report-event-button" onClick={reportEventHandler}>Report Event</Button>
+                        className="report-event-button" onClick={reportEventHandler}>{t("Report Event")}</Button>
 
             </div>
             }
