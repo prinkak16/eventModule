@@ -133,7 +133,7 @@ class Api::EventController < Api::ApplicationController
           EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank? #only leaf event can create form
         end
         event = Event.find(event.id)
-        render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer ,state_id: nil, current_user: current_user) }, status: 200
+        render json: { success: true, message: "Event Submitted Successfully", selected_languages: params[:selected_languages] ,event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer ,state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
         raise ActiveRecord::Rollback
@@ -228,7 +228,7 @@ class Api::EventController < Api::ApplicationController
   def edit
     event = Event.where(id: params[:id])
     data = ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: '', current_user: current_user)
-    render json: { success: true, data: data, message: "successfull" }, status: :ok
+    render json: { success: true, data: data, message: "successfull", selected_languages: params[:selected_languages] }, status: :ok
   end
 
   def event_archive
