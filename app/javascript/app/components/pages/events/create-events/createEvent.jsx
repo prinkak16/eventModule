@@ -89,9 +89,7 @@ export default function CreateEvent({isEdit, editData}) {
     const [allLanguages,setAllLanguages]=useState([]);
 
     const [formFieldValue, setFormFieldValue] = useState({
-        selected_languages: [{
-            lang: "en", name: "English", value: "",
-        },],
+        selected_languages: ['en'],
         event_title: "",
         start_datetime: "",
         end_datetime: "",
@@ -380,9 +378,9 @@ export default function CreateEvent({isEdit, editData}) {
     }
 
     const handleSelectLanguage = (language) => {
-        const containsIncomingLanguage = formFieldValue?.selected_languages?.some((item) => item?.lang === language?.lang);
+        const containsIncomingLanguage = formFieldValue?.selected_languages?.some((item) => item === language?.lang);
         if (containsIncomingLanguage) {
-            const restSelectedLanguages = formFieldValue?.selected_languages?.filter((item) => item?.lang !== language?.lang);
+            const restSelectedLanguages = formFieldValue?.selected_languages?.filter((item) => item !== language?.lang);
             const modifiedTranslatedTitle={...formFieldValue?.translated_title};
             //when we unselect a language chip, we will remove its corresponding key-value pair of event-name from translated_title
             delete modifiedTranslatedTitle[language?.lang];
@@ -390,7 +388,7 @@ export default function CreateEvent({isEdit, editData}) {
 
         } else {
             setFormFieldValue((prevData) => ({
-                ...prevData, selected_languages: [...formFieldValue?.selected_languages, language]
+                ...prevData, selected_languages: [...formFieldValue?.selected_languages, language?.lang]
             }))
         }
 
@@ -410,11 +408,11 @@ export default function CreateEvent({isEdit, editData}) {
                                                         label={language?.name} clickable className={"item"} style={{
                         height: "40px",
                         minWidth: "100px",
-                        background: (formFieldValue?.selected_languages?.some((item) => item?.lang === language?.lang)) ? "#163560" : "",
-                        color: (formFieldValue?.selected_languages?.some((item) => item?.lang === language?.lang)) ? "white" : "black",
+                        background: (formFieldValue?.selected_languages?.some((item) => item === language?.lang)) ? "#163560" : "",
+                        color: (formFieldValue?.selected_languages?.some((item) => item === language?.lang)) ? "white" : "black",
                     }}/>)}
                     {
-                        formFieldValue?.selected_languages?.filter((item) => item?.lang !== 'en')?.length > 0 &&  <HtmlTooltip
+                        formFieldValue?.selected_languages?.filter((item) => item !== 'en')?.length > 0 &&  <HtmlTooltip
                             title={
                                 <React.Fragment>
                                     <LocationIconInfo/>
@@ -451,7 +449,7 @@ export default function CreateEvent({isEdit, editData}) {
                             <span style={{color: 'red'}}>*</span>
           </span>}
                     />
-                    {formFieldValue?.selected_languages?.filter((item) => item?.lang !== 'en')?.length > 0 &&
+                    {formFieldValue?.selected_languages?.filter((item) => item !== 'en')?.length > 0 &&
                         <IconButton onClick={() => {
                             //removing english , because event title in english is already filled
 
