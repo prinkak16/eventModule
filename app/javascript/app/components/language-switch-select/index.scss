@@ -1,4 +1,5 @@
 .language-select-main-container {
+  cursor: pointer;
   border:1px solid #cecece;
   padding:4px;
   border-radius: 8px;
@@ -6,6 +7,7 @@
     display: flex;
     gap: 5px;
     .select-styles{
+      cursor: pointer;
       outline: none;
       border: none;
       background: white;

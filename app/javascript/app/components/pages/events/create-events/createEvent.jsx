@@ -9,9 +9,10 @@ import {
     Radio,
     RadioGroup,
     Switch,
-    TextField,
+    TextField, Tooltip,
 } from "@mui/material";
 import dayjs from "dayjs";
+import InfoIcon from '@mui/icons-material/Info';
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
@@ -318,7 +319,14 @@ export default function CreateEvent({isEdit, editData}) {
 
             } else if (formFieldValue?.inherit_from_parent && (key === 'start_datetime' || key === 'end_datetime' || key === 'level_id' || key === 'state_obj' || key === "location_ids")) {
 
-            } else if (isEdit && key === "crop_data") {
+            } else if(key==='translated_title'){
+                // check if input translated_title length is equal to selected_languages length
+                //if there are equal it means all respective event name is filled
+
+                // if length are equal , we will return false, so that save button can be enabled
+             return   Object.values(formFieldValue?.translated_title).filter(item=>Boolean(item)).length!==formFieldValue?.selected_languages?.filter(item=>item.lang!=='en')?.length;
+            }
+            else if (isEdit && key === "crop_data") {
 
             } else if (key === 'parent_id' && formFieldValue[key] === null) {
 
@@ -355,7 +363,7 @@ export default function CreateEvent({isEdit, editData}) {
 
 
     return (<div className="create-event-container">
-        <EventTitleModal setFormFieldValue={setFormFieldValue} openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}   languagesMap={formFieldValue?.selected_languages?.filter((language) => language?.lang !== 'en')}/>
+        <EventTitleModal setFormFieldValue={setFormFieldValue} openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}  translated_title={formFieldValue?.translated_title}   languagesMap={formFieldValue?.selected_languages?.filter((language) => language?.lang !== 'en')}/>
         {loader ? <ReactLoader/> : (<></>)}
         <div className="container-adjust">
             <h3 className="font-weight-300">
@@ -370,6 +378,13 @@ export default function CreateEvent({isEdit, editData}) {
                         background: (formFieldValue?.selected_languages?.some((item) => item?.lang === language?.lang)) ? "#163560" : "",
                         color: (formFieldValue?.selected_languages?.some((item) => item?.lang === language?.lang)) ? "white" : "black",
                     }}/>)}
+                    {
+                        formFieldValue?.selected_languages?.filter((item) => item?.lang !== 'en')?.length > 0 &&  <Tooltip title="Please click on Language icon to enter other languages event name">
+                            <IconButton>
+                                <InfoIcon className={"info-icon"}/>
+                            </IconButton>
+                        </Tooltip>
+                    }
                 </div>
                 {!isEdit && (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) &&
                     <FormControlLabel control={<Switch name={"inherit_from_parent"} onChange={switchHandler}/>}

@@ -9,7 +9,7 @@ import '../app/i18n'
 export default class extends Controller {
     connect() {
         const app = document.getElementById("app");
-        createRoot(app).render(<BrowserRouter>
+        createRoot(app).render(<BrowserRouter basename={"/"}>
             <EventContext>
                 <App/>
             </EventContext>

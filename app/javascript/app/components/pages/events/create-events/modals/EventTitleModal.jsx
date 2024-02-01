@@ -23,10 +23,14 @@ const style = {
 };
 
 
-export default function EventTitleModal({setOpenLanguageModal, openLanguageModal,languagesMap,setFormFieldValue}) {
-    const handleClose = () => setOpenLanguageModal(false);
+export default function EventTitleModal({translated_title,setOpenLanguageModal, openLanguageModal,languagesMap,setFormFieldValue}) {
+    const handleClose = () => {
+        setFormFieldValue((prevData)=>({...prevData,translated_title:inputData}));
+        setOpenLanguageModal(false);
+    }
     const [languages, setLanguages] = useState([]);
-    const [inputData, setInputData] = useState({});
+    const [inputData, setInputData] = useState(translated_title??{});
+
 
 
     const handleChange = (e) => {
@@ -38,9 +42,14 @@ export default function EventTitleModal({setOpenLanguageModal, openLanguageModal
         setFormFieldValue((prevData)=>({...prevData,translated_title:inputData}));
         setOpenLanguageModal(false);
     }
-    useEffect(() => {
-        console.log('input data  is', inputData);
-    }, [inputData]);
+    const disableSaveButton=()=>{
+        // check if input data length is equal to selected languages length
+        //if there are equal it means all respective event name is filled
+
+        // if length are equal , we will return false, so that save button can be enabled
+        return  Object.values(inputData).filter(item=>Boolean(item)).length!==languagesMap?.length;
+    }
+
 
     return (
         <Modal
@@ -56,7 +65,7 @@ export default function EventTitleModal({setOpenLanguageModal, openLanguageModal
                     {
                         languagesMap?.map((language) => <div className={'input-inner-container'}>
                             <span>{language?.name} title</span>
-                            <TextField multiline fullWidth sx={{maxWidth: "80%"}} name={language?.lang}
+                            <TextField multiline fullWidth sx={{maxWidth: "80%"}} value={inputData[language?.lang]} name={language?.lang}
                                        onChange={handleChange}/>
                         </div>)
                     }
@@ -65,7 +74,7 @@ export default function EventTitleModal({setOpenLanguageModal, openLanguageModal
 
                 <div className="modal-buttons-container">
                     <Button variant={"outlined"} className="no-button" onClick={handleClose}>No</Button>
-                    <Button className="yes-button" onClick={handleSave}>Yes</Button>
+                    <button className="yes-button" onClick={handleSave} disabled={disableSaveButton()}>Yes</button>
                 </div>
             </Box>
         </Modal>

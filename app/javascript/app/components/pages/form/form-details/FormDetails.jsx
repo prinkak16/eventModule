@@ -38,7 +38,6 @@ const FormDetails = () => {
 
 
     useEffect(() => {
-        console.log('form details is mounted')
         getEventAndEventChildren();
     }, [id,globalSelectedLanguage]);
     return (

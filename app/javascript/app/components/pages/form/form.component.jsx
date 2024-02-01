@@ -15,8 +15,10 @@ import FormEventCard from "./FormEventCard";
 import {EventState} from "../../../EventContext";
 
 import ReactLoader from "../../shared/loader/Loader";
+import {useTranslation} from "react-i18next";
 
 const FormComponent = () => {
+    const {t}=useTranslation();
 
     const imgDefault =
         "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
@@ -127,7 +129,7 @@ const FormComponent = () => {
                         <TextField
                             className="search-input"
                             sx={{margin: "30px", width: "80%"}}
-                            placeholder="Search"
+                            placeholder={t("Search")}
                             variant="outlined"
                             value={searchEventName}
                             onChange={(e) => {
