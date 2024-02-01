@@ -15,3 +15,12 @@ export const getStates = (queryParams) => {
 export const getDataLevels = (queryParams) => {
     return ApiClient.get("/event/data_levels", {params: queryParams});
 };
+
+/**
+ *
+ */
+
+export const getAllLanguages=()=>{
+    return ApiClient.get('/event/languages');
+}
+

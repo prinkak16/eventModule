@@ -19,7 +19,7 @@ import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import {toast} from "react-toastify";
 import {useNavigate, useParams} from "react-router-dom";
 import {createEvent} from "../../../../services/RestServices/Modules/EventServices/CreateEventServices";
-import {getDataLevels, getStates,} from "../../../../services/CommonServices/commonServices";
+import {getAllLanguages, getDataLevels, getStates,} from "../../../../services/CommonServices/commonServices";
 import {ApiClient} from "../../../../services/RestServices/BaseRestServices";
 import {getEventById} from "../../../../services/RestServices/Modules/EventServices/EventsServices";
 import {LanguageIcon, NextIcon} from '../../../../assests/svg/index'
@@ -104,8 +104,7 @@ export default function CreateEvent({isEdit, editData}) {
                 try {
                     const {data} = await getEventById(id);
                     if (data?.success) {
-                        setImage(data?.data[0]?.image_url),
-
+                        setImage(data?.data[0]?.image_url)
                             setFormFieldValue((prevData) => ({
                                 ...prevData,
                                 event_id: data?.data[0]?.id,
@@ -148,15 +147,12 @@ export default function CreateEvent({isEdit, editData}) {
 
                 } catch (e) {
                     toast.error(e?.message);
-
                 }
             })();
 
         }
-
-
         getAllData();
-
+        getLanguages();
         return () => {
             setLoader(false)
         }
@@ -187,6 +183,15 @@ export default function CreateEvent({isEdit, editData}) {
             crop_data: finalImageAfterCropping[0]?.crop_data
         }))
 
+    }
+
+    const getLanguages=async ()=>{
+        try{
+            const {data}= await  getAllLanguages();
+            console.log('data of lang ',data);
+        }catch (e) {
+            console.log(e?.message);
+        }
     }
     const getAllData = async () => {
         try {
@@ -350,8 +355,10 @@ export default function CreateEvent({isEdit, editData}) {
         const containsIncomingLanguage = formFieldValue?.selected_languages?.some((item) => item?.lang === language?.lang);
         if (containsIncomingLanguage) {
             const restSelectedLanguages = formFieldValue?.selected_languages?.filter((item) => item?.lang !== language?.lang);
-
-            setFormFieldValue((prevData) => ({...prevData, selected_languages: restSelectedLanguages}));
+            const modifiedTranslatedTitle={...formFieldValue?.translated_title};
+            //when we unselect a language chip, we will remove its corresponding key-value pair of event-name from translated_title
+            delete modifiedTranslatedTitle[language?.lang];
+            setFormFieldValue((prevData) => ({...prevData, selected_languages: restSelectedLanguages,translated_title: modifiedTranslatedTitle}));
 
         } else {
             setFormFieldValue((prevData) => ({
@@ -379,7 +386,7 @@ export default function CreateEvent({isEdit, editData}) {
                         color: (formFieldValue?.selected_languages?.some((item) => item?.lang === language?.lang)) ? "white" : "black",
                     }}/>)}
                     {
-                        formFieldValue?.selected_languages?.filter((item) => item?.lang !== 'en')?.length > 0 &&  <Tooltip title="Please click on Language icon to enter other languages event name">
+                        formFieldValue?.selected_languages?.filter((item) => item?.lang !== 'en')?.length > 0 &&  <Tooltip title="Please click on language icon to enter event name in other languages">
                             <IconButton>
                                 <InfoIcon className={"info-icon"}/>
                             </IconButton>

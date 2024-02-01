@@ -6,9 +6,10 @@ import moment from "moment";
 import EllipsesComponent from "../../../../utils/EllipsesComponent";
 import Tooltip from "@mui/material/Tooltip";
 import {useNavigate} from "react-router";
+import {useTranslation} from "react-i18next";
 
 const FormEventMobileCard = ({event, index}) => {
-
+     const {t}=useTranslation();
     const navigate = useNavigate();
 
     const submissionHandler = (event_id) => {
@@ -50,7 +51,7 @@ const FormEventMobileCard = ({event, index}) => {
                             </span>
 
 
-                            <span className="title">Level</span>
+                            <span className="title">{t("Level")}</span>
 
 
                         </div>
@@ -61,7 +62,7 @@ const FormEventMobileCard = ({event, index}) => {
                                 />
                             </span>
 
-                            <span className="title">Date</span>
+                            <span className="title">{t("Date")}</span>
 
                         </div>
                         <div className="form-event-time-container">
@@ -74,7 +75,7 @@ const FormEventMobileCard = ({event, index}) => {
                                </span>
 
 
-                            <span className="title">Time</span>
+                            <span className="title">{t("Time")}</span>
                         </div>
                     </div>
 

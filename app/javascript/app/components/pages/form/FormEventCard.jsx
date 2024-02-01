@@ -5,9 +5,11 @@ import moment from "moment";
 import {ImageNotFound} from "../../../assests/png"
 import {useNavigate} from "react-router";
 import {motion} from 'framer-motion'
+import {useTranslation} from "react-i18next";
 
 
 const FormEventCard = ({event}) => {
+    const {t}=useTranslation();
 
     const zoomVariants = {
         initial: {scale: 1},
@@ -37,7 +39,7 @@ const FormEventCard = ({event}) => {
                     <div className="green-line"></div>
                     <div className="level-event-container">
                         <div>
-                            <span style={{color: " #66666699"}}>Level : </span>
+                            <span style={{color: " #66666699"}}>{t("Level")} : </span>
                             <span style={{color: "#FF9559"}}>{event?.data_level}</span>
                         </div>
 

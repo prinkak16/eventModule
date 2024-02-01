@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 /*
 import { useContext } from "react";
 import { LanguageContext } from "../../provider/language-provider";*/
@@ -17,6 +17,7 @@ function LangaugeSwitchSelect({supportedLanguages}) {
         i18n.changeLanguage(value);
         setGlobalSelectedLanguage(value);
     };
+
 
     return (
         <div className="language-select-main-container">

@@ -24,15 +24,17 @@ const style = {
 
 
 export default function EventTitleModal({translated_title,setOpenLanguageModal, openLanguageModal,languagesMap,setFormFieldValue}) {
+    const [inputData, setInputData] = useState(translated_title??{});
+
     const handleClose = () => {
         setFormFieldValue((prevData)=>({...prevData,translated_title:inputData}));
         setOpenLanguageModal(false);
     }
-    const [languages, setLanguages] = useState([]);
-    const [inputData, setInputData] = useState(translated_title??{});
 
 
-
+   useEffect(()=>{
+       setInputData(translated_title??{});
+   },[translated_title])
     const handleChange = (e) => {
         const {name, value} = e?.target;
         setInputData((prevData) => ({...prevData, [name]: value}));
