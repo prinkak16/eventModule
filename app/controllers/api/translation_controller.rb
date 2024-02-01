@@ -2,9 +2,67 @@ class Api::TranslationController < ApplicationController
 
   def fetch_languages
     begin
-      languages = ['English', 'Hindi', 'Marathi', 'Telugu', 'Kannada', 'Tamil', 'Bengali', 'Odia', 'Gujarati', 'Punjabi', 'Malayalam', 'Assamese'].freeze
-      language_codes = ['en', 'hn', 'mr', 'te', 'kn', 'ta', 'bn', 'or', 'gu', 'pa', 'ml', 'as'].freeze
-      render json: { success: true, message: "Request Processed Successfully", languages: languages, language_codes: language_codes }, status: :ok
+      languages = [{
+                     "lang": "en",
+                     "name": "English",
+                     "value": ""
+                   },
+                   {
+                     "lang": "hn",
+                     "name": "Hindi",
+                     "value": ""
+                   },
+                   {
+                     "lang": "mr",
+                     "name": "Marathi",
+                     "value": ""
+                   },
+                   {
+                     "lang": "te",
+                     "name": "Telugu",
+                     "value": ""
+                   },
+                   {
+                     "lang": "kn",
+                     "name": "Kannada",
+                     "value": ""
+                   },
+                   {
+                     "lang": "ta",
+                     "name": "Tamil",
+                     "value": ""
+                   },
+                   {
+                     "lang": "bn",
+                     "name": "Bengali",
+                     "value": ""
+                   },
+                   {
+                     "lang": "or",
+                     "name": "Odia",
+                     "value": ""
+                   },
+                   {
+                     "lang": "gu",
+                     "name": "Gujarati",
+                     "value": ""
+                   },
+                   {
+                     "lang": "pa",
+                     "name": "Punjabi",
+                     "value": ""
+                   },
+                   {
+                     "lang": "ml",
+                     "name": "Malayalam",
+                     "value": ""
+                   },
+                   {
+                     "lang": "as",
+                     "name": "Assamese",
+                     "value": ""
+                   }]
+      render json: { success: true, message: "Request Processed Successfully", data: languages }, status: :ok
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end
