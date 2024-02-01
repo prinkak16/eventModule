@@ -143,6 +143,8 @@ export default function CreateEvent({isEdit, editData}) {
                                 state_obj: data?.data[0]?.state_ids ?? [],
                                 has_sub_event: data?.data[0]?.has_sub_event,
                                 status: data?.data[0]?.status?.name ?? "",
+                                selected_languages: [...prevData?.selected_languages,...JSON.parse(data?.selected_languages)??[]],
+                                translated_title: JSON.parse(data?.data[0]?.translated_title)??{}
                             }))
                     } else {
                         toast?.error('Faild to get event details')
@@ -263,6 +265,7 @@ export default function CreateEvent({isEdit, editData}) {
         formData.append('has_sub_event', formFieldValue?.has_sub_event)
         formData?.append('inherit_from_parent', formFieldValue?.inherit_from_parent);
         formData?.append('translated_title',JSON.stringify(formFieldValue?.translated_title));
+        formData?.append('selected_languages',JSON.stringify(formFieldValue?.selected_languages));
         if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
             formData.append('parent_id', formFieldValue?.parent_id);
         }
