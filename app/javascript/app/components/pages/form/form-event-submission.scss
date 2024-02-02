@@ -1,204 +1,219 @@
-  .form-event-submission-container{
-    width: 100%;
-    background: white;
-    border-radius: 0 0 15px 15px;
-    padding-bottom: 100px;
-    display: flex;
-    flex-direction: column;
-    gap:20px;
-    .MuiTablePagination-root {
+.form-event-submission-container {
+  width: 100%;
+  background: white;
+  border-radius: 0 0 15px 15px;
+  padding-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .MuiTablePagination-root {
     font-size: 20px;
 
   }
+
   .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar {
     align-items: baseline;
   }
 
 
-    .event-name-heading-container{
-      position: sticky;
-      top:0;
-      background:white;
-      width: 100%;
-      height: 80px;
+  .event-name-heading-container {
+    position: sticky;
+    top: 0;
+    background: white;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 5px 2px 15px #e9e3e3;
+
+    .form-event-back-button {
+      padding: 0 10px;
+
+    }
+
+    .event-name-heading {
+      flex-grow: 2;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow:5px 2px 15px #e9e3e3 ;
-      .form-event-back-button{
-       padding:0 10px;
 
-      }
-
-      .event-name-heading{
-
-        flex-grow: 2  ;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-
-      }
 
     }
 
-    .event-image-container{
+  }
+
+  .event-image-container {
+    width: 100%;
+    height: 310px;
+
+    .event-image {
       width: 100%;
-      height: 310px;
-      .event-image{
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
+      height: 100%;
+      object-fit: contain;
 
 
-      }
+    }
+  }
+
+  .event-total-report {
+    align-self: flex-start;
+    font-family: Quicksand;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 14px;
+    letter-spacing: 0em;
+    color: #949494;
+  }
+
+  .form-event-submissions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .report-button-container {
+    position: sticky;
+    bottom: 50px;
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .report-event-button {
+      border: none;
+      background: #2F2F2F;
+      color: white;
+      padding: 10px 50px;
+      border-radius: 10px;
     }
 
-    .event-total-report{
-      align-self: flex-start;
-      font-family: Quicksand;
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 14px;
-      letter-spacing: 0em;
-      color:#949494;
+    .report-event-button[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
-    .form-event-submissions{
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap:16px;
-      justify-content: center;
-      align-items: center;
-    }
-    .report-button-container{
-      position: sticky;
-      bottom: 50px;
-      margin-top: 40px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      .report-event-button{
-        border:none;
-        background: #2F2F2F;
-        color:white;
-        padding:10px 50px;
-        border-radius: 10px;
-      }
-      .report-event-button[disabled] {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
+  }
 
 }
 
 
-  @media screen and (width <=480px) {
-    .form-event-submission-container{
+@media screen and (width <=480px) {
+  .form-event-submission-container {
 
+    width: 100%;
+
+    background: white;
+    border-radius: 0 0 15px 15px;
+    padding-bottom: 40px;
+    /**
+         .MuiTablePagination-root {
+      font-size: 20px;
+    }
+    .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar {
+      align-items: baseline;
+    }
+     */
+
+    .event-name-heading-container {
+      position: relative;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 5px 2px 15px #e9e3e3;
+
+      .form-event-back-button {
+        padding: 0 10px;
+
+      }
+
+      .event-name-heading {
+
+        flex-grow: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+
+      }
+
+    }
+
+    .event-image-container {
       width: 100%;
+      height: 200px;
 
-      background: white;
-      border-radius: 0 0 15px 15px;
-      padding-bottom: 40px;
-      /**
-           .MuiTablePagination-root {
-        font-size: 20px;
-      }
-      .css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar {
-        align-items: baseline;
-      }
-       */
-
-      .event-name-heading-container{
-        position: relative;
-        height: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow:5px 2px 15px #e9e3e3 ;
-        .form-event-back-button{
-          padding:0 10px;
-
-        }
-
-        .event-name-heading{
-
-          flex-grow: 2  ;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-
-        }
-
-      }
-      .event-image-container{
+      .event-image {
         width: 100%;
-        height: 200px;
-        .event-image{
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
+        height: 100%;
+        object-fit: contain;
 
-        }
       }
+    }
 
-      .event-total-report{
-        align-self: flex-start;
-        font-family: Quicksand;
-        font-size: 16px;
-        font-weight: 600;
+    .event-total-report {
+      align-self: flex-start;
+      font-family: Quicksand;
+      font-size: 16px;
+      font-weight: 600;
 
-        color:#949494;
-      }
-      .form-event-submissions{
-        display: flex;
-        flex-direction: column;
-        gap:16px;
-        justify-content: center;
-        align-items: center;
-      }
-      .report-button-container{
-        position: sticky;
-        bottom: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+      color: #949494;
+    }
+
+    .form-event-submissions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .report-button-container {
+      position: sticky;
+      bottom: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: 20px;
+      margin-top: 0;
+
+      .report-event-button {
+        border: none;
+        background: #2F2F2F;
+        color: white;
+        max-height: 44px;
+        border-radius: 10px;
         width: 100%;
-        padding:20px;
-        margin-top: 0;
-        .report-event-button{
-          border:none;
-          background: #2F2F2F;
-          color:white;
-          max-height: 44px;
-          border-radius: 10px;
-          width: 100%;
-        }
-
-      }
-      .report-button-container[disabled]{
-        opacity: 0.5;
-        cursor: not-allowed;
       }
 
     }
 
+    .report-button-container[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
   }
-  @media screen and (width=414px) {
-    .form-event-submission-container{
-      .report-button-container{
-        position: sticky;
-        bottom: 45px;
 
 
-      }
+}
+
+@media screen and (width=414px) {
+  .form-event-submission-container {
+    .report-button-container {
+      position: sticky;
+      bottom: 45px;
+
 
     }
 
-
   }
+
+
+}
 

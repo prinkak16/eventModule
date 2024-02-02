@@ -1,0 +1,31 @@
+.language-select-main-container {
+  cursor: pointer;
+  border:1px solid #cecece;
+  padding:4px;
+  border-radius: 8px;
+  .inner-container {
+    display: flex;
+    gap: 5px;
+    .select-styles{
+      cursor: pointer;
+      outline: none;
+      border: none;
+      background: white;
+    }
+
+    .language-icon-container {
+      display: flex;
+      background-color: #E3E3E3;
+      justify-content: center;
+      align-items: center;
+      border-radius: 5px;
+      padding: 5px;
+
+      .language-icon {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+}

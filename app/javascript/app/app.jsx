@@ -1,60 +1,56 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import "./app.scss";
-import { Navigate, useLocation, useParams } from "react-router";
-import HomeComponent from "./components/pages/home/home.component";
+import {useLocation, useNavigate} from "react-router";
 
-import { ToastContainer, toast } from "react-toastify";
+import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import HeaderBar from "./components/shared/header/header";
-
-import {useNavigate} from "react-router";
 import Router from "./Routes";
 
 const paths = ["forms",];
 
 
-function    App() {
-  const navigate=useNavigate();
-  const { pathname } = useLocation();
+function App() {
+    const navigate = useNavigate();
+    const {pathname} = useLocation();
 
-  const [showNavbar, setShowNavbar] = useState(true);
+    const [showNavbar, setShowNavbar] = useState(true);
 
-  const toggleNavbar = () => {
-    const isValid = paths.some((item) => pathname.includes(item));
-    if (isValid) {
-      setShowNavbar(false);
-    } else {
-      setShowNavbar(true);                                                            
-    }
-  };
+    const toggleNavbar = () => {
+        const isValid = paths.some((item) => pathname.includes(item));
+        if (isValid) {
+            setShowNavbar(false);
+        } else {
+            setShowNavbar(true);
+        }
+    };
 
 
-  const customToastStyle = {
-    minWidth:"40%",
-    maxWidth:"100%",
-  };
-  useEffect(() => {
-    toggleNavbar();
-  }, [pathname]);
+    const customToastStyle = {
+        minWidth: "40%",
+        maxWidth: "100%",
+    };
+    useEffect(() => {
+        toggleNavbar();
+    }, [pathname]);
 
- 
-  return (  
-    <div className={!showNavbar?"outer-form-div":""}>
-       <HeaderBar />
-        <Router />
-      <ToastContainer theme="colored"
-                      hideProgressBar={true}
-                      autoClose={3000}
-                      closeOnClick
-                      pauseOnHover
-                      style={customToastStyle}
-      />
-    </div>
-  );
+
+    return (
+        <div className={!showNavbar ? "outer-form-div" : ""}>
+            <HeaderBar/>
+            <Router/>
+            <ToastContainer theme="colored"
+                            hideProgressBar={true}
+                            autoClose={3000}
+                            closeOnClick
+                            pauseOnHover
+                            style={customToastStyle}
+            />
+        </div>
+    );
 }
 
 export default App;

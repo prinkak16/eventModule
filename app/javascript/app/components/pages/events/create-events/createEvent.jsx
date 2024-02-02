@@ -1,19 +1,76 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import "./createEvent.scss";
-import {Autocomplete, Box, FormControlLabel, Radio, RadioGroup, Switch, TextField,} from "@mui/material";
+import {
+    Autocomplete,
+    Box,
+    Button,
+    Chip,
+    FormControlLabel,
+    IconButton,
+    Radio,
+    RadioGroup,
+    Switch,
+    TextField, Tooltip,
+} from "@mui/material";
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import dayjs from "dayjs";
+import InfoIcon from '@mui/icons-material/Info';
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import {toast} from "react-toastify";
 import {useNavigate, useParams} from "react-router-dom";
 import {createEvent} from "../../../../services/RestServices/Modules/EventServices/CreateEventServices";
-import {getDataLevels, getStates,} from "../../../../services/CommonServices/commonServices";
+import {getAllLanguages, getDataLevels, getStates,} from "../../../../services/CommonServices/commonServices";
 import {ApiClient} from "../../../../services/RestServices/BaseRestServices";
 import {getEventById} from "../../../../services/RestServices/Modules/EventServices/EventsServices";
-import {NextIcon} from '../../../../assests/svg/index'
+import {LanguageIcon, LocationIconInfo, NextIcon} from '../../../../assests/svg/index'
 import ImageCroper from "../../../shared/image-croper/ImageCroper";
 import ReactLoader from "../../../shared/loader/Loader";
+import EventTitleModal from "./modals/EventTitleModal";
+import  { tooltipClasses } from '@mui/material/Tooltip';
+
+import {EventState} from "../../../../EventContext";
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+        backgroundColor: '#f5f5f9',
+        color: 'rgba(0, 0, 0, 0.87)',
+        minWidth:"100%",
+        fontSize: theme.typography.pxToRem(12),
+        border: '1px solid #dadde9',
+    },
+}));
+
+export const languages = [{
+    lang: "en", name: "English", value: "",
+}, {
+    lang: "hn", name: "Hindi", value: "",
+}, {
+    lang: "mr", name: "Marathi", value: "",
+}, {
+    lang: "te", name: "Telugu", value: "",
+}, {
+    lang: "kn", name: "Kannada", value: "",
+}, {
+    lang: "ta", name: "Tamil", value: "",
+}, {
+    lang: "bn", name: "Bengali", value: "",
+}, {
+    lang: "or", name: "Odia", value: "",
+}, {
+    lang: "gu", name: "Gujarati", value: "",
+}, {
+    lang: "pa", name: "Punjabi", value: "",
+}, {
+    lang: "ml", name: "Malayalam", value: "",
+}, {
+    lang: "as", name: "Assamese", value: "",
+},];
+
 
 export default function CreateEvent({isEdit, editData}) {
     const {id} = useParams();
@@ -29,8 +86,10 @@ export default function CreateEvent({isEdit, editData}) {
     const [image, setImage] = useState(null);
 
     const [loader, setLoader] = useState(false);
+    const [allLanguages,setAllLanguages]=useState([]);
 
     const [formFieldValue, setFormFieldValue] = useState({
+        selected_languages: ['en'],
         event_title: "",
         start_datetime: "",
         end_datetime: "",
@@ -43,16 +102,18 @@ export default function CreateEvent({isEdit, editData}) {
         parent_id: !isEdit && id ? id : null,     // here !isEdit is used because in case of edit event {id} from useParams() will be id of that current event which we are editing
         has_sub_event: false,
         inherit_from_parent: false,
-        status:""
+        status: "",
+        translated_title: {}
     });
-    const [parentEventDetails,setParentEventDetails]=useState({
-        start_datetime:null,
-        end_datetime:null,
-        level_id: "",
-        location_ids: [],
-        state_obj: [],
-        
+    const [openLanguageModal, setOpenLanguageModal] = useState(false);
+    const [parentEventDetails, setParentEventDetails] = useState({
+        start_datetime: null, end_datetime: null, level_id: "", location_ids: [], state_obj: [],
+
     })
+
+
+
+
 
     const requiredField = ["start_datetime"];
 
@@ -63,9 +124,11 @@ export default function CreateEvent({isEdit, editData}) {
                 try {
                     const {data} = await getEventById(id);
                     if (data?.success) {
-                        setImage(data?.data[0]?.image_url),
-
-                            setFormFieldValue((prevData) => ({
+                        setImage(data?.data[0]?.image_url)
+                         const keysarr=Object.keys(JSON.parse(data?.data?.[0]?.translated_title)??{});
+                        // const newarr=allLanguages?.filter((item)=>keysarr.includes(item?.lang));
+                        //     debugger;
+                        setFormFieldValue((prevData) => ({
                                 ...prevData,
                                 event_id: data?.data[0]?.id,
                                 event_title: data?.data[0]?.name,
@@ -77,18 +140,20 @@ export default function CreateEvent({isEdit, editData}) {
                                 location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
                                 state_obj: data?.data[0]?.state_ids ?? [],
                                 has_sub_event: data?.data[0]?.has_sub_event,
-                                status: data?.data[0]?.status?.name??"",
+                                status: data?.data[0]?.status?.name ?? "",
+                                selected_languages: [...prevData?.selected_languages,...keysarr],
+                                translated_title: JSON.parse(data?.data[0]?.translated_title)??{}
                             }))
-                    }else{
+                    } else {
                         toast?.error('Faild to get event details')
                     }
                 } catch (e) {
-                     toast.error(e?.message);
+                    toast.error(e?.message);
                 }
 
             })();
         }
-        if(!isEdit) {
+        if (!isEdit) {
             (async () => {
                 try {
                     const {data} = await getEventById(id);
@@ -107,16 +172,12 @@ export default function CreateEvent({isEdit, editData}) {
 
                 } catch (e) {
                     toast.error(e?.message);
-
                 }
             })();
 
         }
-
-
-
         getAllData();
-
+        getLanguages();
         return () => {
             setLoader(false)
         }
@@ -148,9 +209,18 @@ export default function CreateEvent({isEdit, editData}) {
         }))
 
     }
+
+    const getLanguages=async ()=>{
+        try{
+            const {data}= await  getAllLanguages();
+            setAllLanguages(data?.data);
+        }catch (e) {
+            console.log(e?.message);
+        }
+    }
     const getAllData = async () => {
         try {
-            const {data} = await getStates({parent_id:id});
+            const {data} = await getStates({parent_id: id});
             if (data?.success) {
                 setCountryStates(data?.data ?? []);
             }
@@ -162,10 +232,10 @@ export default function CreateEvent({isEdit, editData}) {
         try {
             const dataLevelResponse = await getDataLevels();
             if (dataLevelResponse?.data?.success) {
-             /*   if (dataLevelResponse?.data?.data?.length > 1 && !isEdit ) {
-                    const defaultId = dataLevelResponse?.data?.data[0]?.id;
-                    setFormFieldValue((prevData) => ({...prevData, level_id: defaultId}))
-                }*/
+                /*   if (dataLevelResponse?.data?.data?.length > 1 && !isEdit ) {
+                       const defaultId = dataLevelResponse?.data?.data[0]?.id;
+                       setFormFieldValue((prevData) => ({...prevData, level_id: defaultId}))
+                   }*/
 
                 setDataLevels(dataLevelResponse?.data?.data);
 
@@ -192,6 +262,7 @@ export default function CreateEvent({isEdit, editData}) {
         formData.append("img", formFieldValue?.img ?? "");
         formData.append('has_sub_event', formFieldValue?.has_sub_event)
         formData?.append('inherit_from_parent', formFieldValue?.inherit_from_parent);
+        formData?.append('translated_title',JSON.stringify(formFieldValue?.translated_title));
         if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
             formData.append('parent_id', formFieldValue?.parent_id);
         }
@@ -239,15 +310,6 @@ export default function CreateEvent({isEdit, editData}) {
         CreateEvents(type, id);
     };
 
-    const fileInputRef = useRef(null);
-
-    const handleImageUploadClick = () => {
-        // Trigger the input[type="file"] element when the image is clicked
-        if (fileInputRef.current) {
-            fileInputRef.current.value = ''
-            fileInputRef.current.click();
-        }
-    };
 
     const switchHandler = (e) => {
         setFormFieldValue((prevData) => ({...prevData, [e?.target?.name]: e?.target?.checked}))
@@ -283,20 +345,22 @@ export default function CreateEvent({isEdit, editData}) {
     const isNextButtonDisabled = () => {
 
         for (let key in formFieldValue) {
-            if(key==="status"){
-                continue;
-            }
-           else if (formFieldValue?.inherit_from_parent && (key === 'start_datetime' || key === 'end_datetime' || key === 'level_id' || key === 'state_obj'||key==="location_ids"))
-            {
-                continue;
+            if (key === "status") {
+
+            } else if (formFieldValue?.inherit_from_parent && (key === 'start_datetime' || key === 'end_datetime' || key === 'level_id' || key === 'state_obj' || key === "location_ids")) {
+
+            } else if(key==='translated_title'){
+                // check if input translated_title length is equal to selected_languages length
+                //if there are equal it means all respective event name is filled
+
+                // if length are equal , we will return false, so that save button can be enabled
+             return   Object.values(formFieldValue?.translated_title).filter(item=>Boolean(item)).length!==formFieldValue?.selected_languages?.filter(item=>item!=='en')?.length;
             }
             else if (isEdit && key === "crop_data") {
-                    continue;
-                }
-            else if (key === 'parent_id' && formFieldValue[key] === null) {
-                continue;
-            }
-           else if (key === 'location_ids' || key === 'state_obj') {
+
+            } else if (key === 'parent_id' && formFieldValue[key] === null) {
+
+            } else if (key === 'location_ids' || key === 'state_obj') {
                 if (formFieldValue[key].length === 0) {
                     return true;
                 }
@@ -312,36 +376,92 @@ export default function CreateEvent({isEdit, editData}) {
 
     }
 
+    const handleSelectLanguage = (language) => {
+        const containsIncomingLanguage = formFieldValue?.selected_languages?.some((item) => item === language?.lang);
+        if (containsIncomingLanguage) {
+            const restSelectedLanguages = formFieldValue?.selected_languages?.filter((item) => item !== language?.lang);
+            const modifiedTranslatedTitle={...formFieldValue?.translated_title};
+            //when we unselect a language chip, we will remove its corresponding key-value pair of event-name from translated_title
+            delete modifiedTranslatedTitle[language?.lang];
+            setFormFieldValue((prevData) => ({...prevData, selected_languages: restSelectedLanguages,translated_title: modifiedTranslatedTitle}));
+
+        } else {
+            setFormFieldValue((prevData) => ({
+                ...prevData, selected_languages: [...formFieldValue?.selected_languages, language?.lang]
+            }))
+        }
+
+    }
+
+
     return (<div className="create-event-container">
+        <EventTitleModal allLanguages={allLanguages} setFormFieldValue={setFormFieldValue} openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}  translated_title={formFieldValue?.translated_title}   languagesMap={formFieldValue?.selected_languages?.filter((language) => language !== 'en')} />
         {loader ? <ReactLoader/> : (<></>)}
         <div className="container-adjust">
             <h3 className="font-weight-300">
                 {isEdit ? "Edit the Event" : "Create the Event"}
             </h3>
             <Box className="event-create-form-bg">
+                <div className={"language-select-container"}>
+                    {allLanguages?.map((language) => <Chip onClick={() => handleSelectLanguage(language)}
+                                                        label={language?.name} clickable className={"item"} style={{
+                        height: "40px",
+                        minWidth: "100px",
+                        background: (formFieldValue?.selected_languages?.some((item) => item === language?.lang)) ? "#163560" : "",
+                        color: (formFieldValue?.selected_languages?.some((item) => item === language?.lang)) ? "white" : "black",
+                    }}/>)}
+                    {
+                        formFieldValue?.selected_languages?.filter((item) => item !== 'en')?.length > 0 &&  <HtmlTooltip
+                            title={
+                                <React.Fragment>
+                                    <LocationIconInfo/>
+                                </React.Fragment>
+                            }
+                        >
+                            <IconButton>
+                                <InfoIcon className={"info-icon"}/>
+                            </IconButton>
+                        </HtmlTooltip>
+
+
+                    }
+
+                </div>
                 {!isEdit && (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) &&
                     <FormControlLabel control={<Switch name={"inherit_from_parent"} onChange={switchHandler}/>}
                                       label="Inherit from parent"/>
 
                 }
 
-                <TextField
-                    disabled={isEdit&&formFieldValue?.status?.toLowerCase()==='expired'}
-                    id="event_title"
-                    onChange={(event) => setFormField(event, "event_title")}
-                    variant="outlined"
-                    className="w-100"
-                    placeholder="Enter Event Title"
-                    value={formFieldValue.event_title}
-                    label={<span>
+
+                <div className={"input-with-language-icon-container"}>
+                    <TextField
+                        disabled={isEdit && formFieldValue?.status?.toLowerCase() === 'expired'}
+                        id="event_title"
+                        onChange={(event) => setFormField(event, "event_title")}
+                        variant="outlined"
+                        className="w-100"
+                        placeholder="Enter Event Title in english"
+                        value={formFieldValue.event_title}
+                        label={<span>
             Event Title{' '}
-                        <span style={{color: 'red'}}>*</span>
+                            <span style={{color: 'red'}}>*</span>
           </span>}
-                />
+                    />
+                    {formFieldValue?.selected_languages?.filter((item) => item !== 'en')?.length > 0 &&
+                        <IconButton onClick={() => {
+                            //removing english , because event title in english is already filled
+
+                            setOpenLanguageModal(true)
+                        }} className={"language-button-container"}>
+                            <LanguageIcon className={"icon-button"}/>
+                        </IconButton>}
+                </div>
+
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <div className="d-flex justify-content-between">
                         <DateTimePicker
-                            disabled={formFieldValue?.inherit_from_parent||(isEdit&&formFieldValue?.status?.toLowerCase()==='expired')}
+                            disabled={formFieldValue?.inherit_from_parent || (isEdit && formFieldValue?.status?.toLowerCase() === 'expired')}
                             ampm={false}
 
                             required={true}
@@ -351,8 +471,8 @@ export default function CreateEvent({isEdit, editData}) {
             </span>}
                             className="w-49"
                             minDateTime={formFieldValue?.parent_id ? dayjs(parentEventDetails?.start_datetime) : dayjs(new Date()).subtract(5, 'minute')}
-                            value={ formFieldValue?.inherit_from_parent? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
-                            maxDateTime={parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime):null}
+                            value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
+                            maxDateTime={parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime) : null}
                             onChange={(event) => {
                                 setFormField(event, "start_datetime");
                                 if (formFieldValue.end_datetime) {
@@ -370,9 +490,9 @@ export default function CreateEvent({isEdit, editData}) {
             End data & Time{' '}<span style={{color: 'red'}}>*</span>
                    </span>}
                             className="w-49"
-                            value={formFieldValue?.inherit_from_parent? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
+                            value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
                             minDateTime={dayjs(formFieldValue?.start_datetime)}
-                            maxDateTime={parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime):null}
+                            maxDateTime={parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime) : null}
                             onChange={(event) => {
                                 setFormField(event, "end_datetime");
                             }}
@@ -381,7 +501,8 @@ export default function CreateEvent({isEdit, editData}) {
                 </LocalizationProvider>
                 <div>
                     <p>Upload Image/ Banner{' '}<span style={{color: "red"}}>*</span> :</p>
-                    <ImageCroper handleImage={handleImage} Initial_image={formFieldValue?.img} isEditable={isEdit} eventStatus={formFieldValue?.status?.toLowerCase()}/>
+                    <ImageCroper handleImage={handleImage} Initial_image={formFieldValue?.img} isEditable={isEdit}
+                                 eventStatus={formFieldValue?.status?.toLowerCase()}/>
                 </div>
 
                 <div className="levels">
@@ -390,13 +511,12 @@ export default function CreateEvent({isEdit, editData}) {
                     </h6>
                     {Array.isArray(dataLevels) && dataLevels.map((item, index) => (<button
                         className="level-button"
-                        key={index}
-                        disabled={isEdit || formFieldValue?.inherit_from_parent}
+                        key={index} disabled={isEdit || formFieldValue?.inherit_from_parent}
                         style={{
                             height: "40px",
                             width: "120px",
-                            background:( (formFieldValue?.inherit_from_parent && item?.id=== parentEventDetails?.level_id) || item?.id === formFieldValue?.level_id) ? "#163560" : "",
-                            color: ( (formFieldValue?.inherit_from_parent && item?.id=== parentEventDetails?.level_id) || item?.id === formFieldValue?.level_id) ? "white" : "black",
+                            background: ((formFieldValue?.inherit_from_parent && item?.id === parentEventDetails?.level_id) || item?.id === formFieldValue?.level_id) ? "#163560" : "",
+                            color: ((formFieldValue?.inherit_from_parent && item?.id === parentEventDetails?.level_id) || item?.id === formFieldValue?.level_id) ? "white" : "black",
                         }}
                         onClick={() => setFormFieldValue((prevData) => {
                             return {...prevData, level_id: item?.id};
@@ -408,7 +528,7 @@ export default function CreateEvent({isEdit, editData}) {
                     disabled={isEdit || formFieldValue?.inherit_from_parent}
                     className="w-100"
                     multiple
-                    value={formFieldValue?.inherit_from_parent? parentEventDetails?.state_obj :formFieldValue?.state_obj}
+                    value={formFieldValue?.inherit_from_parent ? parentEventDetails?.state_obj : formFieldValue?.state_obj}
                     options={countryStates}
                     getOptionLabel={(option) => option.name || ""}
                     onChange={handleStateChange}
@@ -431,8 +551,7 @@ export default function CreateEvent({isEdit, editData}) {
                             setFormFieldValue((prevData) => {
                                 return {...prevData, has_sub_event: event.target.value === 'yes' ? true : false};
                             })
-                        }
-                        }
+                        }}
                     >
                         <FormControlLabel
                             disabled={isEdit}
@@ -493,17 +612,16 @@ export default function CreateEvent({isEdit, editData}) {
                     onClick={() => submit('save', id)}
                 > Save Event
                 </button>
-                {(!formFieldValue?.has_sub_event&&formFieldValue?.status?.toLowerCase()!=='expired') &&
-                    <button
-                        disabled={isNextButtonDisabled()}
-                        className="go-to-form-button"
-                        style={{
-                            background: "black", color: "white", height: "40px", width: "150px",
-                        }}
+                {(!formFieldValue?.has_sub_event && formFieldValue?.status?.toLowerCase() !== 'expired') && <button
+                    disabled={isNextButtonDisabled()}
+                    className="go-to-form-button"
+                    style={{
+                        background: "black", color: "white", height: "40px", width: "150px",
+                    }}
 
-                        onClick={() => submit('go_to_form', id)}
-                    > Go to form
-                    </button>}
+                    onClick={() => submit('go_to_form', id)}
+                > Go to form
+                </button>}
             </>)}
         </div>
     </div>);
