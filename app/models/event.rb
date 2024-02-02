@@ -13,6 +13,7 @@ class Event < ApplicationRecord
   belongs_to :parent, class_name: 'Event',  optional: true
   has_many :children, class_name: 'Event', foreign_key: 'parent_id'
   has_one_attached :csv_file
+  has_one_attached :report_file
   def get_image_url
     if self.image.attached? && self.image_url.blank?
       update(image_url: image.url(expires_in: 1.year))
@@ -34,9 +35,10 @@ class Event < ApplicationRecord
     Saral::Locatable::State.where(id: self.event_locations.where(location_type: "Saral::Locatable::State").pluck(:location_id)).select(:id, :name).order(:name)
   end
 
-  def get_title(language_key)
-    if self.translated_title.present? && language_key.present?
-      self.translated_title[language_key].present? ? self.translated_title[language_key] : self.name
+  def get_title(language_key = nil)
+    if self.translated_title.present? && language_key.present? && language_key != 'en'
+      data = JSON.parse(self.translated_title)
+      data[language_key]
     else
       self.name
     end

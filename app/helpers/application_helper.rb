@@ -1,4 +1,35 @@
 module ApplicationHelper
+
+  include SendGrid
+
+  def send_email(subject, content, recipients, attachments = [])
+    require 'sendgrid-ruby'
+
+    from = Email.new(email: 'noreply@jarvis.consulting')
+    html_content = Content.new(type: 'text/html',
+                               value: content)
+    sg = SendGrid::API.new(api_key: ENV['SENDGRID_API_KEY'])
+
+    personalization = Personalization.new
+
+    recipients.each do |recipient|
+      personalization.add_to(Email.new(email: recipient))
+    end
+
+    mail = SendGrid::Mail.new
+    mail.from = from
+    mail.subject = subject
+    mail.add_content(html_content)
+    mail.add_personalization(personalization)
+
+    if Rails.env.production?
+      sg.client.mail._('send').post(request_body: mail.to_json)
+    else
+      sg.client.mail._('send').post(request_body: mail.to_json)
+      puts mail.to_json
+    end
+  end
+
   def current_user
     User.find_by_id(session[:user_id])
   end
