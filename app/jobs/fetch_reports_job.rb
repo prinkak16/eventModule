@@ -123,7 +123,7 @@ class FetchReportsJob
             headers << questions.first["question"][i]["title"].first["value"]
           end
         end
-        headers << ['createdAt','updatedAt']
+        headers << ['createdAt', 'updatedAt']
         file_name = "#{event_id}"
         csv_file = Tempfile.new([file_name, '.csv'])
         file_name += '.csv'
@@ -135,15 +135,17 @@ class FetchReportsJob
             row_data << data[i]['username']
             row_data << phone_number
             hash = Hash.new
-            for j in 0...data[i]["questions"]
-              hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"]
+            for j in 0...data[i]["questions"].size
+              hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
             end
-            for k in 2...headers.size-2
+            k = 2
+            while k < (headers.size - 2)
               if hash[headers[k]].present?
                 row_data << hash[headers[k]]
               else
                 row_data << ""
               end
+              k += 1
             end
             row_data << data[i]["createdAt"]
             row_data << data[i]["updatedAt"]
