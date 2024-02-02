@@ -44,8 +44,7 @@ class FetchReportsJob
         data = JSON.parse(db.aggregate([
                                          {
                                            '$match': {
-                                             eventId: "53",
-                                             status: "COMPLETED",
+                                             eventId: "#{event.id}",
                                              '$or': [
                                                {
                                                  deletedAt: {
@@ -80,11 +79,23 @@ class FetchReportsJob
                                                  ]
                                                },
                                                then: "$questions.files.value",
-                                               else: ["$questions.answer"]
+                                               else: {
+                                                 '$cond': {
+                                                   if: {
+                                                     '$in': [
+                                                       "$questions.type",
+                                                       ["radio", "dropdown"]
+                                                     ]
+                                                   },
+                                                   then: "$questions.options",
+                                                   else: ["$questions.answer"]
+                                                 }
+                                               }
                                              }
                                            },
                                            createdAt: 1,
-                                           updatedAt: 1
+                                           updatedAt: 1,
+                                           status: 1
                                          }
                                          },
                                          { '$group': {
@@ -95,6 +106,7 @@ class FetchReportsJob
                                              submissionId: '$submissionId',
                                              createdAt: '$createdAt',
                                              updatedAt: '$updatedAt',
+                                             status: '$status',
                                            },
                                            questions: {
                                              '$push': {
@@ -112,18 +124,25 @@ class FetchReportsJob
                                            submissionId: '$_id.submissionId',
                                            questions: 1,
                                            createdAt: '$_id.createdAt',
-                                           updatedAt: '$_id.updatedAt'
+                                           updatedAt: '$_id.updatedAt',
+                                           status: '$_id.status'
                                          }
                                          }
                                        ]).to_json)
         mongo_db.close
-        headers = ['Username', 'user_phonenumber']
+        headers = ['Username', 'User Phone Number']
         for i in 0...questions.first["question"].size
           if questions.first["question"][i]["title"].first["value"] != "Provide your event location."
-            headers << questions.first["question"][i]["title"].first["value"]
+            if questions.first["question"][i]["isHidden"] == true
+              headers << questions.first["question"][i]["title"].first["value"] + "(isHidden)"
+            else
+              headers << questions.first["question"][i]["title"].first["value"]
+            end
           end
         end
-        headers << ['createdAt','updatedAt']
+        headers << 'createdAt'
+        headers << 'updatedAt'
+        headers << 'status'
         file_name = "#{event_id}"
         csv_file = Tempfile.new([file_name, '.csv'])
         file_name += '.csv'
@@ -135,18 +154,31 @@ class FetchReportsJob
             row_data << data[i]['username']
             row_data << phone_number
             hash = Hash.new
-            for j in 0...data[i]["questions"]
-              hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"]
+            for j in 0...data[i]["questions"].size
+              if data[i]["questions"][j]["answer"].first.class == Hash
+                temp = ""
+                for m in 0...data[i]["questions"][j]["answer"].size
+                  if data[i]["questions"][j]["answer"][m]["isAnswered"] == true
+                    temp += data[i]["questions"][j]["answer"][m]["value"]
+                  end
+                end
+                hash[data[i]["questions"][j]["question"]] = temp
+              else
+                hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
+              end
             end
-            for k in 2...headers.size-2
+            k = 2
+            while k < (headers.size - 3)
               if hash[headers[k]].present?
                 row_data << hash[headers[k]]
               else
                 row_data << ""
               end
+              k += 1
             end
             row_data << data[i]["createdAt"]
             row_data << data[i]["updatedAt"]
+            row_data <<  data[i]["status"]
             csv << row_data
           end
         end
