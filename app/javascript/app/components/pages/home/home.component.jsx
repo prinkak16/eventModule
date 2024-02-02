@@ -25,6 +25,8 @@ import {
 import moment from "moment";
 import {ImageNotFound} from "../../../assests/png";
 import Button from "@mui/material/Button";
+import ReportEmailModal from "../../shared/ReportsModel/ReportEmailModal";
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 const HomeComponent = () => {
     const eventStatusArray = [{
@@ -69,6 +71,8 @@ const HomeComponent = () => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [confirmationStatus, setConfirmationStatus] = useState(false);
     const [eventDeleteId, setEventDeleteId] = useState(-1);
+    const [reportEventId, setReportEventId] = useState("");
+    const [reportModal, setReportModal] = useState(false);
 
 
     async function getApisValue(filerType, apiPath) {
@@ -296,6 +300,7 @@ const HomeComponent = () => {
         <ConfirmationModal message="Are you sure want to archive ?" showConfirmationModal={showConfirmationModal}
                            setShowConfirmationModal={setShowConfirmationModal}
                            setConfirmationStatus={setConfirmationStatus}/>
+        <ReportEmailModal reportModal={reportModal} setReportModal={setReportModal} reportEventId={reportEventId}/>
         {loader ? <Loader
             type="bubble-ping"
             bgColor={"#FFFFFF"}
@@ -444,6 +449,18 @@ const HomeComponent = () => {
                                 </IconButton>
                                 <span className="font1-2rem">Archive</span>
                             </div>
+
+                            { event?.create_form_url == "" ? null :
+                                <div className="edit-bar-sub-div cursor-pointer" onClick={() => {
+                                setReportEventId(event?.id)
+                                setReportModal(true)
+                            }}>
+                                <IconButton>
+                                    <FileDownloadIcon className="event-list-icon" sx={{color: "orange"}}/>
+
+                                </IconButton>
+                                <span className="font1-2rem">Report</span>
+                            </div> }
 
 
                         </div>
