@@ -79,7 +79,18 @@ class FetchReportsJob
                                                  ]
                                                },
                                                then: "$questions.files.value",
-                                               else: ["$questions.answer"]
+                                               else: {
+                                                 '$cond': {
+                                                   if: {
+                                                     '$in': [
+                                                       "$questions.type",
+                                                       ["radio", "dropdown"]
+                                                     ]
+                                                   },
+                                                   then: "$questions.options",
+                                                   else: ["$questions.answer"]
+                                                 }
+                                               }
                                              }
                                            },
                                            createdAt: 1,
@@ -122,7 +133,11 @@ class FetchReportsJob
         headers = ['Username', 'User Phone Number']
         for i in 0...questions.first["question"].size
           if questions.first["question"][i]["title"].first["value"] != "Provide your event location."
-            headers << questions.first["question"][i]["title"].first["value"]
+            if questions.first["question"][i]["isHidden"] == true
+              headers << questions.first["question"][i]["title"].first["value"] + "(isHidden)"
+            else
+              headers << questions.first["question"][i]["title"].first["value"]
+            end
           end
         end
         headers << 'createdAt'
@@ -140,7 +155,17 @@ class FetchReportsJob
             row_data << phone_number
             hash = Hash.new
             for j in 0...data[i]["questions"].size
-              hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
+              if data[i]["questions"][j]["answer"].first.class == Hash
+                temp = ""
+                for m in 0...data[i]["questions"][j]["answer"].size
+                  if data[i]["questions"][j]["answer"][m]["isAnswered"] == true
+                    temp += data[i]["questions"][j]["answer"][m]["value"]
+                  end
+                end
+                hash[data[i]["questions"][j]["question"]] = temp
+              else
+                hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
+              end
             end
             k = 2
             while k < (headers.size - 3)
