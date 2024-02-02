@@ -7,6 +7,7 @@ import {Button} from "@mui/material";
 import {useLocation} from "react-router";
 import './event-details.scss'
 import {toast} from "react-toastify";
+import ReportEmailModal from "../../../shared/ReportsModel/ReportEmailModal";
 
 const EventDetails = () => {
     const {pathname} = useLocation();
@@ -14,6 +15,8 @@ const EventDetails = () => {
     const [parentEvent, setParentEvent] = useState({});
     const [childEvents, setChildEVents] = useState([]);
     const [isChildEvent, setIsChildEvent] = useState(false)
+    const [reportEventId, setReportEventId] = useState("");
+    const [reportModal, setReportModal] = useState(false);
 
     const {id} = useParams();
 
@@ -52,6 +55,7 @@ const EventDetails = () => {
 
     return (
         <div className={"event-details-main-container"}>
+            <ReportEmailModal reportModal={reportModal} setReportModal={setReportModal} reportEventId={reportEventId}/>
             <div className={"heading"}>Event Details</div>
             <EventDetailsCard event={parentEvent}/>
             {parentEvent?.has_sub_event && <>
@@ -70,9 +74,14 @@ const EventDetails = () => {
             }
             {!parentEvent?.has_sub_event && <>
                 {parentEvent?.status?.name?.toLowerCase() !== 'expired' &&
-                    <div className={"add-event-button-container"}>
+                    <div className={"add-event-button-container"} style={{display:"flex", gap:"20px"}}>
                         <Button onClick={() => handleClick('go_to_form')} className={"add-event-button"}
                                 variant={"contained"}>Go to form</Button>
+                        <Button onClick={() => {
+                            setReportEventId(id)
+                            setReportModal(true)
+                        }} className={"add-event-button"}
+                                variant={"contained"}>Download Report</Button>
                     </div>
                 }
                 <div className={"heading"}>Form View</div>
