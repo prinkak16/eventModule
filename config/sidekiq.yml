@@ -1,0 +1,19 @@
+# Options here can still be overridden by cmd line args.
+  # Place this file at config/sidekiq.yml and Sidekiq will
+  # pick it up automatically.
+---
+:verbose: false
+:concurrency: 50
+:timeout: 25
+
+# Sidekiq will run this file through ERB when reading it so you can
+# even put in dynamic logic, like a host-specific queue.
+
+:queues:
+  - ['report', 10]
+
+# you can override concurrency based on environment
+production:
+  :concurrency: 50
+staging:
+  :concurrency: 5

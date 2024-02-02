@@ -13,6 +13,7 @@ class Event < ApplicationRecord
   belongs_to :parent, class_name: 'Event',  optional: true
   has_many :children, class_name: 'Event', foreign_key: 'parent_id'
   has_one_attached :csv_file
+  has_one_attached :report_file
   def get_image_url
     if self.image.attached? && self.image_url.blank?
       update(image_url: image.url(expires_in: 1.year))
