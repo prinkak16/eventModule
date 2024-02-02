@@ -26,6 +26,7 @@ import moment from "moment";
 import {ImageNotFound} from "../../../assests/png";
 import Button from "@mui/material/Button";
 import ReportEmailModal from "../../shared/ReportsModel/ReportEmailModal";
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 const HomeComponent = () => {
     const eventStatusArray = [{
@@ -449,16 +450,17 @@ const HomeComponent = () => {
                                 <span className="font1-2rem">Archive</span>
                             </div>
 
-                            <div className="edit-bar-sub-div cursor-pointer" onClick={() => {
+                            { event?.create_form_url == "" ? null :
+                                <div className="edit-bar-sub-div cursor-pointer" onClick={() => {
                                 setReportEventId(event?.id)
                                 setReportModal(true)
                             }}>
                                 <IconButton>
-                                    <ArchiveIcon className="event-list-icon" sx={{color: "orange"}}/>
+                                    <FileDownloadIcon className="event-list-icon" sx={{color: "orange"}}/>
 
                                 </IconButton>
                                 <span className="font1-2rem">Report</span>
-                            </div>
+                            </div> }
 
 
                         </div>
