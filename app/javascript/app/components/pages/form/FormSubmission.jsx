@@ -52,10 +52,18 @@ const FormSubmission = () => {
                 setIsLoading(false);
             }
         })();
+
+        return () => {
+            setIsLoading(false)
+        }
+
     }, []);
 
+    /* useEffect(() => {
+         console.log('events are ', eventDetails)
+     }, [eventDetails]);*/
 
-    //managing the global state , to make sure that we are on submission page 
+    //managing the global state , to make sure that we are on submission page
     useEffect(() => {
         setIsSubmissionPage(true);
     }, []);
