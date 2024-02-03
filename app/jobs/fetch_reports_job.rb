@@ -9,12 +9,16 @@ class FetchReportsJob
       event = Event.find_by(id: event_id)
       event_form = EventForm.find_by(event_id: event_id)
       mongo_db = Mongo::Client.new('mongodb://admin:Jarvis$1234@10.190.15.227:27017/saral_form_builder?serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authMechanism=SCRAM-SHA-1&authSource=admin')
-      subject = "Event Report Download"
-      content = "Event-#{event.name} download has started."
+      subject = "Event Report Download for event #{event.name}"
+      content = "Event Report Download processing has been started."
+      content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
       send_email(subject, content, mail_ids)
       if event.status_aasm_state == 'Expired' && event.report_file.attached?
-        subject = "Event Report Download"
-        content = "Event-#{event.name} Report can be download through this URL - #{event.report_file.service_url}"
+        file_url = event.report_file.url
+        subject = "Event Report Download for event #{event.name}"
+        content = "Event Report for #{event.name} has been processed and can be downloaded by clicking on the below url."
+        content += "<br/><a href=#{file_url}>Click to Download #{event.name} Report.</a><br/>"
+        content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
         send_email(subject, content, mail_ids)
       else
         question_db = mongo_db[:forms]
@@ -44,8 +48,7 @@ class FetchReportsJob
         data = JSON.parse(db.aggregate([
                                          {
                                            '$match': {
-                                             eventId: "53",
-                                             status: "COMPLETED",
+                                             eventId: "#{event.id}",
                                              '$or': [
                                                {
                                                  deletedAt: {
@@ -80,11 +83,23 @@ class FetchReportsJob
                                                  ]
                                                },
                                                then: "$questions.files.value",
-                                               else: ["$questions.answer"]
+                                               else: {
+                                                 '$cond': {
+                                                   if: {
+                                                     '$in': [
+                                                       "$questions.type",
+                                                       ["radio", "dropdown"]
+                                                     ]
+                                                   },
+                                                   then: "$questions.options",
+                                                   else: ["$questions.answer"]
+                                                 }
+                                               }
                                              }
                                            },
                                            createdAt: 1,
-                                           updatedAt: 1
+                                           updatedAt: 1,
+                                           status: 1
                                          }
                                          },
                                          { '$group': {
@@ -95,6 +110,7 @@ class FetchReportsJob
                                              submissionId: '$submissionId',
                                              createdAt: '$createdAt',
                                              updatedAt: '$updatedAt',
+                                             status: '$status',
                                            },
                                            questions: {
                                              '$push': {
@@ -112,19 +128,26 @@ class FetchReportsJob
                                            submissionId: '$_id.submissionId',
                                            questions: 1,
                                            createdAt: '$_id.createdAt',
-                                           updatedAt: '$_id.updatedAt'
+                                           updatedAt: '$_id.updatedAt',
+                                           status: '$_id.status'
                                          }
                                          }
                                        ]).to_json)
         mongo_db.close
-        headers = ['Username', 'user_phonenumber']
+        headers = ['Username', 'User Phone Number']
         for i in 0...questions.first["question"].size
           if questions.first["question"][i]["title"].first["value"] != "Provide your event location."
-            headers << questions.first["question"][i]["title"].first["value"]
+            if questions.first["question"][i]["isHidden"] == true
+              headers << questions.first["question"][i]["title"].first["value"] + "(isHidden)"
+            else
+              headers << questions.first["question"][i]["title"].first["value"]
+            end
           end
         end
-        headers << ['createdAt','updatedAt']
-        file_name = "#{event_id}"
+        headers << 'createdAt'
+        headers << 'updatedAt'
+        headers << 'status'
+        file_name = "#{event.name}" + "-report"
         csv_file = Tempfile.new([file_name, '.csv'])
         file_name += '.csv'
         CSV.open(csv_file, 'w') do |csv|
@@ -135,24 +158,40 @@ class FetchReportsJob
             row_data << data[i]['username']
             row_data << phone_number
             hash = Hash.new
-            for j in 0...data[i]["questions"]
-              hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"]
+            for j in 0...data[i]["questions"].size
+              if data[i]["questions"][j]["answer"].first.class == Hash
+                temp = ""
+                for m in 0...data[i]["questions"][j]["answer"].size
+                  if data[i]["questions"][j]["answer"][m]["isAnswered"] == true
+                    temp += data[i]["questions"][j]["answer"][m]["value"]
+                  end
+                end
+                hash[data[i]["questions"][j]["question"]] = temp
+              else
+                hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
+              end
             end
-            for k in 2...headers.size-2
+            k = 2
+            while k < (headers.size - 3)
               if hash[headers[k]].present?
                 row_data << hash[headers[k]]
               else
                 row_data << ""
               end
+              k += 1
             end
-            row_data << data[i]["createdAt"]
-            row_data << data[i]["updatedAt"]
+            row_data << DateTime.parse(data[i]["createdAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
+            row_data << DateTime.parse(data[i]["updatedAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
+            row_data <<  data[i]["status"]
             csv << row_data
           end
         end
         event.report_file.attach(io: csv_file, filename: file_name, content_type: 'text/csv')
-        subject = "Event Report Download"
-        content = "Event-#{event.name} Report can be download through this URL - #{event.report_file.url}"
+        file_url = event.report_file.url
+        subject = "Event Report Download for event #{event.name}"
+        content = "Event Report for #{event.name} has been processed and can be downloaded by clicking on the below url."
+        content += "<br/><a href=#{file_url}>Click to Download #{event.name} Report.</a><br/>"
+        content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
         send_email(subject, content, mail_ids)
       end
     rescue => e
