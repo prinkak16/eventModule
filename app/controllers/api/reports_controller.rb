@@ -3,7 +3,7 @@ class Api::ReportsController < ApplicationController
   def fetch_reports
     begin
       FetchReportsJob.perform_async(params[:event_id], params[:email_id].split(','))
-      render json: { success: true, message: "Job has been scheduled successfully" }, status: :ok
+      render json: { success: true, message: "the report will be send to #{params[:email_id]}." }, status: :ok
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end
