@@ -20,7 +20,7 @@ export default function ReportEmailModal({reportModal, setReportModal, reportEve
                 try {
                     const {data} = await ApiClient.get(`/event/reports?email_id=${email}&event_id=${reportEventId}`);
                     if (data?.success) {
-                        toast.success(`Reports sends Successfully`);
+                        toast.success(`Please Check your mail for reports`);
                         setReportModal(false);
                         setEmail("");
                     }
@@ -49,11 +49,22 @@ export default function ReportEmailModal({reportModal, setReportModal, reportEve
         >
             <Box sx={style}>
                 <div className="confirmation-modal-main-container">
-                    <label>Enter Your Email Address</label>
+                    <label>Report Download</label>
                     <br/>
-                    <TextField sx={{marginY: "20px", width:"100%"}} id="outlined-basic" label="Outlined" variant="outlined" value={email} onChange={(e)=> setEmail(e.target.value)}/>
+                    <TextField sx={{marginY: "20px", width:"100%"}} id="outlined-basic" label="Email Address" variant="outlined" value={email} onChange={(e)=> setEmail(e.target.value)}/>
                     <br/>
-                    <Button variant="contained" onClick={sendReportToEmail}>Send</Button>
+                    <Button variant="contained" onClick={sendReportToEmail} component="label"
+                            size="medium"
+                            style={{ textTransform: "none", border: "1px solid #fffff" }}
+                            sx={{
+                                ":hover": { background: "#f77f00" },
+                                background: "#F3F7FF",
+                                borderRadius: 2,
+                                fontSize: 20,
+                                fontFamily: "Quicksand",
+                                color: "#3f3f3f",
+                                fontStyle: "normal",
+                            }}>Send</Button>
                 </div>
             </Box>
         </Modal>
