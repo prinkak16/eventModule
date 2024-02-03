@@ -115,7 +115,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_25_083637) do
     t.integer "parent_id"
     t.boolean "has_sub_event", default: false
     t.jsonb "translated_title"
-    t.jsonb "translated_title"
     t.index ["created_by_id"], name: "index_events_on_created_by_id"
     t.index ["data_level_id"], name: "index_events_on_data_level_id"
     t.index ["deleted_at"], name: "index_events_on_deleted_at"
