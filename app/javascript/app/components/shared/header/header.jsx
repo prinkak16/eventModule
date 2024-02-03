@@ -76,7 +76,7 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                     )}
                 </Toolbar> :
 
-                <Toolbar className="header-form-bg">
+                <Toolbar className={window.location.pathname === '/forms-mobile' ? 'header-form-bg header-form-bg-mobile' : 'header-form-bg'}>
                     <Tooltip className="header-form-back-button" onClick={() =>
                         navigate(-1)
                     }>

@@ -126,8 +126,8 @@ const FormComponent = () => {
             {loader ? <ReactLoader/> :
                 <>
 
-                    <div className="form-event-search">
-                        {!(window.location.pathname === '/forms-mobile') &&<TextField
+                    <div className={window.location.pathname === '/forms-mobile' ? 'form-event-search form-event-search-mobile' : 'form-event-search'}>
+                        <TextField
                             className="search-input"
                             sx={{margin: "30px", width: "80%"}}
                             placeholder={t("Search")}
@@ -143,7 +143,6 @@ const FormComponent = () => {
                                     </InputAdornment>),
                                 }}
                             />
-                        }
                     </div>
 
                     <div className="form-events-container">

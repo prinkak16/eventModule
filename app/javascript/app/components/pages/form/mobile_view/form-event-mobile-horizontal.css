@@ -61,5 +61,9 @@ p{
     }
     .form-main-container{
         padding: 20px 0px;
+        height: 100vh;
+    }
+    .header-form-bg-mobile, .form-event-search-mobile{
+        display: none !important;
     }
 }
