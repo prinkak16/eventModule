@@ -20,7 +20,7 @@ export default function ReportEmailModal({reportModal, setReportModal, reportEve
                 try {
                     const {data} = await ApiClient.get(`/event/reports?email_id=${email}&event_id=${reportEventId}`);
                     if (data?.success) {
-                        toast.success(`Please Check your mail for reports`);
+                        toast.success(data?.message);
                         setReportModal(false);
                         setEmail("");
                     }
