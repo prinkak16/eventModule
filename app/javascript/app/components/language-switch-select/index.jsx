@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useState,useEffect} from 'react';
 /*
 import { useContext } from "react";
 import { LanguageContext } from "../../provider/language-provider";*/
@@ -6,17 +6,41 @@ import {EventState} from "../../EventContext";
 import {LanguageIcon} from "../../assests/svg";
 import './index.scss'
 import {useTranslation} from "react-i18next";
+import {getAllLanguages} from "../../services/CommonServices/commonServices";
+import {toast} from "react-toastify";
 
 
-function LangaugeSwitchSelect({supportedLanguages}) {
+function LangaugeSwitchSelect() {
     const {i18n } = useTranslation();
     const {globalSelectedLanguage, setGlobalSelectedLanguage} = EventState();
+    const [supportedLanguages,setSupportedLanguages]=useState([]);
 
     const handleChange = (e) => {
         const {value} = e?.target;
         i18n.changeLanguage(value);
         setGlobalSelectedLanguage(value);
+        localStorage.setItem('userLanguage',value);
     };
+
+    const fetchLanguages=async ()=>{
+        try {
+            const {data}=await getAllLanguages();
+            //sorted the languages in  ascending order
+            setSupportedLanguages(data?.data?.sort((a,b)=>a.name.localeCompare(b.name))??[]);
+        }catch (e) {
+            toast.error(e?.message);
+        }
+
+    }
+
+    useEffect(()=>{
+        fetchLanguages();
+        //checking whether there exists already selected language in local storage
+        const userLang=localStorage.getItem('userLanguage');
+        if(userLang){
+            setGlobalSelectedLanguage(userLang);
+        }
+    },[]);
 
 
     return (

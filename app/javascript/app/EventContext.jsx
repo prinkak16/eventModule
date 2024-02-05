@@ -8,8 +8,6 @@ const EventContext = ({children}) => {
     const [isSubmissionPage, setIsSubmissionPage] = useState(false);
     const [eventDeleteId, setEventDeleteId] = useState(-1);
     const [globalSelectedLanguage, setGlobalSelectedLanguage] = useState('en');
-
-
     return (
         <Event.Provider value={{
             eventName,
