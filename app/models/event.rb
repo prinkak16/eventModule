@@ -38,7 +38,7 @@ class Event < ApplicationRecord
   def get_title(language_key = nil)
     if self.translated_title.present? && language_key.present? && language_key != 'en'
       data = JSON.parse(self.translated_title)
-      data[language_key]
+      data[language_key].present? ? data[language_key]: self.name
     else
       self.name
     end

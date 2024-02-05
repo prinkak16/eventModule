@@ -8,7 +8,7 @@ class FetchReportsJob
     begin
       event = Event.find_by(id: event_id)
       event_form = EventForm.find_by(event_id: event_id)
-      mongo_db = Mongo::Client.new('mongodb://admin:Jarvis$1234@10.190.15.227:27017/saral_form_builder?serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authMechanism=SCRAM-SHA-1&authSource=admin')
+      mongo_db = Mongo::Client.new(ENV["MONGO_URL"])
       subject = "Event Report Download for event #{event.name}"
       content = "Event Report Download processing has been started."
       content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
