@@ -163,10 +163,15 @@ class FetchReportsJob
                 temp = ""
                 for m in 0...data[i]["questions"][j]["answer"].size
                   if data[i]["questions"][j]["answer"][m]["isAnswered"] == true
-                    temp += data[i]["questions"][j]["answer"][m]["value"]
+                    for n in 0..data[i]["questions"][j]["answer"][m]["label"].size
+                      if data[i]["questions"][j]["answer"][m]["label"][n]["lang"] == "en"
+                        temp += data[i]["questions"][j]["answer"][m]["label"][n]["value"] + ":"
+                        break
+                      end
+                    end
                   end
                 end
-                hash[data[i]["questions"][j]["question"]] = temp
+                hash[data[i]["questions"][j]["question"]] = temp.chomp
               else
                 hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
               end
