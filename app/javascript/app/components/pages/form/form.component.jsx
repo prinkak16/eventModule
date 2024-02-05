@@ -126,7 +126,7 @@ const FormComponent = () => {
             {loader ? <ReactLoader/> :
                 <>
 
-                    <div className={window.location.pathname === '/forms-mobile' ? 'form-event-search form-event-search-mobile' : 'form-event-search'}>
+                    <div className={window.location.pathname === '/formsmobile' ? 'form-event-search form-event-search-mobile' : 'form-event-search'}>
                         <TextField
                             className="search-input"
                             sx={{margin: "30px", width: "80%"}}
@@ -145,15 +145,15 @@ const FormComponent = () => {
                             />
                     </div>
 
-                    <div className="form-events-container">
+                    <div className={window.location.pathname === '/formsmobile' ? "form-events-container-mobile" : "form-events-container"}>
                         {allEventList.length > 0 ? (
-                            <div className={window.location.pathname === '/forms-mobile' ? 'form-list-container-horizontal' : 'form-list-container'}>
+                            <div className={window.location.pathname === '/formsmobile' ? 'form-list-container-horizontal' : 'form-list-container'}>
                                 {allEventList.map((event, index) => {
                                         if (innerWidth > 450) {
                                             return <FormEventCard event={event} key={index}/>
                                         } else {
                                             return (
-                                window.location.pathname === '/forms-mobile' ?
+                                window.location.pathname === '/formsmobile' ?
                                     <FormEventMobileCardHorizontal event={event} key={index}/>
                                     :<FormEventMobileCard event={event} key={index}/>
                                         )
@@ -164,7 +164,7 @@ const FormComponent = () => {
                             <div className="no-event-data">No Data Found</div>
                         )}
                     </div>
-                    <div className={`pagination ${window.location.pathname === '/forms-mobile' && 'pagination-toggle'}`}>
+                    <div className={`pagination ${window.location.pathname === '/formsmobile' && 'pagination-toggle'}`}>
                         <Pagination
                             count={Math.ceil(totalCount / 10)}
                             page={page}
