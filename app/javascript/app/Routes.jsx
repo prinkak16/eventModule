@@ -17,7 +17,8 @@ const Router = () => {
 
         <Routes>
             <Route path="/" element={<Navigate to="/forms" replace={true}/>}/>
-            <Route path="/forms" element={<FormComponent/>}/>
+            <Route exact path="/forms" element={<FormComponent/>}/>
+            <Route exact path="/forms-mobile" element={<FormComponent />} />
             <Route element={<RoutesWithBreadcrumbs/>}>
                 <Route path={"/forms/:id"} element={<FormDetails/>}/>
                 {/*
