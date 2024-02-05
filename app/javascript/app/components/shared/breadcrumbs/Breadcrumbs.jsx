@@ -53,17 +53,21 @@ export default function MyBreadcrumbs() {
 
     }
 
+    function capitalizeFirstWord(inputString) {
+        return inputString.replace(/^\w/, (match) => match.toUpperCase());
+    }
+
     useEffect(() => {
         getDynamicRoutes();
     }, [pathname,globalSelectedLanguage]);
 
     return (<div className={"breadcrumbs-main-container"}>
-            {urls?.length > 0 && <Link to={`/${urls[0]}`}>{urls[0]}</Link>}
-            {Object.keys(dynamicRoutes).length > 0 && <span> &nbsp;/&nbsp; </span>}
+            {urls?.length > 0 && <Link to={`/${urls[0]}`}>{capitalizeFirstWord(urls[0])}</Link>}
+            {Object.keys(dynamicRoutes).length > 0 && <span> &nbsp;/&nbsp; </span>}      {/* if dynamic routes exist add '/' before adding them*/}
             {Object.keys(dynamicRoutes)?.map((key, index) => <span key={index} style={{display: "flex"}}>
          <Link to={`/${urls[0]}/${key}`}>
-           <span style={{display: "flex", gap: "10px"}}> {RenderEventIcon(dynamicRoutes[key][1])}
-               {dynamicRoutes[key][0]}</span>
+           <span style={{display: "flex", gap: "6px"}}> {RenderEventIcon(dynamicRoutes[key][1])}
+               {capitalizeFirstWord(dynamicRoutes[key][0])}</span>
          </Link>
                 {index < Object.keys(dynamicRoutes).length - 1 && <span> &nbsp;/&nbsp; </span>}
       </span>)}

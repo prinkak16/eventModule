@@ -9,7 +9,6 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import LangaugeSwitchSelect from "../../language-switch-select";
-import {languages} from "../../pages/events/create-events/createEvent";
 import {useTranslation} from "react-i18next";
 
 
@@ -93,7 +92,7 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                         {(JSON.parse(document.getElementById("app").getAttribute("data-create"))) && !isSubmissionPage &&
                             <button className={"header-form-create-button"} onClick={() => navigate('/events')}>{t("Create Event")}</button>
                         }
-                        <LangaugeSwitchSelect supportedLanguages={languages}/>
+                        <LangaugeSwitchSelect/>
                     </div>
 
                 </Toolbar>

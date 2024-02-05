@@ -39,38 +39,10 @@ const HtmlTooltip = styled(({ className, ...props }) => (
     [`& .${tooltipClasses.tooltip}`]: {
         backgroundColor: '#f5f5f9',
         color: 'rgba(0, 0, 0, 0.87)',
-        minWidth:"100%",
         fontSize: theme.typography.pxToRem(12),
         border: '1px solid #dadde9',
     },
 }));
-
-export const languages = [{
-    lang: "en", name: "English", value: "",
-}, {
-    lang: "hn", name: "Hindi", value: "",
-}, {
-    lang: "mr", name: "Marathi", value: "",
-}, {
-    lang: "te", name: "Telugu", value: "",
-}, {
-    lang: "kn", name: "Kannada", value: "",
-}, {
-    lang: "ta", name: "Tamil", value: "",
-}, {
-    lang: "bn", name: "Bengali", value: "",
-}, {
-    lang: "or", name: "Odia", value: "",
-}, {
-    lang: "gu", name: "Gujarati", value: "",
-}, {
-    lang: "pa", name: "Punjabi", value: "",
-}, {
-    lang: "ml", name: "Malayalam", value: "",
-}, {
-    lang: "as", name: "Assamese", value: "",
-},];
-
 
 export default function CreateEvent({isEdit, editData}) {
     const {id} = useParams();

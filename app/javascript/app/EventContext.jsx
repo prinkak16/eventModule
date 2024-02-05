@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState} from 'react';
+import React, {createContext, useContext, useEffect, useState} from 'react';
 
 //creating the context
 const Event = createContext();
@@ -8,6 +8,10 @@ const EventContext = ({children}) => {
     const [isSubmissionPage, setIsSubmissionPage] = useState(false);
     const [eventDeleteId, setEventDeleteId] = useState(-1);
     const [globalSelectedLanguage, setGlobalSelectedLanguage] = useState('en');
+
+    useEffect(()=>{
+
+    },[]);
 
 
     return (
