@@ -228,8 +228,8 @@ class Api::EventController < Api::ApplicationController
   def edit
     begin
       event = Event.where(id: params[:id])
-      max_start_datetime = event.first.children.present? ? event.first.children.maximum(:start_date) : nil
-      min_end_datetime = event.first.children.present? ? event.first.children.minimum(:end_date) : nil
+      max_start_datetime = event.first.children.present? ? event.first.children.maximum(:start_date)&.in_time_zone(ENV['TIME_ZONE'])&.strftime("%d-%m-%y %I:%M:%S %p") : nil
+      min_end_datetime = event.first.children.present? ? event.first.children.minimum(:end_date)&.in_time_zone(ENV['TIME_ZONE'])&.strftime("%d-%m-%y %I:%M:%S %p") : nil
       data = ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: '', current_user: current_user)
       render json: { success: true, data: data, start_datetime: max_start_datetime, end_datetime: min_end_datetime, message: "successfull" }, status: :ok
     rescue => e
