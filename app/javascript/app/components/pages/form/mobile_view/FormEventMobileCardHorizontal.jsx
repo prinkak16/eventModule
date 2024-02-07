@@ -11,8 +11,6 @@ const FormEventMobileCardHorizontal=({event,index})=>{
     const navigate=useNavigate();
 
     const submissionHandler = (event_id) => {
-        // to receive events in mobile app
-        window.MobileInterface.onEventCardClick(event_id);
         navigate(`/forms/${event_id}`);
     };
 
