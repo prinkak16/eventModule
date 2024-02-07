@@ -1,4 +1,5 @@
 <%= content_tag(:div, "", id: "app", data: {
   controller: "react",
-  create: has_event_create_permission
+  create: has_event_create_permission,
+  redirect_for: session[:redirect_for]
 }) %>

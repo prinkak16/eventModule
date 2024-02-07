@@ -14,11 +14,9 @@ import FormDetails from "./components/pages/form/form-details/FormDetails";
 
 const Router = () => {
     return (
-
         <Routes>
             <Route path="/" element={<Navigate to="/forms" replace={true}/>}/>
             <Route path="/forms" element={<FormComponent/>}/>
-            <Route path="/formsmobile" element={<FormComponent />} />
             <Route element={<RoutesWithBreadcrumbs/>}>
                 <Route path={"/forms/:id"} element={<FormDetails/>}/>
                 {/*
@@ -37,8 +35,7 @@ const Router = () => {
                 </Route>
             </Route>
             <Route path="/*" element={<Navigate to="/" replace={true}/>}/>
-        </Routes>
-    )
+        </Routes>)
 }
 
 export default Router;

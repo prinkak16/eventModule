@@ -13,6 +13,7 @@ import {useTranslation} from "react-i18next";
 
 
 const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) => {
+    const redirectFor = document.getElementById('app').getAttribute('data-redirect-for');
     const bjpLogo = 'https://storage.googleapis.com/public-saral/public_document/BJP-logo.png';
     const [userDetails, setUserDetails] = useState(null)
     const navigate = useNavigate()
@@ -75,7 +76,7 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                     )}
                 </Toolbar> :
 
-                <Toolbar className={window.location.pathname === '/formsmobile' ? 'header-form-bg header-form-bg-mobile' : 'header-form-bg'}>
+                <Toolbar className={redirectFor === 'mobile' ? 'header-form-bg header-form-bg-mobile' : 'header-form-bg'}>
                     <Tooltip className="header-form-back-button" onClick={() =>
                         navigate(-1)
                     }>
