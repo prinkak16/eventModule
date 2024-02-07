@@ -68,6 +68,7 @@ class Api::EventSubmissionController < Api::ApplicationController
     raise StandardError, 'Error finding submission' if submission.nil?
     event_meta = {
       stateIds: event.event_locations.pluck(:state_id),
+      userStateId: current_user&.sso_payload["country_state_id"].present? ? current_user&.sso_payload["country_state_id"]: nil ,
       redirectionLink: ENV['ROOT_URL'] + 'forms/submissions/' + event_id,
       logo: event.get_image_url
     }
