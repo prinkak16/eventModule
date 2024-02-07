@@ -34,7 +34,7 @@ class Api::EventSubmissionController < Api::ApplicationController
       },
       body: { submissionId: submissions.pluck(:submission_id) }.to_json
     )
-    raise StandardError, 'Error fetching response' if response.status != 200
+    raise StandardError, 'Error fetching response' if response.code != 200
     response = JSON.parse(response.body)
     submissions_data = response['data']
     data = []
