@@ -39,6 +39,7 @@ function LangaugeSwitchSelect() {
         const userLang=localStorage.getItem('userLanguage');
         if(userLang){
             setGlobalSelectedLanguage(userLang);
+            i18n.changeLanguage(userLang);
         }
     },[]);
 
