@@ -25,17 +25,15 @@ class Api::EventSubmissionController < Api::ApplicationController
     events = Event.where(id: params[:event_id])
     events = ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user)
     submissions = EventSubmission.where(user_id: current_user, event_id: params[:event_id]).order(created_at: :desc)
-    conn = Faraday.new(
-      url: ENV['FORM_BASE_URL'],
+    response = HTTParty.post(
+      "#{ENV['FORM_BASE_URL']}/api/submissionStatus",
       headers: {
         'Authorization' => "Bearer #{ENV['AUTH_TOKEN_FOR_REDIRECTION']}",
         'Content-Type' => 'application/json',
         'Accept' => 'application/json'
-      }
+      },
+      body: { submissionId: submissions.pluck(:submission_id) }.to_json
     )
-    response = conn.post("/api/submissionStatus") do |req|
-      req.body = { 'submissionId': submissions.pluck(:submission_id) }.to_json
-    end
     raise StandardError, 'Error fetching response' if response.status != 200
     response = JSON.parse(response.body)
     submissions_data = response['data']
