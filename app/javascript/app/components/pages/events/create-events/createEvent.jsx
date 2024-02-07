@@ -125,7 +125,7 @@ export default function CreateEvent({isEdit, editData}) {
 
             })();
         }
-        if (!isEdit) {
+        if (!isEdit&&id) {
             (async () => {
                 try {
                     const {data} = await getEventById(id);

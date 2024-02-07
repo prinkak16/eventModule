@@ -19,12 +19,7 @@ const Router = () => {
             <Route path="/forms" element={<FormComponent/>}/>
             <Route element={<RoutesWithBreadcrumbs/>}>
                 <Route path={"/forms/:id"} element={<FormDetails/>}/>
-                {/*
-                <Route path="/forms/submissions/:id" element={<FormSubmission />} />
-*/}
             </Route>
-
-
             <Route element={<ProtectedRoutes/>}>
                 <Route path="/events" element={<HomeComponent/>}/>
                 <Route element={<RoutesWithBreadcrumbs/>}>
