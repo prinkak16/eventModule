@@ -14,6 +14,13 @@ class Event < ApplicationRecord
   has_many :children, class_name: 'Event', foreign_key: 'parent_id'
   has_one_attached :csv_file
   has_one_attached :report_file
+
+  before_destroy do
+    if destroyed_by_association.nil?
+      image.purge_later
+    end
+  end
+
   def get_image_url
     if self.image.attached? && self.image_url.blank?
       update(image_url: image.url(expires_in: 1.year))
@@ -42,6 +49,18 @@ class Event < ApplicationRecord
     else
       self.name
     end
+  end
+
+  def restore_with_children
+    self.restore
+
+    if self.respond_to?(:event_locations)
+      self.event_locations.only_deleted.each do |location|
+        location.restore
+      end
+    end
+
+    EventForm.only_deleted.where(event: self).first.restore
   end
 
 end
