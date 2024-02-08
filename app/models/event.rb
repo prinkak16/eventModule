@@ -14,6 +14,7 @@ class Event < ApplicationRecord
   has_many :children, class_name: 'Event', foreign_key: 'parent_id'
   has_one_attached :csv_file
   has_one_attached :report_file
+  acts_as_list scope: :parent
 
   before_destroy do
     if destroyed_by_association.nil?
