@@ -10,7 +10,8 @@ import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import LangaugeSwitchSelect from "../../language-switch-select";
 import {useTranslation} from "react-i18next";
-
+import HeadphonesIcon from '@mui/icons-material/Headphones';
+import Dialer from "../../phone-dialer/Dialer";
 
 const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) => {
     const redirectFor = document.getElementById('app').getAttribute('data-redirect-for');
@@ -93,6 +94,7 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                         {(JSON.parse(document.getElementById("app").getAttribute("data-create"))) && !isSubmissionPage &&
                             <button className={"header-form-create-button"} onClick={() => navigate('/events')}>{t("Create Event")}</button>
                         }
+                       <Dialer phoneNumber={"9918442211"}/>
                         <LangaugeSwitchSelect/>
                     </div>
 
