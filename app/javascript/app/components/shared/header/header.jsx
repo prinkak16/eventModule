@@ -94,8 +94,9 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                         {(JSON.parse(document.getElementById("app").getAttribute("data-create"))) && !isSubmissionPage &&
                             <button className={"header-form-create-button"} onClick={() => navigate('/events')}>{t("Create Event")}</button>
                         }
-                       <Dialer phoneNumber={"9918442211"}/>
                         <LangaugeSwitchSelect/>
+                        <Dialer phoneNumber={"8287809809"}/>
+
                     </div>
 
                 </Toolbar>

@@ -1,18 +1,18 @@
 import React from 'react';
-import HeadphonesIcon from "@mui/icons-material/Headphones";
+import {IconButton} from "@mui/material";
+import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 
 const PhoneDialerLink = ({ phoneNumber }) => {
     const handleDialClick = () => {
-        const telLink = `tel:${phoneNumber}`;
-        window.location.href = telLink;
+        window.open(`tel:${phoneNumber}`)
+
     };
 
     return (
-        <section>
-            <a href="tel:9918483161" className="btn btn-success">
-                <HeadphonesIcon/>
-            </a>
-        </section>
+            <IconButton onClick={handleDialClick}>
+                <HeadsetMicIcon/>
+            </IconButton>
+
     );
 };
 

@@ -11,7 +11,6 @@ import {toast} from "react-toastify";
 
 
 function LangaugeSwitchSelect() {
-    const selectRef = useRef(null);
     const {i18n } = useTranslation();
     const {globalSelectedLanguage, setGlobalSelectedLanguage} = EventState();
     const [supportedLanguages,setSupportedLanguages]=useState([]);
@@ -34,14 +33,6 @@ function LangaugeSwitchSelect() {
 
     }
 
-    const handleLanguageClick = () => {
-        console.log('clicked')
-        if (selectRef.current) {
-            console.log('yes valid')
-            selectRef.current.click();
-        }
-    };
-
     useEffect(()=>{
         fetchLanguages();
         //checking whether there exists already selected language in local storage
@@ -59,15 +50,14 @@ function LangaugeSwitchSelect() {
                 htmlFor="language"
                 className={"inner-container"}
             >
-                <div className={"language-icon-container"} id={"language"} onClick={handleLanguageClick}>
+                <div className={"language-icon-container"} id={"language"} >
                     <LanguageIcon className={"language-icon"} id={"language"}/>
                 </div>
                 <select
                     id="language"
                     onChange={handleChange}
-                    value={""}
+                    value={globalSelectedLanguage}
                     className={'select-styles'}
-                    ref={selectRef}
                 >
                     <option value="" style={{display: 'none'}}></option>
 
