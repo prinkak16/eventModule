@@ -10,9 +10,11 @@ import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import LangaugeSwitchSelect from "../../language-switch-select";
 import {useTranslation} from "react-i18next";
-
+import HeadphonesIcon from '@mui/icons-material/Headphones';
+import Dialer from "../../phone-dialer/Dialer";
 
 const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) => {
+    const redirectFor = document.getElementById('app').getAttribute('data-redirect-for');
     const bjpLogo = 'https://storage.googleapis.com/public-saral/public_document/BJP-logo.png';
     const [userDetails, setUserDetails] = useState(null)
     const navigate = useNavigate()
@@ -75,7 +77,7 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                     )}
                 </Toolbar> :
 
-                <Toolbar className={window.location.pathname === '/formsmobile' ? 'header-form-bg header-form-bg-mobile' : 'header-form-bg'}>
+                <Toolbar className={redirectFor === 'mobile' ? 'header-form-bg header-form-bg-mobile' : 'header-form-bg'}>
                     <Tooltip className="header-form-back-button" onClick={() =>
                         navigate(-1)
                     }>
@@ -92,6 +94,7 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                         {(JSON.parse(document.getElementById("app").getAttribute("data-create"))) && !isSubmissionPage &&
                             <button className={"header-form-create-button"} onClick={() => navigate('/events')}>{t("Create Event")}</button>
                         }
+                       <Dialer phoneNumber={"9918442211"}/>
                         <LangaugeSwitchSelect/>
                     </div>
 

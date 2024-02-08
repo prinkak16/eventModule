@@ -18,8 +18,10 @@ import ReactLoader from "../../shared/loader/Loader";
 import {useTranslation} from "react-i18next";
 
 import FormEventMobileCardHorizontal from "./mobile_view/FormEventMobileCardHorizontal";
+
 const FormComponent = () => {
-    const {t}=useTranslation();
+    const isForMobile = document.getElementById('app').getAttribute('data-redirect-for') === 'mobile';
+    const {t} = useTranslation();
 
     const imgDefault =
         "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
@@ -35,7 +37,7 @@ const FormComponent = () => {
     const myRef = useRef(null);
     const [innerWidth, setInnerWidth] = useState(window.innerWidth);
     const [isEventChanged, setIsEventChanged] = useState(false);
-    const {setIsSubmissionPage, setEventName,globalSelectedLanguage} = EventState();
+    const {setIsSubmissionPage, setEventName, globalSelectedLanguage} = EventState();
 
     async function getEventsList() {
         setLoader(true)
@@ -44,7 +46,7 @@ const FormComponent = () => {
             search_query: searchEventName ?? "",
             limit: rowsPerPage,
             offset: rowsPerPage * (page - 1),
-            language_code:globalSelectedLanguage
+            language_code: globalSelectedLanguage
         };
 
         try {
@@ -77,7 +79,7 @@ const FormComponent = () => {
 
     useEffect(() => {
         getEventsList();
-    }, [page,globalSelectedLanguage]);
+    }, [page, globalSelectedLanguage]);
 
     //useEffect related to context api
     useEffect(() => {
@@ -112,7 +114,7 @@ const FormComponent = () => {
     useEffect(() => {
         handleResize();
         window.addEventListener('resize', handleResize);
-
+        console.log(isForMobile);
         return () => {
             window.removeEventListener('resize', handleResize);
         };
@@ -125,8 +127,7 @@ const FormComponent = () => {
         <Box className="form-main-container" ref={myRef}>
             {loader ? <ReactLoader/> :
                 <>
-
-                    <div className={window.location.pathname === '/formsmobile' ? 'form-event-search form-event-search-mobile' : 'form-event-search'}>
+                    <div className={isForMobile ? 'form-event-search form-event-search-mobile' : 'form-event-search'}>
                         <TextField
                             className="search-input"
                             sx={{margin: "30px", width: "80%"}}
@@ -141,30 +142,30 @@ const FormComponent = () => {
                                     <InputAdornment position="start">
                                         <SearchIcon/>
                                     </InputAdornment>),
-                                }}
-                            />
+                            }}
+                        />
                     </div>
 
-                    <div className={window.location.pathname === '/formsmobile' ? "form-events-container-mobile" : "form-events-container"}>
+                    <div className={isForMobile ? "form-events-container-mobile" : "form-events-container"}>
                         {allEventList.length > 0 ? (
-                            <div className={window.location.pathname === '/formsmobile' ? 'form-list-container-horizontal' : 'form-list-container'}>
+                            <div className={isForMobile ? 'form-list-container-horizontal' : 'form-list-container'}>
                                 {allEventList.map((event, index) => {
                                         if (innerWidth > 450) {
                                             return <FormEventCard event={event} key={index}/>
                                         } else {
                                             return (
-                                window.location.pathname === '/formsmobile' ?
-                                    <FormEventMobileCardHorizontal event={event} key={index}/>
-                                    :<FormEventMobileCard event={event} key={index}/>
-                                        )
+                                                isForMobile ?
+                                                    <FormEventMobileCardHorizontal event={event} key={index}/>
+                                                    : <FormEventMobileCard event={event} key={index}/>
+                                            )
+                                        }
                                     }
-                                }
-                            )}</div>
+                                )}</div>
                         ) : (
                             <div className="no-event-data">No Data Found</div>
                         )}
                     </div>
-                    <div className={`pagination ${window.location.pathname === '/formsmobile' && 'pagination-toggle'}`}>
+                    <div className={`pagination ${isForMobile && 'pagination-toggle'}`}>
                         <Pagination
                             count={Math.ceil(totalCount / 10)}
                             page={page}

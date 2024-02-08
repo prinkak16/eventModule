@@ -439,16 +439,16 @@ const HomeComponent = () => {
                                 <span className="font1-2rem">Edit</span>
                             </div>
 
-                            <div className="edit-bar-sub-div cursor-pointer" onClick={() => {
-                                setEventDeleteId(event?.id)
-                                setShowConfirmationModal(true)
-                            }}>
-                                <IconButton>
-                                    <ArchiveIcon className="event-list-icon" sx={{color: "orange"}}/>
+                            {/*<div className="edit-bar-sub-div cursor-pointer" onClick={() => {*/}
+                            {/*    setEventDeleteId(event?.id)*/}
+                            {/*    setShowConfirmationModal(true)*/}
+                            {/*}}>*/}
+                            {/*    <IconButton>*/}
+                            {/*        <ArchiveIcon className="event-list-icon" sx={{color: "orange"}}/>*/}
 
-                                </IconButton>
-                                <span className="font1-2rem">Archive</span>
-                            </div>
+                            {/*    </IconButton>*/}
+                            {/*    <span className="font1-2rem">Archive</span>*/}
+                            {/*</div>*/}
 
                             { event?.create_form_url == "" ? null :
                                 <div className="edit-bar-sub-div cursor-pointer" onClick={() => {

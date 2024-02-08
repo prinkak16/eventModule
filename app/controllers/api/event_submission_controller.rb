@@ -25,18 +25,16 @@ class Api::EventSubmissionController < Api::ApplicationController
     events = Event.where(id: params[:event_id])
     events = ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user)
     submissions = EventSubmission.where(user_id: current_user, event_id: params[:event_id]).order(created_at: :desc)
-    conn = Faraday.new(
-      url: ENV['FORM_BASE_URL'],
+    response = HTTParty.post(
+      "#{ENV['FORM_BASE_URL']}/api/submissionStatus",
       headers: {
         'Authorization' => "Bearer #{ENV['AUTH_TOKEN_FOR_REDIRECTION']}",
         'Content-Type' => 'application/json',
         'Accept' => 'application/json'
-      }
+      },
+      body: { submissionId: submissions.pluck(:submission_id) }.to_json
     )
-    response = conn.post("/api/submissionStatus") do |req|
-      req.body = { 'submissionId': submissions.pluck(:submission_id) }.to_json
-    end
-    raise StandardError, 'Error fetching response' if response.status != 200
+    raise StandardError, 'Error fetching response' if response.code != 200
     response = JSON.parse(response.body)
     submissions_data = response['data']
     data = []
@@ -68,6 +66,7 @@ class Api::EventSubmissionController < Api::ApplicationController
     raise StandardError, 'Error finding submission' if submission.nil?
     event_meta = {
       stateIds: event.event_locations.pluck(:state_id),
+      userStateId: current_user&.sso_payload["country_state_id"].present? ? current_user&.sso_payload["country_state_id"]: nil ,
       redirectionLink: ENV['ROOT_URL'] + 'forms/submissions/' + event_id,
       logo: event.get_image_url
     }
@@ -90,8 +89,8 @@ class Api::EventSubmissionController < Api::ApplicationController
       eventId: submission.event_id,
     }
     token = JWT.encode(event_meta, ENV['JWT_SECRET_KEY'].presence || "thisisasamplesecret")
-    conn = Faraday.new(
-      url: ENV['FORM_BASE_URL'],
+    response = HTTParty.delete(
+      "#{ENV['FORM_BASE_URL']}/api/submission/delete",
       headers: {
         'Authorization' => "Bearer #{ENV['AUTH_TOKEN_FOR_REDIRECTION']}",
         'Form' => "Bearer #{token}",
@@ -99,8 +98,7 @@ class Api::EventSubmissionController < Api::ApplicationController
         'Accept' => 'application/json'
       }
     )
-    response = conn.delete("api/submission/delete")
-    if response.status == 200
+    if response.code == 200
       submission.destroy!
     else
       raise StandardError, 'Error Deleting Submission'
