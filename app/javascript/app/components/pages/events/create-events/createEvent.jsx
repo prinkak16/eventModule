@@ -3,7 +3,6 @@ import "./createEvent.scss";
 import {
     Autocomplete,
     Box,
-    Button,
     Chip,
     FormControlLabel,
     IconButton,
@@ -13,8 +12,7 @@ import {
     TextField,
     Tooltip,
 } from "@mui/material";
-import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import {styled} from '@mui/material/styles';
 import dayjs from "dayjs";
 import InfoIcon from '@mui/icons-material/Info';
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
@@ -226,6 +224,14 @@ export default function CreateEvent({isEdit, editData}) {
         }
 
 
+    }
+
+    useEffect(() => {
+        if (isEdit) {
+            formFieldUpdationByEdit();
+        }
+        if (!isEdit && id) {
+            getParentDetails(id);
         }
         getAllData();
         getLanguages();
@@ -308,7 +314,7 @@ export default function CreateEvent({isEdit, editData}) {
         formData.append("img", formFieldValue?.img ?? "");
         formData.append('has_sub_event', formFieldValue?.has_sub_event)
         formData?.append('inherit_from_parent', formFieldValue?.inherit_from_parent);
-        formData?.append('translated_title',JSON.stringify(formFieldValue?.translated_title));
+        formData?.append('translated_title', JSON.stringify(formFieldValue?.translated_title));
         if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
             formData.append('parent_id', formFieldValue?.parent_id);
         }
@@ -587,7 +593,6 @@ export default function CreateEvent({isEdit, editData}) {
                         <DateTimePicker
                             disabled={formFieldValue?.inherit_from_parent || (isEdit && formFieldValue?.status?.toLowerCase() === 'expired')}
                             ampm={false}
-
                             required={true}
                             label={<span>
            Start date & Time{' '}
@@ -622,6 +627,7 @@ export default function CreateEvent({isEdit, editData}) {
                         />
                     </div>
                 </LocalizationProvider>
+
                 <div>
                     <p>Upload Image/ Banner{' '}<span style={{color: "red"}}>*</span> :</p>
                     <ImageCroper handleImage={handleImage} Initial_image={formFieldValue?.img} isEditable={isEdit}
