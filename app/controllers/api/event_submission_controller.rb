@@ -22,33 +22,37 @@ class Api::EventSubmissionController < Api::ApplicationController
   end
 
   def user_submissions
-    events = Event.where(id: params[:event_id])
-    events = ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user)
-    submissions = EventSubmission.where(user_id: current_user, event_id: params[:event_id]).order(created_at: :desc)
-    response = HTTParty.post(
-      "#{ENV['FORM_BASE_URL']}/api/submissionStatus",
-      headers: {
-        'Authorization' => "Bearer #{ENV['AUTH_TOKEN_FOR_REDIRECTION']}",
-        'Content-Type' => 'application/json',
-        'Accept' => 'application/json'
-      },
-      body: { submissionId: submissions.pluck(:submission_id) }.to_json
-    )
-    raise StandardError, 'Error fetching response' if response.code != 200
-    response = JSON.parse(response.body)
-    submissions_data = response['data']
-    data = []
-    submissions.each do |submission|
-      res = submissions_data[submission.submission_id]
-      if res.present?
-        data << { reported_on: submission.created_at, images: res['images'],
-                  status: res['status'], locations: res['locations'].pluck('locationName'),
-                  event_id: submission.event_id, submission_id: submission.submission_id, id: submission.id }
+    begin
+      events = Event.where(id: params[:event_id])
+      events = ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user)
+      submissions = EventSubmission.where(user_id: current_user, event_id: params[:event_id]).order(created_at: :desc)
+      puts "Event Module Queries - " + "#{current_user.phone_number}"
+      response = HTTParty.post(
+        "#{ENV['FORM_BASE_URL']}/api/submissionStatus",
+        headers: {
+          'Authorization' => "Bearer #{ENV['AUTH_TOKEN_FOR_REDIRECTION']}",
+          'Content-Type' => 'application/json',
+          'Accept' => 'application/json'
+        },
+        body: { submissionId: submissions.pluck(:submission_id) }.to_json
+      )
+      raise StandardError, 'Error fetching response' if response.code != 200
+      puts "Form Builder Queries - " + "#{current_user.phone_number}"
+      response = JSON.parse(response.body)
+      submissions_data = response['data']
+      data = []
+      submissions.each do |submission|
+        res = submissions_data[submission.submission_id]
+        if res.present?
+          data << { reported_on: submission.created_at, images: res['images'],
+                    status: res['status'], locations: res['locations'].pluck('locationName'),
+                    event_id: submission.event_id, submission_id: submission.submission_id, id: submission.id }
+        end
       end
+      render json: { success: true, data: { events: events, submissions: data }, message: "success full" }, status: :ok
+    rescue => e
+      render json: { success: false ,message: e.message }, status: :bad_request
     end
-    render json: { success: true, data: { events: events, submissions: data }, message: "success full" }, status: 200
-  rescue => e
-    render json: { message: e.message }, status: 400
   end
 
   def user_submit_event
