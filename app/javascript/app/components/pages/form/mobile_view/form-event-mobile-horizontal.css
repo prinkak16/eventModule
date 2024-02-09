@@ -46,6 +46,7 @@ p{
         gap: 8px;
         overflow-x: scroll;
         padding-left: 10px;
+        height: 150px;
     }
     .form-list-container-horizontal::-webkit-scrollbar {
         display: none;
