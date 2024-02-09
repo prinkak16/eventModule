@@ -28,7 +28,7 @@ class Api::EventSubmissionController < Api::ApplicationController
       submissions = EventSubmission.where(user_id: current_user, event_id: params[:event_id]).order(created_at: :desc)
       puts "Event Module Queries - " + "#{current_user.phone_number}"
       response = HTTParty.post(
-        "#{ENV['FORM_BASE_URL']}api/submissionStatus",
+        "#{ENV['CLUSTER_FORM_BASE_URL']}api/submissionStatus",
         headers: {
           'Authorization' => "Bearer #{ENV['AUTH_TOKEN_FOR_REDIRECTION']}",
           'Content-Type' => 'application/json',
@@ -94,7 +94,7 @@ class Api::EventSubmissionController < Api::ApplicationController
     }
     token = JWT.encode(event_meta, ENV['JWT_SECRET_KEY'].presence || "thisisasamplesecret")
     response = HTTParty.delete(
-      "#{ENV['FORM_BASE_URL']}api/submission/delete",
+      "#{ENV['CLUSTER_FORM_BASE_URL']}api/submission/delete",
       headers: {
         'Authorization' => "Bearer #{ENV['AUTH_TOKEN_FOR_REDIRECTION']}",
         'Form' => "Bearer #{token}",
