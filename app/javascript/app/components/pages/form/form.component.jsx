@@ -18,6 +18,7 @@ import ReactLoader from "../../shared/loader/Loader";
 import {useTranslation} from "react-i18next";
 
 import FormEventMobileCardHorizontal from "./mobile_view/FormEventMobileCardHorizontal";
+import HorizontalCardShimmerEffect from "../shimmer_effects/HorizontalCardShimmerEffect";
 
 const FormComponent = () => {
     const isForMobile = document.getElementById('app').getAttribute('data-redirect-for') === 'mobile';
@@ -31,7 +32,7 @@ const FormComponent = () => {
     const [allEventList, setAllEventList] = useState([]);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(1);
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState(true);
     const [searchEventName, setSearchEventName] = useState(null);
     const rowsPerPage = 10;
     const myRef = useRef(null);
@@ -56,16 +57,15 @@ const FormComponent = () => {
             if (data.success) {
                 setAllEventList(data.data);
                 setTotalCount(data?.total ?? data?.data?.length);
-                setLoader(false)
                 window.scrollTo({top: 0});
 
             } else {
-                setLoader(false)
                 toast.error(`Failed to get event list`);
             }
         } catch (error) {
-            setLoader(false)
             toast.error("Failed to get event list");
+        }finally {
+            setLoader(false)
         }
         setIsEventChanged(false)
 
@@ -125,7 +125,10 @@ const FormComponent = () => {
      }, [innerWidth]);*/
     return (
         <Box className="form-main-container" ref={myRef}>
-            {loader ? <ReactLoader/> :
+            {loader ? (isForMobile ?
+                    <div className={"form-list-container-horizontal"}>
+                        <HorizontalCardShimmerEffect/>
+                    </div>: <ReactLoader/>) :
                 <>
                     <div className={isForMobile ? 'form-event-search form-event-search-mobile' : 'form-event-search'}>
                         <TextField
@@ -162,7 +165,7 @@ const FormComponent = () => {
                                     }
                                 )}</div>
                         ) : (
-                            <div className="no-event-data">No Data Found</div>
+                            (loader ? null : <div className="no-event-data">No Data Found</div>)
                         )}
                     </div>
                     <div className={`pagination ${isForMobile && 'pagination-toggle'}`}>
