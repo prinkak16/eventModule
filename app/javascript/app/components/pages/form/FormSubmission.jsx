@@ -27,6 +27,7 @@ const FormSubmission = () => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [eventDeleteId, setEventDeleteId] = useState(-1);
     const [confirmationStatus, setConfirmationStatus] = useState(false);
+    const [disableReportButton,setDisableReportButton]=useState(false);
 
     useEffect(() => {
         (async () => {
@@ -38,7 +39,6 @@ const FormSubmission = () => {
                 if (data?.success) {
                     setEventDetails(data?.data?.events[0] ?? {})
                     setEventsubmissionsData(data?.data?.submissions)
-                    setIsLoading(false)
                     if (data?.data?.events?.length > 0) {
                         setEventName(data?.data?.events[0]?.name);
                     }
@@ -68,16 +68,20 @@ const FormSubmission = () => {
         setIsSubmissionPage(true);
     }, []);
     const reportEventHandler = async () => {
-
         setIsLoading(true)
+        setDisableReportButton(true);
         try {
             const {data} = await ApiClient.get(`user/submit_event/${id}`);
             if (data?.success) {
-                setIsLoading(false)
                 window.location.href = data?.data?.redirect_url;
             }
+
         } catch (e) {
             console.log(e)
+            //will only enable the report button if api is failed
+            setDisableReportButton(false);
+        }finally {
+            setIsLoading(false);
         }
 
     }
@@ -130,7 +134,7 @@ const FormSubmission = () => {
             </div>
             {eventDetails?.status?.name?.toLowerCase() === 'active'&&
             <div className="report-button-container">
-                <Button variant={"contained"} disabled={eventDetails?.status?.name?.toLowerCase() !== 'active'}
+                <Button variant={"contained"} disabled={disableReportButton|| eventDetails?.status?.name?.toLowerCase() !== 'active'}
                         className="report-event-button" onClick={reportEventHandler}>{t("Report Event")}</Button>
 
             </div>
