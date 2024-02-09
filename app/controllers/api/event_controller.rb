@@ -169,13 +169,18 @@ class Api::EventController < Api::ApplicationController
     end
     events = events.joins(:event_locations).where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
+    events = events.where(pinned: false)
+    pinned_events = events.where(pinned: true).order(:position)
+    pinned_events_size = pinned_events.size
     total = events.size
     events = events.order(created_at: :desc).limit(limit).offset(offset)
     render json: {
       data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, language_code: params[:language_code],state_id: params[:state_id], current_user: current_user),
+      pinned_events: ActiveModelSerializers::SerializableResource.new(pinned_events, each_serializer: EventSerializer, language_code: params[:language_code],state_id: params[:state_id], current_user: current_user),
       message: ['Event list'],
       success: true,
-      total: total
+      total: total,
+      pinned_events_size: pinned_events_size
     }, status: :ok
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
@@ -189,13 +194,18 @@ class Api::EventController < Api::ApplicationController
     events = events.joins(:event_locations).where(event_locations: { state_id: current_user.sso_payload["country_state_id"] })
     events = events.where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
+    events = events.where(pinned: false)
+    pinned_events = events.where(pinned: true)
+    pinned_events_size = pinned_events.size
     total = events.count
     events = events.order(created_at: :desc).limit(limit).offset(offset)
     render json: {
       data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, language_code: params[:language_code], state_id: params[:state_id], current_user: current_user),
+      pinned_events: ActiveModelSerializers::SerializableResource.new(pinned_events, each_serializer: EventSerializer, language_code: params[:language_code], state_id: params[:state_id], current_user: current_user),
       message: ['Event list'],
       success: true,
       total: total,
+      pinned_events_size: pinned_events_size
     }, status: :ok
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
@@ -311,6 +321,34 @@ class Api::EventController < Api::ApplicationController
                      is_child: is_child}, status: :ok
     rescue => e
       puts e.message
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
+
+  def pin_event
+    begin
+      event = Event.find_by(id: params[:event_id])
+      operation = params[:operation] == "pin" ? true: false
+      event.update!(pinned: operation)
+      if operation == false
+        event.update!(position: nil)
+      end
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
+
+  def update_position
+    begin
+      data = params[:data].to_a
+      index = 1
+      data.each do |event_position|
+        event = Event.find_by(id: event_position)
+        event.set_list_position(index) if event.present?
+        index = index + 1
+      end
+      render json: { success: true, message: "successfully position update" }, status: :ok
+    rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end
   end
