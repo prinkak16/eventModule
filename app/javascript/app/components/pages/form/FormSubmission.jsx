@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {useNavigate, useParams} from "react-router";
+import {useLocation, useNavigate, useParams} from "react-router";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import './form-event-submission.scss'
 import {Box} from "@mui/material";
@@ -16,7 +16,7 @@ import {useTranslation} from "react-i18next";
 
 const FormSubmission = () => {
     const { t } = useTranslation();
-
+    const {key}=useLocation();
     const navigate = useNavigate();
     const [eventDetails, setEventDetails] = useState({});
     const [eventSubmissionsData, setEventsubmissionsData] = useState([]);
@@ -57,7 +57,7 @@ const FormSubmission = () => {
             setIsLoading(false)
         }
 
-    }, []);
+    }, [key]);
 
     /* useEffect(() => {
          console.log('events are ', eventDetails)
@@ -67,6 +67,7 @@ const FormSubmission = () => {
     useEffect(() => {
         setIsSubmissionPage(true);
     }, []);
+
     const reportEventHandler = async () => {
         setIsLoading(true)
         setDisableReportButton(true);
