@@ -37,8 +37,8 @@ Rails.application.routes.draw do
       get 'event/user_children', to: 'event#user_list_children'
       get 'event/languages', to: 'translation#fetch_languages'
       get 'event/reports', to: 'reports#fetch_reports'
-      put 'event/pin', to: 'event#pin_event'
-      put 'event/update_position', to: 'event#update_position'
+      get 'event/pin', to: 'event#pin_event'
+      get 'event/update_position', to: 'event#update_position'
   end
   #noinspection RailsParamDefResolve
   match '*path', to: 'home#index', via: :all, constraints: lambda { |req|
