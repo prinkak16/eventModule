@@ -4,8 +4,7 @@ import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 
 const PhoneDialerLink = ({ phoneNumber }) => {
     const handleDialClick = () => {
-        window.open(`tel:${phoneNumber}`)
-
+        window.location.href=`tel:${phoneNumber}`;
     };
 
     return (
