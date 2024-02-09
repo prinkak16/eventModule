@@ -213,8 +213,12 @@ export default function CreateEvent({isEdit, editData}) {
                     ...prevData,
                     ...newObj
                 }))
-                  // setting start_date_time and end_date_time from intersection of all child event
-                setChildEventIntersection((prevData)=>({...prevData,start_datetime: data?.start_datetime,end_datetime: data?.end_datetime}))
+                // setting start_date_time and end_date_time from intersection of all child event
+                setChildEventIntersection((prevData) => ({
+                    ...prevData,
+                    start_datetime: data?.start_datetime,
+                    end_datetime: data?.end_datetime
+                }))
 
             } else {
                 toast?.error('Failed to get event details')
@@ -448,19 +452,17 @@ export default function CreateEvent({isEdit, editData}) {
 
     }
 
-    useEffect(() => {
-        console.log(' child details ',childEventsIntersection)
-        console.log('start of cild',dayjs(childEventsIntersection?.start_datetime))
-    }, [childEventsIntersection]);
-
 
     const startDateTimeValidation = (validationFor) => {
         if (validationFor === 'minDate') {
+            //min date should not be less than that of its parent event
             return parentEventDetails?.start_datetime ? dayjs(parentEventDetails?.start_datetime) : dayjs(new Date()).subtract(5, 'minute')
         } else {
-            if(isEdit&&childEventsIntersection?.start_datetime){
+            if (isEdit && childEventsIntersection?.start_datetime) {
+                // in case of edit , max-date selection for start-date-time  should not be greater than start-date-time of child-event
                 return dayjs(childEventsIntersection?.start_datetime);
             }
+            //if not the case of edit, max-date selection should not be greater than the parent end-date-time
             return parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime) : null
         }
 
@@ -468,10 +470,12 @@ export default function CreateEvent({isEdit, editData}) {
 
     const endDateTimeValidation = (validationFor) => {
         if (validationFor === 'minDate') {
-            return formFieldValue?.start_datetime ? dayjs(formFieldValue?.start_datetime) :(
-                childEventsIntersection?.end_datetime?dayjs(childEventsIntersection?.end_datetime):
+            // if start-date-time is selected then that should be the lower bound for end-date-time selection , otherwise lower-bound for end-date-time will depend on end-date-time of child-event , there is no child event, then lower-bound will the start-date-time of parent-event
+            return formFieldValue?.start_datetime ? dayjs(formFieldValue?.start_datetime) : (
+                childEventsIntersection?.end_datetime ? dayjs(childEventsIntersection?.end_datetime) :
                     (parentEventDetails?.start_datetime ? dayjs(parentEventDetails?.start_datetime) : null));
         } else {
+            //for upper-bound of end-date-time selection , parent-event end-date-time will be the upper bound
             return parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime) : null
         }
 
@@ -545,49 +549,6 @@ export default function CreateEvent({isEdit, editData}) {
                         </IconButton>}
                 </div>
 
-                {/*     <LocalizationProvider dateAdapter={AdapterDayjs}>*/}
-                {/*         <div className="d-flex justify-content-between">*/}
-                {/*             <DateTimePicker*/}
-                {/*                 disabled={formFieldValue?.inherit_from_parent || (isEdit && formFieldValue?.status?.toLowerCase() === 'expired')}*/}
-                {/*                 ampm={false}*/}
-
-                {/*                 required={true}*/}
-                {/*                 label={<span>*/}
-                {/*Start date & Time{' '}*/}
-                {/*                     <span style={{color: 'red'}}>*</span>*/}
-                {/* </span>}*/}
-                {/*                 className="w-49"*/}
-                {/*                 minDateTime={formFieldValue?.parent_id ? dayjs(parentEventDetails?.start_datetime) : dayjs(new Date()).subtract(5, 'minute')}*/}
-                {/*                 value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}*/}
-                {/*                 maxDateTime={parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime) : null}*/}
-                {/*                 onChange={(event) => {*/}
-                {/*                     setFormField(event, "start_datetime");*/}
-                {/*                     if (formFieldValue.end_datetime) {*/}
-                {/*                         if (dayjs(event.$d) > dayjs(formFieldValue.end_datetime)) {*/}
-                {/*                             setFormField(event, "end_datetime");*/}
-                {/*                         }*/}
-                {/*                     }*/}
-                {/*                 }}*/}
-                {/*             />*/}
-                {/*             <DateTimePicker*/}
-                {/*                 ampm={false}*/}
-
-                {/*                 disabled={formFieldValue?.start_datetime === "" || formFieldValue?.inherit_from_parent}*/}
-                {/*                 label={<span>*/}
-                {/* End data & Time{' '}<span style={{color: 'red'}}>*</span>*/}
-                {/*        </span>}*/}
-                {/*                 className="w-49"*/}
-                {/*                 value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}*/}
-                {/*                 minDateTime={dayjs(formFieldValue?.start_datetime)}*/}
-                {/*                 maxDateTime={parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime) : null}*/}
-                {/*                 onChange={(event) => {*/}
-                {/*                     setFormField(event, "end_datetime");*/}
-                {/*                 }}*/}
-                {/*             />*/}
-                {/*         </div>*/}
-                {/*     </LocalizationProvider>*/}
-
-
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <div className="d-flex justify-content-between">
                         <DateTimePicker
@@ -600,7 +561,7 @@ export default function CreateEvent({isEdit, editData}) {
             </span>}
                             className="w-49"
                             minDateTime={startDateTimeValidation('minDate')}
-                            value={formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
+                            value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
                             maxDateTime={startDateTimeValidation('maxDate')}
                             onChange={(event) => {
                                 setFormField(event, "start_datetime");
@@ -618,7 +579,7 @@ export default function CreateEvent({isEdit, editData}) {
             End data & Time{' '}<span style={{color: 'red'}}>*</span>
                    </span>}
                             className="w-49"
-                            value={formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
+                            value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
                             minDateTime={endDateTimeValidation('minDate')}
                             maxDateTime={endDateTimeValidation('maxDate')}
                             onChange={(event) => {
