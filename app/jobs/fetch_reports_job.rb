@@ -21,6 +21,7 @@ class FetchReportsJob
         content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
         send_email(subject, content, mail_ids)
       else
+        puts "Question Query Started"
         question_db = mongo_db[:forms]
         questions = JSON.parse(question_db.aggregate(
           [
@@ -44,6 +45,7 @@ class FetchReportsJob
             }
           ]
         ).to_json)
+        puts "Question Query ended"
         db = mongo_db[:formsubmissions]
         data = JSON.parse(db.aggregate([
                                          {
@@ -134,6 +136,7 @@ class FetchReportsJob
                                          }
                                        ]).to_json)
         mongo_db.close
+        puts "Query data completed"
         headers = ['Username', 'User Phone Number']
         for i in 0...questions.first["question"].size
           if questions.first["question"][i]["title"].first["value"] != "Provide your event location."
@@ -150,13 +153,13 @@ class FetchReportsJob
         file_name = "#{event.name}" + "-report"
         csv_file = Tempfile.new([file_name, '.csv'])
         file_name += '.csv'
+        phone_numbers = Hash[EventSubmission.includes(:user).where(event_id: event.id).pluck('submission_id','users.phone_number')]
         CSV.open(csv_file, 'w') do |csv|
           csv << headers
           for i in 0...data.size
             row_data = []
-            phone_number = EventSubmission.find_by(event_id: event.id, submission_id: data[i]['submissionId'])&.user&.phone_number
             row_data << data[i]['username']
-            row_data << phone_number
+            row_data << phone_numbers[data[i]["submissionId"]]
             hash = Hash.new
             for j in 0...data[i]["questions"].size
               if data[i]["questions"][j]["answer"].first.class == Hash
