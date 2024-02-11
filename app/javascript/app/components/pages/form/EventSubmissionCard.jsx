@@ -46,10 +46,10 @@ const EventSubmissionCard = ({
                         ({moment(data?.reported_on).format('DD/MM/YYYY')
                         }) {moment(data?.reported_on).format('LT')
                         }</div>
-                    <div className="verified-icon-container">
-                        <Verified className="verified-icon"
-                                  style={{color: data?.status === "COMPLETED" ? "#61BE7A" : "grey"}}/>
-                    </div>
+                        { data?.status === "NA" ? null :
+                            <div className="verified-icon-container">
+                                <Verified className="verified-icon" style={{color: data?.status === "COMPLETED" ? "#61BE7A" : "grey"}}/>
+                            </div>}
                 </div>
 
                 <div className="event-name">
