@@ -44,7 +44,7 @@ class FetchReportsJob
               }
             }
           ]
-        ).to_json)
+        ).allow_disk_use(true).to_json)
         puts "Question Query ended"
         db = mongo_db[:formsubmissions]
         data = JSON.parse(db.aggregate([
@@ -134,7 +134,7 @@ class FetchReportsJob
                                            status: '$_id.status'
                                          }
                                          }
-                                       ]).to_json)
+                                       ]).allow_disk_use(true).to_json)
         mongo_db.close
         puts "Query data completed"
         headers = ['Username', 'User Phone Number']
@@ -183,6 +183,8 @@ class FetchReportsJob
             while k < (headers.size - 3)
               if hash[headers[k]].present?
                 row_data << hash[headers[k]]
+              elsif data[i]["status"] == "COMPLETED"
+                row_data << "Not Applicable"
               else
                 row_data << ""
               end
