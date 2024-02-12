@@ -20,13 +20,6 @@ const FormEventMobileCardHorizontal = ({event, index}) => {
                     <img src={event?.image_url ? event?.image_url : DefaultImage} alt="loading..." className="bg-img"/>
                     <div className="event-details-container">
                         <EllipsesComponent text={event?.name}/>
-                        <div className="flex-details">
-                            <EllipsesComponent text={moment(event?.start_date).format("DD MMM YY")}
-                            />
-                            <EllipsesComponent
-                                text={moment(event?.start_datetime, "YY-MM-DD hh:mm:ss A").format('h:mm a')}
-                            />
-                        </div>
                     </div>
                 </div>
             </div>
