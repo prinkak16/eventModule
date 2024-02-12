@@ -174,17 +174,23 @@ class FetchReportsJob
                     end
                   end
                 end
-                hash[data[i]["questions"][j]["question"]] = temp.chomp
+                if data[i]["status"] == "COMPLETED" && temp.chomp == ""
+                  hash[data[i]["questions"][j]["question"]] = "NA"
+                else
+                  hash[data[i]["questions"][j]["question"]] = temp.chomp
+                end
               else
-                hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
+                if data[i]["status"] == "COMPLETED" && data[i]["questions"][j]["answer"].join(',') == ""
+                  hash[data[i]["questions"][j]["question"]] = "NA"
+                else
+                  hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
+                end
               end
             end
             k = 2
             while k < (headers.size - 3)
               if hash[headers[k]].present?
                 row_data << hash[headers[k]]
-              elsif data[i]["status"] == "COMPLETED"
-                row_data << "Not Applicable"
               else
                 row_data << ""
               end
