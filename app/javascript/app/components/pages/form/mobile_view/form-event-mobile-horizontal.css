@@ -19,17 +19,13 @@ p{
     top: 0px;
     width:100%;
     height: inherit;
-    background: #000000a8;
+    background: #00000052;
     padding:10px;
     color:white;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-}
-.flex-details{
-    display: flex;
-    gap: 15px;
+    justify-content: flex-end;
 }
 .flex-div{
     display: flex;
