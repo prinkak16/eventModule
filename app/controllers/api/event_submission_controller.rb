@@ -39,23 +39,27 @@ class Api::EventSubmissionController < Api::ApplicationController
       )
       # raise StandardError, 'Error fetching response' if response.code != 200
       puts "Form Builder Queries - " + "#{current_user.phone_number}"
-      check = false
-      if response.code == 200
-        check = true
-        response = JSON.parse(response.body)
-        submissions_data = response['data']
-      end
+      response = JSON.parse(response.body)
+      submissions_data = response['data']
       data = []
       submissions.each do |submission|
         res = submissions_data[submission.submission_id]
         if res.present?
-          data << { reported_on: submission.created_at, images: check == true ? res['images']: [],
-                    status: check == true ? res['status'] : "NA", locations: check == true ? res['locations'].pluck('locationName'): [],
+          data << { reported_on: submission.created_at, images: res['images'],
+                    status: res['status'], locations: res['locations'].pluck('locationName'),
                     event_id: submission.event_id, submission_id: submission.submission_id, id: submission.id }
         end
       end
       render json: { success: true, data: { events: events, submissions: data }, message: "success full" }, status: :ok
-    rescue StandardError => e
+    rescue Net::OpenTimeout , Net::ReadTimeout => e
+      data = []
+      submissions.each do |submission|
+        data << { reported_on: submission.created_at, images: [],
+                  status: "NA", locations: [],
+                  event_id: submission.event_id, submission_id: submission.submission_id, id: submission.id }
+      end
+      render json: { success: true, data: { events: events, submissions: data }, message: "success full" }, status: :ok
+    rescue =>e
       render json: { success: false ,message: e.message }, status: :bad_request
     end
   end
