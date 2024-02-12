@@ -15,9 +15,6 @@ import {
 import {styled} from '@mui/material/styles';
 import dayjs from "dayjs";
 import InfoIcon from '@mui/icons-material/Info';
-import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
-import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import {toast} from "react-toastify";
 import {useNavigate, useParams} from "react-router-dom";
 import {createEvent} from "../../../../services/RestServices/Modules/EventServices/CreateEventServices";
@@ -29,6 +26,7 @@ import ImageCroper from "../../../shared/image-croper/ImageCroper";
 import ReactLoader from "../../../shared/loader/Loader";
 import EventTitleModal from "./modals/EventTitleModal";
 import {tooltipClasses} from '@mui/material/Tooltip';
+import ReactDateTimePicker from '../../../date-time-picker'
 
 const HtmlTooltip = styled(({className, ...props}) => (
     <Tooltip {...props} classes={{popper: className}}/>
@@ -45,10 +43,6 @@ export default function CreateEvent({isEdit, editData}) {
     const {id} = useParams();
     const urlParams = new URLSearchParams(window.location.search);
     const publishedParamValue = urlParams.get('published');
-
-
-    const imgCross = "https://storage.googleapis.com/public-saral/public_document/icon.jpg";
-
     const navigate = useNavigate();
     const [dataLevels, setDataLevels] = useState([]);
     const [countryStates, setCountryStates] = useState([]);
@@ -82,76 +76,6 @@ export default function CreateEvent({isEdit, editData}) {
     const [childEventsIntersection, setChildEventIntersection] = useState({
         start_datetime: null, end_datetime: null
     })
-
-
-    const requiredField = ["start_datetime"];
-
-
-    // useEffect(() => {
-    //     if (isEdit) {
-    //         (async () => {
-    //             try {
-    //                 const {data} = await getEventById(id);
-    //                 if (data?.success) {
-    //                     setImage(data?.data[0]?.image_url)
-    //                      const keysarr=Object.keys(JSON.parse(data?.data?.[0]?.translated_title)??{});
-    //                     setFormFieldValue((prevData) => ({
-    //                             ...prevData,
-    //                             event_id: data?.data[0]?.id,
-    //                             event_title: data?.data[0]?.name,
-    //                             img: data?.data[0]?.image_url,
-    //                             start_datetime: data?.data[0]?.start_date,
-    //                             end_datetime: data?.data[0]?.end_date,
-    //                             level_id: data?.data[0]?.data_level_id,
-    //                             event_type: data?.data[0]?.event_type,
-    //                             location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
-    //                             state_obj: data?.data[0]?.state_ids ?? [],
-    //                             has_sub_event: data?.data[0]?.has_sub_event,
-    //                             status: data?.data[0]?.status?.name ?? "",
-    //                             selected_languages: [...prevData?.selected_languages,...keysarr],
-    //                             translated_title: JSON.parse(data?.data[0]?.translated_title)??{}
-    //                         }))
-    //                 } else {
-    //                     toast?.error('Faild to get event details')
-    //                 }
-    //             } catch (e) {
-    //                 toast.error(e?.message);
-    //             }
-    //
-    //         })();
-    //     }
-    //     if (!isEdit) {
-    //         (async () => {
-    //             try {
-    //                 const {data} = await getEventById(id);
-    //                 if (data?.success) {
-    //                     setParentEventDetails((prevData) => ({
-    //                         ...prevData,
-    //                         start_datetime: data?.data[0]?.start_date,
-    //                         end_datetime: data?.data[0]?.end_date,
-    //                         level_id: data?.data[0]?.data_level_id,
-    //                         location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
-    //                         state_obj: data?.data[0]?.state_ids ?? [],
-    //                     }))
-    //                 } else {
-    //                     toast?.error('Failed to get parent event details')
-    //                 }
-    //
-    //             } catch (e) {
-    //                 toast.error(e?.message);
-    //             }
-    //         })();
-    //
-    //     }
-    //     getAllData();
-    //     getLanguages();
-    //     return () => {
-    //         setLoader(false)
-    //     }
-    //
-    // }, []);
-
-
     const getParentDetails = async (parent_id) => {
         try {
             const {data} = await getEventById(parent_id);
@@ -368,8 +292,21 @@ export default function CreateEvent({isEdit, editData}) {
 
 
     const switchHandler = (e) => {
-        setFormFieldValue((prevData) => ({...prevData, [e?.target?.name]: e?.target?.checked}))
+        if(e?.target?.checked){
+            setFormFieldValue((prevData) => ({...prevData,...parentEventDetails, [e?.target?.name]: e?.target?.checked}))
+        }else{
+            //to reset all those properties of formFieldValue which we have set when when Inherit from parent switch was turned on
 
+            const newObj={
+                start_datetime:null,
+                end_datetime:null,
+                level_id: "",
+                location_ids: [],
+                state_obj: [],
+            }
+            setFormFieldValue((prevData) => ({...prevData,...newObj, [e?.target?.name]: e?.target?.checked}))
+
+        }
     }
     //
     // useEffect(() => {
@@ -471,8 +408,8 @@ export default function CreateEvent({isEdit, editData}) {
     const endDateTimeValidation = (validationFor) => {
         if (validationFor === 'minDate') {
             // if start-date-time is selected then that should be the lower bound for end-date-time selection , otherwise lower-bound for end-date-time will depend on end-date-time of child-event , there is no child event, then lower-bound will the start-date-time of parent-event
-            return formFieldValue?.start_datetime ? dayjs(formFieldValue?.start_datetime) : (
-                childEventsIntersection?.end_datetime ? dayjs(childEventsIntersection?.end_datetime) :
+            return childEventsIntersection?.end_datetime ? dayjs(childEventsIntersection?.end_datetime):
+                (formFieldValue?.start_datetime ? dayjs(formFieldValue?.start_datetime) :
                     (parentEventDetails?.start_datetime ? dayjs(parentEventDetails?.start_datetime) : null));
         } else {
             //for upper-bound of end-date-time selection , parent-event end-date-time will be the upper bound
@@ -480,6 +417,11 @@ export default function CreateEvent({isEdit, editData}) {
         }
 
     }
+
+    const handleInputChange = (event) => {
+        // Prevent changes to the input field programmatically
+        event.preventDefault();
+    };
 
     // console.log('start date time is ',startDateTimeValidation('minDate'), startDateTimeValidation(), 'end date time validation i s',endDateTimeValidation('minDate'), endDateTimeValidation())
     return (<div className="create-event-container">
@@ -549,16 +491,12 @@ export default function CreateEvent({isEdit, editData}) {
                         </IconButton>}
                 </div>
 
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <div className="d-flex justify-content-between">
-                        <DateTimePicker
+                    <div className={"date-time-picker-container"}>
+                        <ReactDateTimePicker
                             disabled={formFieldValue?.inherit_from_parent || (isEdit && formFieldValue?.status?.toLowerCase() === 'expired')}
                             ampm={false}
                             required={true}
-                            label={<span>
-           Start date & Time{' '}
-                                <span style={{color: 'red'}}>*</span>
-            </span>}
+                            title={"Start date & Time"}
                             className="w-49"
                             minDateTime={startDateTimeValidation('minDate')}
                             value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
@@ -572,12 +510,12 @@ export default function CreateEvent({isEdit, editData}) {
                                 }
                             }}
                         />
-                        <DateTimePicker
+
+                        <ReactDateTimePicker
                             ampm={false}
                             disabled={formFieldValue?.inherit_from_parent}
-                            label={<span>
-            End data & Time{' '}<span style={{color: 'red'}}>*</span>
-                   </span>}
+                            title={" End data & Time"}
+                            required={true}
                             className="w-49"
                             value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
                             minDateTime={endDateTimeValidation('minDate')}
@@ -587,8 +525,6 @@ export default function CreateEvent({isEdit, editData}) {
                             }}
                         />
                     </div>
-                </LocalizationProvider>
-
                 <div>
                     <p>Upload Image/ Banner{' '}<span style={{color: "red"}}>*</span> :</p>
                     <ImageCroper handleImage={handleImage} Initial_image={formFieldValue?.img} isEditable={isEdit}
@@ -601,20 +537,19 @@ export default function CreateEvent({isEdit, editData}) {
                     </h6>
                     {Array.isArray(dataLevels) && dataLevels.map((item, index) => (<button
                         className="level-button"
-                        key={index} disabled={isEdit || formFieldValue?.inherit_from_parent}
+                        key={index}
+                        disabled={isEdit || formFieldValue?.inherit_from_parent}
                         style={{
                             height: "40px",
                             width: "120px",
-                            background: ((formFieldValue?.inherit_from_parent && item?.id === parentEventDetails?.level_id) || item?.id === formFieldValue?.level_id) ? "#163560" : "",
-                            color: ((formFieldValue?.inherit_from_parent && item?.id === parentEventDetails?.level_id) || item?.id === formFieldValue?.level_id) ? "white" : "black",
+                            background: (item?.id === formFieldValue?.level_id) ? "#163560" : "",
+                            color: (item?.id === formFieldValue?.level_id) ? "white" : "black",
                         }}
                         onClick={() => setFormFieldValue((prevData) => {
-
                             return {...prevData, level_id: item?.id};
                         })}
                     >{item?.name}  </button>))}
                 </div>
-
                 <Autocomplete
                     disabled={isEdit || formFieldValue?.inherit_from_parent}
                     className="w-100"
