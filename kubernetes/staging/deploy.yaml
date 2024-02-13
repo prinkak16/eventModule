@@ -51,14 +51,17 @@ spec:
         - envFrom:
             - configMapRef:
                 name: event-module-config-staging
+          env:
+            - name: QUEUE
+              value: '*'
           args:
-            - sidekiq
+            - 'rake resque:work'
           command:
             - bundle
             - exec
           image: gcr.io/bjp-saral/github.com/jarvisconsulting/event-module
           imagePullPolicy: Always
-          name: event-module-staging-sidekiq
+          name: event-module-staging-resque
           resources:
             limits:
               cpu: 2000m

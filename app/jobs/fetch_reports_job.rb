@@ -1,10 +1,9 @@
-class FetchReportsJob
-  include Sidekiq::Worker
+module FetchReportsJob
   require 'csv'
   include ApplicationHelper
-  sidekiq_options queue: :report
+  @queue = :report
 
-  def perform(event_id = nil, mail_ids = nil)
+  def self.perform(event_id = nil, mail_ids = nil)
     begin
       event = Event.find_by(id: event_id)
       event_form = EventForm.find_by(event_id: event_id)
@@ -12,14 +11,14 @@ class FetchReportsJob
       subject = "Event Report Download for event #{event.name}"
       content = "Event Report Download processing has been started."
       content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
-      send_email(subject, content, mail_ids)
+      ApplicationController.helpers.send_email(subject, content, mail_ids)
       if event.status_aasm_state == 'Expired' && event.report_file.attached?
         file_url = event.report_file.url
         subject = "Event Report Download for event #{event.name}"
         content = "Event Report for #{event.name} has been processed and can be downloaded by clicking on the below url."
         content += "<br/><a href=#{file_url}>Click to Download #{event.name} Report.</a><br/>"
         content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
-        send_email(subject, content, mail_ids)
+        ApplicationController.helpers.send_email(subject, content, mail_ids)
       else
         puts "Question Query Started"
         question_db = mongo_db[:forms]
@@ -47,96 +46,6 @@ class FetchReportsJob
         ).allow_disk_use(true).to_json)
         puts "Question Query ended"
         db = mongo_db[:formsubmissions]
-        data = JSON.parse(db.aggregate([
-                                         {
-                                           '$match': {
-                                             eventId: "#{event.id}",
-                                             '$or': [
-                                               {
-                                                 deletedAt: {
-                                                   '$exists': false
-                                                 }
-                                               },
-                                               {
-                                                 deletedAt: nil
-                                               }
-                                             ]
-                                           }
-                                         },
-                                         {
-                                           '$unwind': "$questions"
-                                         },
-                                         { '$match': {
-                                           "questions.isAnswered": true
-                                         }
-                                         },
-                                         { '$project': {
-                                           _id: 1,
-                                           userName: "$user.name",
-                                           eventId: 1,
-                                           submissionId: 1,
-                                           question: { '$arrayElemAt': ["$questions.title.value", 0] },
-                                           answer: {
-                                             '$cond': {
-                                               if: {
-                                                 '$in': [
-                                                   "$questions.type",
-                                                   ["imageUpload", "audioUpload", "docUpload", "videoUpload"]
-                                                 ]
-                                               },
-                                               then: "$questions.files.value",
-                                               else: {
-                                                 '$cond': {
-                                                   if: {
-                                                     '$in': [
-                                                       "$questions.type",
-                                                       ["radio", "dropdown"]
-                                                     ]
-                                                   },
-                                                   then: "$questions.options",
-                                                   else: ["$questions.answer"]
-                                                 }
-                                               }
-                                             }
-                                           },
-                                           createdAt: 1,
-                                           updatedAt: 1,
-                                           status: 1
-                                         }
-                                         },
-                                         { '$group': {
-                                           _id: {
-                                             id: '$_id',
-                                             username: '$userName',
-                                             eventId: '$eventId',
-                                             submissionId: '$submissionId',
-                                             createdAt: '$createdAt',
-                                             updatedAt: '$updatedAt',
-                                             status: '$status',
-                                           },
-                                           questions: {
-                                             '$push': {
-                                               question: "$question",
-                                               answer: "$answer"
-                                             }
-                                           }
-                                         }
-                                         },
-                                         { '$project': {
-                                           _id: 0,
-                                           id: '$_id.id',
-                                           username: '$_id.username',
-                                           eventId: '$_id.eventId',
-                                           submissionId: '$_id.submissionId',
-                                           questions: 1,
-                                           createdAt: '$_id.createdAt',
-                                           updatedAt: '$_id.updatedAt',
-                                           status: '$_id.status'
-                                         }
-                                         }
-                                       ]).allow_disk_use(true).to_json)
-        mongo_db.close
-        puts "Query data completed"
         headers = ['Username', 'User Phone Number']
         for i in 0...questions.first["question"].size
           if questions.first["question"][i]["title"].first["value"] != "Provide your event location."
@@ -156,51 +65,141 @@ class FetchReportsJob
         phone_numbers = Hash[EventSubmission.includes(:user).where(event_id: event.id).pluck('submission_id','users.phone_number')]
         CSV.open(csv_file, 'w') do |csv|
           csv << headers
-          for i in 0...data.size
-            row_data = []
-            row_data << data[i]['username']
-            row_data << phone_numbers[data[i]["submissionId"]]
-            hash = Hash.new
-            for j in 0...data[i]["questions"].size
-              if data[i]["questions"][j]["answer"].first.class == Hash
-                temp = ""
-                for m in 0...data[i]["questions"][j]["answer"].size
-                  if data[i]["questions"][j]["answer"][m]["isAnswered"] == true
-                    for n in 0..data[i]["questions"][j]["answer"][m]["label"].size
-                      if data[i]["questions"][j]["answer"][m]["label"][n]["lang"] == "en"
-                        temp += data[i]["questions"][j]["answer"][m]["label"][n]["value"] + ":"
-                        break
+          offset = 0
+          limit = 50000
+          begin
+            data = JSON.parse(db.aggregate([
+                                             {
+                                               '$match': {
+                                                 eventId: "#{event.id}",
+                                                 '$or': [
+                                                   {
+                                                     deletedAt: {
+                                                       '$exists': false
+                                                     }
+                                                   },
+                                                   {
+                                                     deletedAt: nil
+                                                   }
+                                                 ]
+                                               }
+                                             },
+                                             {
+                                               '$unwind': "$questions"
+                                             },
+                                             { '$match': {
+                                               "questions.isAnswered": true
+                                             }
+                                             },
+                                             { '$project': {
+                                               _id: 1,
+                                               userName: "$user.name",
+                                               eventId: 1,
+                                               submissionId: 1,
+                                               question: { '$arrayElemAt': ["$questions.title.value", 0] },
+                                               answer: {
+                                                 '$cond': {
+                                                   if: {
+                                                     '$in': [
+                                                       "$questions.type",
+                                                       ["imageUpload", "audioUpload", "docUpload", "videoUpload"]
+                                                     ]
+                                                   },
+                                                   then: "$questions.files.value",
+                                                   else: {
+                                                     '$cond': {
+                                                       if: {
+                                                         '$in': [
+                                                           "$questions.type",
+                                                           ["radio", "dropdown"]
+                                                         ]
+                                                       },
+                                                       then: "$questions.options",
+                                                       else: ["$questions.answer"]
+                                                     }
+                                                   }
+                                                 }
+                                               },
+                                               createdAt: 1,
+                                               updatedAt: 1,
+                                               status: 1
+                                             }
+                                             },
+                                             { '$group': {
+                                               _id: {
+                                                 id: '$_id',
+                                                 username: '$userName',
+                                                 eventId: '$eventId',
+                                                 submissionId: '$submissionId',
+                                                 createdAt: '$createdAt',
+                                                 updatedAt: '$updatedAt',
+                                                 status: '$status',
+                                               },
+                                               questions: {
+                                                 '$push': {
+                                                   question: "$question",
+                                                   answer: "$answer"
+                                                 }
+                                               }
+                                             }
+                                             },
+                                             { '$project': {
+                                               _id: 0,
+                                               id: '$_id.id',
+                                               username: '$_id.username',
+                                               eventId: '$_id.eventId',
+                                               submissionId: '$_id.submissionId',
+                                               questions: 1,
+                                               createdAt: '$_id.createdAt',
+                                               updatedAt: '$_id.updatedAt',
+                                               status: '$_id.status'
+                                             }
+                                             },
+                                             { "$sort": { "createdAt": -1 } },
+                                             { "$skip": offset },
+                                             { "$limit": limit }
+                                           ]).allow_disk_use(true).to_json)
+            puts "Data Query Processed - #{offset}"
+            puts "The size of array - #{data.size}"
+            for i in 0...data.size
+              row_data = []
+              row_data << data[i]['username']
+              row_data << phone_numbers[data[i]["submissionId"]]
+              hash = Hash.new
+              for j in 0...data[i]["questions"].size
+                if data[i]["questions"][j]["answer"].first.class == Hash
+                  temp = ""
+                  for m in 0...data[i]["questions"][j]["answer"].size
+                    if data[i]["questions"][j]["answer"][m]["isAnswered"] == true
+                      for n in 0..data[i]["questions"][j]["answer"][m]["label"].size
+                        if data[i]["questions"][j]["answer"][m]["label"][n]["lang"] == "en"
+                          temp += data[i]["questions"][j]["answer"][m]["label"][n]["value"] + ":"
+                          break
+                        end
                       end
                     end
                   end
-                end
-                if data[i]["status"] == "COMPLETED" && temp.chomp == ""
-                  hash[data[i]["questions"][j]["question"]] = "NA"
-                else
                   hash[data[i]["questions"][j]["question"]] = temp.chomp
-                end
-              else
-                if data[i]["status"] == "COMPLETED" && data[i]["questions"][j]["answer"].join(',') == ""
-                  hash[data[i]["questions"][j]["question"]] = "NA"
                 else
                   hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
                 end
               end
-            end
-            k = 2
-            while k < (headers.size - 3)
-              if hash[headers[k]].present?
-                row_data << hash[headers[k]]
-              else
-                row_data << ""
+              k = 2
+              while k < (headers.size - 3)
+                if hash[headers[k]].present?
+                  row_data << hash[headers[k]]
+                else
+                  row_data << ""
+                end
+                k += 1
               end
-              k += 1
+              row_data << DateTime.parse(data[i]["createdAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
+              row_data << DateTime.parse(data[i]["updatedAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
+              row_data <<  data[i]["status"]
+              csv << row_data
             end
-            row_data << DateTime.parse(data[i]["createdAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
-            row_data << DateTime.parse(data[i]["updatedAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
-            row_data <<  data[i]["status"]
-            csv << row_data
-          end
+            offset = offset + limit
+          end while data.size == limit
         end
         event.report_file.attach(io: csv_file, filename: file_name, content_type: 'text/csv')
         file_url = event.report_file.url
@@ -208,7 +207,8 @@ class FetchReportsJob
         content = "Event Report for #{event.name} has been processed and can be downloaded by clicking on the below url."
         content += "<br/><a href=#{file_url}>Click to Download #{event.name} Report.</a><br/>"
         content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
-        send_email(subject, content, mail_ids)
+        ApplicationController.helpers.send_email(subject, content, mail_ids)
+        mongo_db.close
       end
     rescue => e
       puts "Job stopped executing because of #{e.message}"
