@@ -51,8 +51,11 @@ spec:
         - envFrom:
             - configMapRef:
                 name: event-module-config
+          env:
+            - name: QUEUE
+              value: '*'
           args:
-            - sidekiq
+            - 'rake resque:work'
           command:
             - bundle
             - exec
