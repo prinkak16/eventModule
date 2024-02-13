@@ -32,7 +32,6 @@ const EventDetails = () => {
                 toast.error("Failed to get events details")
             }
 
-
         } catch (e) {
             toast.error(e?.message);
 

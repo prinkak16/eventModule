@@ -497,7 +497,6 @@ export default function CreateEvent({isEdit, editData}) {
                             ampm={false}
                             required={true}
                             title={"Start date & Time"}
-                            className="w-49"
                             minDateTime={startDateTimeValidation('minDate')}
                             value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
                             maxDateTime={startDateTimeValidation('maxDate')}
@@ -516,7 +515,6 @@ export default function CreateEvent({isEdit, editData}) {
                             disabled={formFieldValue?.inherit_from_parent}
                             title={" End data & Time"}
                             required={true}
-                            className="w-49"
                             value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
                             minDateTime={endDateTimeValidation('minDate')}
                             maxDateTime={endDateTimeValidation('maxDate')}

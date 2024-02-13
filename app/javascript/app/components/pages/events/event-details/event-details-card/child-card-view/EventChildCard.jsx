@@ -23,13 +23,23 @@ import Box from '@mui/material/Box';
 
 const EventChildCard = ({event}) => {
     const {id} = useParams();
-
     const navigate = useNavigate();
     const [childrenEvents, setChildrenEvents] = useState([]);
     const [showChildrenEvents, setShowChildrenEvents] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (showChildrenEvents) {
+            getAllSubEvents();
+        }
+    }, [showChildrenEvents]);
+
+    useEffect(() => {
+        return ()=>{
+                setShowChildrenEvents(false);
+        }
+    }, [id]);
     const submissionHandler = (event_id, event_level) => {
-        console.log('event label is ', event_level)
 
         if (String(id) === String(event_id)) {
             navigate(`/events/edit/${event_id}`)
@@ -37,7 +47,6 @@ const EventChildCard = ({event}) => {
         } else {
             navigate(`/events/${event_id}`);
         }
-
     };
 
     const getAllSubEvents = async () => {
@@ -54,8 +63,6 @@ const EventChildCard = ({event}) => {
 
         }
         setIsLoading(false);
-
-
     }
 
     const RenderEventIcon = (event_level) => {
@@ -69,17 +76,8 @@ const EventChildCard = ({event}) => {
 
     }
 
-    const zoomVariants = {
-        initial: {scale: 1},
-        hover: {scale: 1.02},
-    };
 
-    useEffect(() => {
-        if (showChildrenEvents && childrenEvents?.length === 0) {
-            getAllSubEvents();
-        }
 
-    }, [showChildrenEvents]);
     return (
 
         <div style={{marginLeft: "36px"}}>
@@ -89,7 +87,9 @@ const EventChildCard = ({event}) => {
                         width: "40px", height: "40px"
                     }} onClick={() => {
                         setShowChildrenEvents(!showChildrenEvents)
-                    }}>{!showChildrenEvents ? <ExpandMoreIcon/> : <ExpandLessIcon/>}</IconButton>}
+                    }}>
+                        {!showChildrenEvents ? <ExpandMoreIcon/> : <ExpandLessIcon/>}
+                    </IconButton>}
                 <div
                     className="event-details-child-list-card"
                     onClick={() => submissionHandler(event?.id, event?.event_level)}

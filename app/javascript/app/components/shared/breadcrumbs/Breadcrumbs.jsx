@@ -15,18 +15,18 @@ export default function MyBreadcrumbs() {
     let urls = pathname?.split("/").filter(Boolean);
     const {globalSelectedLanguage} = EventState();
 
-
+    //function to check whether url contains number in the end
     function isNumeric(input) {
         return /^\d+$/.test(input);
     }
-
     if (isNumeric(urls[urls.length - 1])) {
+        //don't want number in the breadcrumbs
         urls = urls.slice(0, urls.length - 1);
     }
-
-
-    const breadcrumbsNames = {
-        events: "Events", create: "Create Event", edit: "Edit Event", view: "View Event "
+    // clear browser history stack
+    const clearHistoryStack = (event,entriesToClear) => {
+        event.preventDefault();
+        window.history.go(-entriesToClear)     //number of steps to go back in browser
     };
 
     const RenderEventIcon = (event_level) => {
@@ -62,10 +62,10 @@ export default function MyBreadcrumbs() {
     }, [pathname,globalSelectedLanguage]);
 
     return (<div className={"breadcrumbs-main-container"}>
-            {urls?.length > 0 && <Link to={`/${urls[0]}`}>{capitalizeFirstWord(urls[0])}</Link>}
+            {urls?.length > 0 && <Link onClick={(e)=>clearHistoryStack(e,Object.keys(dynamicRoutes)?.length)}>{capitalizeFirstWord(urls[0])}</Link>}
             {Object.keys(dynamicRoutes).length > 0 && <span> &nbsp;/&nbsp; </span>}      {/* if dynamic routes exist add '/' before adding them*/}
             {Object.keys(dynamicRoutes)?.map((key, index) => <span key={index} style={{display: "flex"}}>
-         <Link to={`/${urls[0]}/${key}`}>
+         <Link   onClick={(e)=>clearHistoryStack(e,Object.keys(dynamicRoutes)?.length-(index+1))}>
            <span style={{display: "flex", gap: "6px"}}> {RenderEventIcon(dynamicRoutes[key][1])}
                {capitalizeFirstWord(dynamicRoutes[key][0])}</span>
          </Link>
@@ -78,6 +78,6 @@ export default function MyBreadcrumbs() {
                 }}
             >
                 {urls[urls.length - 1]}
-            </Link>}
+            </Link>}        {/*these paths are from url */}
         </div>);
 }
