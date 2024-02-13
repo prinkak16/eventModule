@@ -81,11 +81,9 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                     <Tooltip className="header-form-back-button" onClick={() =>
                         navigate(-1)
                     }>
-                        {isSubmissionPage &&
                             <IconButton>
                                 <ArrowBackIosIcon/>
                             </IconButton>
-                        }
                     </Tooltip>
 
                     <h2 className="event-name-heading">Events</h2>

@@ -58,33 +58,14 @@ const FormSubmission = () => {
         }
 
     }, [key]);
-
-    // useEffect(() => {
-    //     const handlePopstate = () => {
-    //         // Callback function when URL changes
-    //         console.log('URL changed:', window.location.pathname);
-    //     };
-    //
-    //     window.addEventListener('popstate', handlePopstate);
-    //
-    //     return () => {
-    //         window.removeEventListener('popstate', handlePopstate);
-    //     };
-    // }, []);
-    // useEffect(() => {
-    //     setIsSubmissionPage(true);
-    // }, []);
-
     const reportEventHandler = async () => {
         setIsLoading(true)
         setDisableReportButton(true);
         try {
             const {data} = await ApiClient.get(`user/submit_event/${id}`);
             if (data?.success) {
-                setTimeout(() => {
-                    window.reload();
-                }, 500)
                 window.location.href = data?.data?.redirect_url;
+                setDisableReportButton(false)
             }
 
         } catch (e) {
