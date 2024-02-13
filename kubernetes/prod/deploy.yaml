@@ -61,7 +61,7 @@ spec:
             - exec
           image: gcr.io/bjp-saral/github.com/jarvisconsulting/event-module
           imagePullPolicy: Always
-          name: event-module-sidekiq
+          name: event-module-resque
           resources:
             limits:
               cpu: 2000m
