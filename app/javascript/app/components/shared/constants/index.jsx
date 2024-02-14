@@ -1,1 +1,1 @@
-export const reportTimeline=["0.5hr","1hr","2hr","3hr","4hr","5hr","6hr","7hr","8hr","9hr","10hr","12hr","24hr","All-time"]
+export const reportTimeline=["Last 0.5 hour","Last 1 hour","Last 2 hours","Last 3 hours","Last 4 hours","Last 5 hours","Last 6 hours","Last 7 hours","Last 8 hours","Last 9 hours","Last 10 hours","Last 11 hours","Last 12 hours","All-time"]
