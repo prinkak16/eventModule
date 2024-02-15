@@ -9,6 +9,7 @@ import './form-details.scss'
 import FormSubmission from "../FormSubmission";
 import FormEventMobileCard from "../mobile_view/FormEventMobileCard";
 import {EventState} from "../../../../EventContext";
+import WithParamReload from "../../../../middlewares/withParamReload";
 
 const FormDetails = () => {
     const {id} = useParams();
@@ -72,4 +73,4 @@ const FormDetails = () => {
     )
 }
 
-export default FormDetails;
+export default WithParamReload(FormDetails,"id");

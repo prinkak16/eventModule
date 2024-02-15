@@ -12,7 +12,7 @@ import {toast} from "react-toastify";
 
 function LangaugeSwitchSelect() {
     const {i18n } = useTranslation();
-    const {globalSelectedLanguage, setGlobalSelectedLanguage} = EventState();
+    const {globalSelectedLanguage, setGlobalSelectedLanguage} = EventState({});
     const [supportedLanguages,setSupportedLanguages]=useState([]);
 
     const handleChange = (e) => {
@@ -34,10 +34,12 @@ function LangaugeSwitchSelect() {
     }
 
     useEffect(()=>{
-        fetchLanguages();
+        if(supportedLanguages.length===0) {
+            fetchLanguages();
+        }
         //checking whether there exists already selected language in local storage
         const userLang=localStorage.getItem('userLanguage');
-        if(userLang){
+        if(userLang&&globalSelectedLanguage!==userLang){
             setGlobalSelectedLanguage(userLang);
             i18n.changeLanguage(userLang);
         }
