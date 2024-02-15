@@ -3,7 +3,7 @@ module FetchReportsJob
   include ApplicationHelper
   @queue = :report
 
-  def self.perform(event_id = nil, mail_ids = nil)
+  def self.perform(event_id = nil, mail_ids = nil, time_limit = nil)
     begin
       event = Event.find_by(id: event_id)
       event_form = EventForm.find_by(event_id: event_id)
@@ -68,97 +68,109 @@ module FetchReportsJob
           offset = 0
           limit = 50000
           begin
-            data = JSON.parse(db.aggregate([
-                                             {
-                                               '$match': {
-                                                 eventId: "#{event.id}",
-                                                 '$or': [
-                                                   {
-                                                     deletedAt: {
-                                                       '$exists': false
-                                                     }
-                                                   },
-                                                   {
-                                                     deletedAt: nil
-                                                   }
-                                                 ]
-                                               }
-                                             },
-                                             {
-                                               '$unwind': "$questions"
-                                             },
-                                             { '$match': {
-                                               "questions.isAnswered": true
-                                             }
-                                             },
-                                             { '$project': {
-                                               _id: 1,
-                                               userName: "$user.name",
-                                               eventId: 1,
-                                               submissionId: 1,
-                                               question: { '$arrayElemAt': ["$questions.title.value", 0] },
-                                               answer: {
-                                                 '$cond': {
-                                                   if: {
-                                                     '$in': [
-                                                       "$questions.type",
-                                                       ["imageUpload", "audioUpload", "docUpload", "videoUpload"]
-                                                     ]
-                                                   },
-                                                   then: "$questions.files.value",
-                                                   else: {
-                                                     '$cond': {
-                                                       if: {
-                                                         '$in': [
-                                                           "$questions.type",
-                                                           ["radio", "dropdown"]
-                                                         ]
-                                                       },
-                                                       then: "$questions.options",
-                                                       else: ["$questions.answer"]
-                                                     }
-                                                   }
-                                                 }
-                                               },
-                                               createdAt: 1,
-                                               updatedAt: 1,
-                                               status: 1
-                                             }
-                                             },
-                                             { '$group': {
-                                               _id: {
-                                                 id: '$_id',
-                                                 username: '$userName',
-                                                 eventId: '$eventId',
-                                                 submissionId: '$submissionId',
-                                                 createdAt: '$createdAt',
-                                                 updatedAt: '$updatedAt',
-                                                 status: '$status',
-                                               },
-                                               questions: {
-                                                 '$push': {
-                                                   question: "$question",
-                                                   answer: "$answer"
-                                                 }
-                                               }
-                                             }
-                                             },
-                                             { '$project': {
-                                               _id: 0,
-                                               id: '$_id.id',
-                                               username: '$_id.username',
-                                               eventId: '$_id.eventId',
-                                               submissionId: '$_id.submissionId',
-                                               questions: 1,
-                                               createdAt: '$_id.createdAt',
-                                               updatedAt: '$_id.updatedAt',
-                                               status: '$_id.status'
-                                             }
-                                             },
-                                             { "$sort": { "createdAt": -1 } },
-                                             { "$skip": offset },
-                                             { "$limit": limit }
-                                           ]).allow_disk_use(true).to_json)
+            pipeline = [
+              {
+                '$match': {
+                  eventId: "#{event.id}",
+                  '$or': [
+                    {
+                      deletedAt: {
+                        '$exists': false
+                      }
+                    },
+                    {
+                      deletedAt: nil
+                    }
+                  ]
+                }
+              },
+              {
+                '$unwind': "$questions"
+              },
+              { '$match': {
+                "questions.isAnswered": true
+              }
+              },
+              { '$project': {
+                _id: 1,
+                userName: "$user.name",
+                eventId: 1,
+                submissionId: 1,
+                question: { '$arrayElemAt': ["$questions.title.value", 0] },
+                answer: {
+                  '$cond': {
+                    if: {
+                      '$in': [
+                        "$questions.type",
+                        ["imageUpload", "audioUpload", "docUpload", "videoUpload"]
+                      ]
+                    },
+                    then: "$questions.files.value",
+                    else: {
+                      '$cond': {
+                        if: {
+                          '$in': [
+                            "$questions.type",
+                            ["radio", "dropdown"]
+                          ]
+                        },
+                        then: "$questions.options",
+                        else: ["$questions.answer"]
+                      }
+                    }
+                  }
+                },
+                createdAt: 1,
+                updatedAt: 1,
+                status: 1
+              }
+              },
+              { '$group': {
+                _id: {
+                  id: '$_id',
+                  username: '$userName',
+                  eventId: '$eventId',
+                  submissionId: '$submissionId',
+                  createdAt: '$createdAt',
+                  updatedAt: '$updatedAt',
+                  status: '$status',
+                },
+                questions: {
+                  '$push': {
+                    question: "$question",
+                    answer: "$answer"
+                  }
+                }
+              }
+              },
+              { '$project': {
+                _id: 0,
+                id: '$_id.id',
+                username: '$_id.username',
+                eventId: '$_id.eventId',
+                submissionId: '$_id.submissionId',
+                questions: 1,
+                createdAt: '$_id.createdAt',
+                updatedAt: '$_id.updatedAt',
+                status: '$_id.status'
+              }
+              },
+              { "$sort": { "createdAt": -1 } },
+              { "$skip": offset },
+              { "$limit": limit }
+            ]
+            if time_limit != "All-time"
+              time = time_limit.split(' ')
+              match_stage = {
+                '$match': {
+                  'createdAt': {
+                    '$gte': Time.now - (time[1].to_i).hours
+                  }
+                }
+              }
+              pipeline.unshift(match_stage)
+            end
+            data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
             puts "Data Query Processed - #{offset}"
             puts "The size of array - #{data.size}"
             for i in 0...data.size
@@ -213,6 +225,30 @@ module FetchReportsJob
     rescue => e
       puts "Job stopped executing because of #{e.message}"
     end
+  end
+
+  def check_if_already_in_progress(queue:, args: [])
+    already_in_progress = false
+    enqueued_jobs = Resque.peek(queue, 0, Resque.size(queue) + 2) # adding 2 to avoid nil or {}
+    enqueued_jobs.each do |job|
+      # job {"class"=>"CreateCalleesJobUrgent", "args"=>[793]}
+      already_in_progress = (job['args'] == args)
+      break if already_in_progress
+    end
+
+    if !already_in_progress
+      # check if in progress
+      workers = Resque.workers
+      workers.each do |worker|
+        job = worker.job
+        # worker {"queue"=>"create_callees_urgent", "run_at"=>"2024-02-13T18:41:57Z", "payload"=>{"class"=>"CreateCalleesJobUrgent", "args"=>[793]}}
+        if job['queue'] == queue
+          already_in_progress = (job['payload']['args'] == args)
+          break if already_in_progress
+        end
+      end
+    end
+    already_in_progress
   end
 
 end

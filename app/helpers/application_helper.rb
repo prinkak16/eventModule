@@ -50,4 +50,28 @@ module ApplicationHelper
     Saral::Locatable::State.where(id: locations).select(:id, :name).order(:name)
   end
 
+  def check_if_already_in_progress(queue:, args: [])
+    already_in_progress = false
+    enqueued_jobs = Resque.peek(queue, 0, Resque.size(queue) + 2) # adding 2 to avoid nil or {}
+    enqueued_jobs.each do |job|
+      # job {"class"=>"CreateCalleesJobUrgent", "args"=>[793]}
+      already_in_progress = (job['args'] == args)
+      break if already_in_progress
+    end
+
+    if !already_in_progress
+      # check if in progress
+      workers = Resque.workers
+      workers.each do |worker|
+        job = worker.job
+        # worker {"queue"=>"create_callees_urgent", "run_at"=>"2024-02-13T18:41:57Z", "payload"=>{"class"=>"CreateCalleesJobUrgent", "args"=>[793]}}
+        if job['queue'] == queue
+          already_in_progress = (job['payload']['args'] == args)
+          break if already_in_progress
+        end
+      end
+    end
+    already_in_progress
+  end
+
 end
