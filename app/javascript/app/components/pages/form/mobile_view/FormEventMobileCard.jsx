@@ -32,53 +32,28 @@ const FormEventMobileCard = ({event, index}) => {
                         </div>
 
                     </Tooltip>
-                    <Tooltip title={event?.states}>
-
-                        <div className="states-name" style={{display: "flex", maxWidth: "45%"}}>
-                            <div className={"location-icon-container"}>
-                                <LocationIcon/>
-
-                            </div>
-                            <EllipsesComponent text={event?.states}/>
-                        </div>
-                    </Tooltip>
                 </div>
                 <div className="form-event-level-date-time-container">
-                    <div style={{flexGrow: 5, display: "flex"}}>
-                        <div className="form-event-level-container">
+
+                    <div className="form-event-level-container">
                             <span style={{color: "#FF9559"}} className="data">
                                 <EllipsesComponent text={event?.data_level}/>
                             </span>
 
 
-                            <span className="title">{t("Level")}</span>
+                        <span className="title">{t("Level")}</span>
 
 
-                        </div>
-                        <div className="form-event-date-container">
+                    </div>
+                    <div className="form-event-date-container">
                             <span className="data">
                                 <EllipsesComponent text=
                                                        {moment(event?.start_date).format("DD MMM YY")}
                                 />
                             </span>
+                        <span className="title">{t("Start Date")}</span>
 
-                            <span className="title">{t("Date")}</span>
-
-                        </div>
-                        <div className="form-event-time-container">
-
-
-                               <span className="data">
-                                   <EllipsesComponent
-                                       text={moment(event?.start_datetime, "YY-MM-DD hh:mm:ss A").format('h:mm a')}/>
-
-                               </span>
-
-
-                            <span className="title">{t("Time")}</span>
-                        </div>
                     </div>
-
 
                     <div className={event?.status?.class_name} style={{margin: 0}}>
                         {event?.status?.name}
