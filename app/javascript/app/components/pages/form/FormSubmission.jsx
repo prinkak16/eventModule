@@ -16,7 +16,6 @@ import {useTranslation} from "react-i18next";
 
 const FormSubmission = () => {
     const { t } = useTranslation();
-    const {key}=useLocation();
     const navigate = useNavigate();
     const [eventDetails, setEventDetails] = useState({});
     const [eventSubmissionsData, setEventsubmissionsData] = useState([]);
@@ -31,11 +30,9 @@ const FormSubmission = () => {
 
     useEffect(() => {
         (async () => {
-            const startDate =new Date();
             setIsLoading(true)
             try {
                 const {data} = await ApiClient.get(`/user/submissions/${id}`);
-                const endDate=new Date();
                 if (data?.success) {
                     setEventDetails(data?.data?.events[0] ?? {})
                     setEventsubmissionsData(data?.data?.submissions)
@@ -44,7 +41,6 @@ const FormSubmission = () => {
                     }
 
                 }
-                console.log(`time to get data from submission api  is ${(endDate-startDate)/1000} sec`);
 
             } catch (error) {
                 toast.error('Failed to get user submissions')
@@ -57,7 +53,7 @@ const FormSubmission = () => {
             setIsLoading(false)
         }
 
-    }, [key]);
+    }, []);
     const reportEventHandler = async () => {
         setIsLoading(true)
         setDisableReportButton(true);
@@ -98,6 +94,7 @@ const FormSubmission = () => {
             deleteEventHandler();
         }
     }, [confirmationStatus]);
+
 
 
     return (<Box className="form-event-submission-container">
