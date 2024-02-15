@@ -48,10 +48,10 @@ const FormEventMobileCard = ({event, index}) => {
                     <div className="form-event-date-container">
                             <span className="data">
                                 <EllipsesComponent text=
-                                                       {`${moment(event?.start_date).format("DD MMM YY")}, ${moment(event?.start_datetime, "YY-MM-DD hh:mm:ss A").format('h:mm a')}`}
+                                                       {moment(event?.start_date).format("DD MMM YY")}
                                 />
                             </span>
-                        <span className="title">{t("Start Date & Time")}</span>
+                        <span className="title">{t("Start Date")}</span>
 
                     </div>
 
