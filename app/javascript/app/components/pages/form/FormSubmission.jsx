@@ -65,7 +65,7 @@ const FormSubmission = () => {
             const {data} = await ApiClient.get(`user/submit_event/${id}`);
             if (data?.success) {
                 window.location.href = data?.data?.redirect_url;
-                setDisableReportButton(false)
+                // setDisableReportButton(false)
             }
 
         } catch (e) {
@@ -73,7 +73,7 @@ const FormSubmission = () => {
             //will only enable the report button if api is failed
             setDisableReportButton(false);
         }finally {
-            setIsLoading(false);
+            // setIsLoading(false);
         }
 
     }
