@@ -7,17 +7,22 @@ body {
 .event-details-child-date-time-location-container {
   flex-grow: 2;
   display: flex;
+  justify-content: space-between;
   gap: 15px;
 
   .date-time-location-inner-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 5px;
     font-family: Quicksand;
     font-size: 12px;
     font-weight: 500;
-    line-height: 20px;
 
+    .title-style{
+      align-self: flex-start;
+      color:#838383;
+    }
     .svg-icon {
       width: 15px;
       height: 15px;
@@ -29,7 +34,7 @@ body {
 
 .event-details-child-list-card {
   cursor: pointer;
-  height: 95px;
+  height: 120px;
   width: 100%;
   background: #f7f7f7;
   border-radius: 1rem;
@@ -52,6 +57,7 @@ body {
 
   .event-details-list-sec-part {
     display: flex;
+    gap:5px;
     flex-direction: column;
     font-family: Quicksand;
     font-size: 0.75rem;
@@ -64,12 +70,8 @@ body {
       display: flex;
 
       .green-line {
-        background: #61be7a;
-        width: 3px;
-        height: 41px;
-        border-radius: 5.52px;
-
-
+        border: 2px solid #61be7a !important;
+        height: 40.89px;
       }
 
       .level-event-container {
