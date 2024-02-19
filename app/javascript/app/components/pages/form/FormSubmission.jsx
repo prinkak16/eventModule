@@ -98,7 +98,7 @@ const FormSubmission = () => {
 
 
     return (<Box className="form-event-submission-container">
-        <ConfirmationModal message="Are you sure want to delete ?" showConfirmationModal={showConfirmationModal}
+        <ConfirmationModal title={"Delete Reporting"} message="Are you sure you want to delete the reporting?" showConfirmationModal={showConfirmationModal}
                            setShowConfirmationModal={setShowConfirmationModal}
                            setConfirmationStatus={setConfirmationStatus}/>
         {isLoading ? <ReactLoader/> : <>

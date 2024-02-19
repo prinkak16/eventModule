@@ -3,11 +3,12 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import './confirmation-modal.scss'
+import Button from "@mui/material/Button";
 
 const style = {};
 
 
-export default function ConfirmationModal({
+export default function ConfirmationModal({  title,
                                               message,
                                               showConfirmationModal,
                                               setShowConfirmationModal,
@@ -31,13 +32,13 @@ export default function ConfirmationModal({
             <Box className="confirmation-modal-main-container">
                 <div className="confirmation-modal-container">
 
-
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                   <Typography className={"title"}>{title}</Typography>
+                    <Typography className={"message"}>
                         {message}
                     </Typography>
                     <div className="confirmation-modal-buttons">
-                        <button className="no-button" onClick={handleClose}>No</button>
-                        <button className="yes-button" onClick={handleConfirmation}>Yes</button>
+                        <Button className="no-button" onClick={handleClose}>No thanks</Button>
+                        <Button variant={"text"} className="yes-button" onClick={handleConfirmation}>Delete</Button>
                     </div>
                 </div>
             </Box>
