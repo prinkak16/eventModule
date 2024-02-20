@@ -58,7 +58,7 @@ export default function CreateEvent({isEdit, editData}) {
         end_datetime: "",
         level_id: "",
         location_ids: [],
-        event_type: "",
+        event_type: "open_event",
         img: "",
         crop_data: "",
         state_obj: [],
@@ -389,7 +389,53 @@ export default function CreateEvent({isEdit, editData}) {
 
     }
 
+   const startDateTimeChangeHandler=(event)=>{
+           const minDate = startDateTimeValidation('minDate');
+           const maxDate = startDateTimeValidation('maxDate');
+           if (dayjs(event.$d) < minDate) {
+               {/** if selected startDateTime is smaller than its parent */
+               }
+               setFormField(minDate, "start_datetime");
+               toast.info('Event start date cannot be smaller than the parent event\'s start date, so the event start date matches with parent\'s start date.',{autoClose:5000})
+           } else if (dayjs(event.$d) > maxDate) {
+               {/** if selected startDateTime is greater than its parent */
+               }
+               setFormField(maxDate, "start_datetime");
+               toast.info('Event start date cannot be greater than the parent event\'s end date, so the event start date matches with parent\'s end date.',{autoClose:5000})
+           }else{
+               setFormField(event, "start_datetime");
+               if (formFieldValue.end_datetime) {
+                   if (dayjs(event.$d) > dayjs(formFieldValue.end_datetime)) {
+                       setFormField(event, "end_datetime");
+                   }
+               }
+           }
 
+
+   }
+
+   const endDateTimeChangeHandler=(event)=>{
+           const minDate=endDateTimeValidation('minDate');
+           const maxDate=endDateTimeValidation('maxDate');
+           if (dayjs(event.$d) < minDate) {
+               {/** if selected endDateTime is smaller than its parent */
+               }
+               setFormField(minDate, "end_datetime");
+               toast.info('Event end date cannot be smaller than the parent event\'s end date, so the event end date matches with parent\'s start date.',{autoClose:5000})
+           } else if (dayjs(event.$d) > maxDate) {
+               {/** if selected endDatetime is greater than its parent */
+               }
+               setFormField(maxDate, "end_datetime");
+               toast.info('Event end date cannot be greater than the parent event\'s end date, so the event end date matches with parent\'s end date.',{autoClose:5000})
+
+           }else {
+
+               setFormField(event, "end_datetime");
+           }
+
+
+
+}
     const startDateTimeValidation = (validationFor) => {
         if (validationFor === 'minDate') {
             //min date should not be less than that of its parent event
@@ -410,7 +456,7 @@ export default function CreateEvent({isEdit, editData}) {
             // if start-date-time is selected then that should be the lower bound for end-date-time selection , otherwise lower-bound for end-date-time will depend on end-date-time of child-event , there is no child event, then lower-bound will the start-date-time of parent-event
             return childEventsIntersection?.end_datetime ? dayjs(childEventsIntersection?.end_datetime):
                 (formFieldValue?.start_datetime ? dayjs(formFieldValue?.start_datetime) :
-                    (parentEventDetails?.start_datetime ? dayjs(parentEventDetails?.start_datetime) : null));
+                    (parentEventDetails?.start_datetime ? dayjs(parentEventDetails?.start_datetime) : dayjs(new Date())));
         } else {
             //for upper-bound of end-date-time selection , parent-event end-date-time will be the upper bound
             return parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime) : null
@@ -418,10 +464,6 @@ export default function CreateEvent({isEdit, editData}) {
 
     }
 
-    const handleInputChange = (event) => {
-        // Prevent changes to the input field programmatically
-        event.preventDefault();
-    };
 
     // console.log('start date time is ',startDateTimeValidation('minDate'), startDateTimeValidation(), 'end date time validation i s',endDateTimeValidation('minDate'), endDateTimeValidation())
     return (<div className="create-event-container">
@@ -484,14 +526,14 @@ export default function CreateEvent({isEdit, editData}) {
                     {formFieldValue?.selected_languages?.filter((item) => item !== 'en')?.length > 0 &&
                         <IconButton onClick={() => {
                             //removing english , because event title in english is already filled
-
                             setOpenLanguageModal(true)
                         }} className={"language-button-container"}>
                             <LanguageIcon className={"icon-button"}/>
+                            <span style={{color: 'red'}}>*</span>
                         </IconButton>}
                 </div>
 
-                    <div className={"date-time-picker-container"}>
+                <div className={"date-time-picker-container"}>
                         <ReactDateTimePicker
                             disabled={formFieldValue?.inherit_from_parent || (isEdit && formFieldValue?.status?.toLowerCase() === 'expired')}
                             ampm={false}
@@ -500,14 +542,7 @@ export default function CreateEvent({isEdit, editData}) {
                             minDateTime={startDateTimeValidation('minDate')}
                             value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
                             maxDateTime={startDateTimeValidation('maxDate')}
-                            onChange={(event) => {
-                                setFormField(event, "start_datetime");
-                                if (formFieldValue.end_datetime) {
-                                    if (dayjs(event.$d) > dayjs(formFieldValue.end_datetime)) {
-                                        setFormField(event, "end_datetime");
-                                    }
-                                }
-                            }}
+                            onChange={startDateTimeChangeHandler}
                         />
 
                         <ReactDateTimePicker
@@ -518,9 +553,7 @@ export default function CreateEvent({isEdit, editData}) {
                             value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
                             minDateTime={endDateTimeValidation('minDate')}
                             maxDateTime={endDateTimeValidation('maxDate')}
-                            onChange={(event) => {
-                                setFormField(event, "end_datetime");
-                            }}
+                            onChange={endDateTimeChangeHandler}
                         />
                     </div>
                 <div>
