@@ -31,11 +31,12 @@ export default function ConfirmationModal({  title,
         >
             <Box className="confirmation-modal-main-container">
                 <div className="confirmation-modal-container">
-
-                   <Typography className={"title"}>{title}</Typography>
-                    <Typography className={"message"}>
-                        {message}
-                    </Typography>
+                    <div className={"title-message-container"}>
+                        <Typography className={"title"}>{title}</Typography>
+                        <Typography className={"message"}>
+                            {message}
+                        </Typography>
+                    </div>
                     <div className="confirmation-modal-buttons">
                         <Button className="no-button" onClick={handleClose}>No thanks</Button>
                         <Button variant={"text"} className="yes-button" onClick={handleConfirmation}>Delete</Button>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "./event-submission-card.scss";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import moment from "moment";
@@ -25,18 +25,17 @@ const EventSubmissionCard = ({
         try {
             const {data} = await ApiClient.get(`/user/submit_event/${event_id}/${submission_id}`);
             if (data.success) {
-                setIsLoading(false);
                 window.location.href = data?.data?.redirect_url;
-
             }
         } catch (e) {
             setIsLoading(false)
             console.log(error)
         }
-        setIsLoading(false);
-
-
     }
+
+    useEffect(() => {
+        setIsLoading(false);
+    }, []);
 
 
     return (<div className="event-submission-card-container">
@@ -55,11 +54,9 @@ const EventSubmissionCard = ({
 
                     <div className="event-location">
                         <span className="event-location-icon-container"><LocationIcon className={"location-icon"}/></span>
-                        <Tooltip title={data?.locations?.join(' , ')}>
-                            <div className="event-location-data">
-                                <EllipsesComponent text=
-                                                       {data?.locations?.filter(Boolean)?.join(' , ')}/></div>
-                        </Tooltip>
+                            <div className="event-location-data">{
+                                data?.locations?.filter(Boolean)?.join(' , ')}
+                            </div>
                     </div>
                     <div className="submission-image-group-container">
                         {data?.images.length > 0 && <span className={"photo-title"}>Photos</span>}

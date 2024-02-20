@@ -63,8 +63,7 @@
 
         .event-location-data {
           color: #454444;
-
-
+          width:100%;
         }
       }
 
@@ -169,8 +168,7 @@
 
           .event-location-data {
             color: #454444;
-
-
+            width:100%;
           }
         }
 
@@ -205,7 +203,7 @@
 
       .event-submission-card-action-icon-child {
         display: flex;
-        flex-direction: column;
+        flex-direction:row;
         justify-content: center;
         align-items: center;
       }

@@ -3,7 +3,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 350px;
+  width: 25%;
   hight:180px;
   border: none;
   boxShadow: 24px;
@@ -15,17 +15,22 @@
 
 .confirmation-modal-container {
   display: flex;
-
   flex-direction: column;
-  gap: 20px;
- .title{
-   font-weight: 400;
-   font-size:24px;
- }
-  .message{
-  font-width:400px;
-    font-size: 14px;
+  gap: 40px;
+  .title-message-container{
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+    .title{
+      font-weight: 400;
+      font-size:24px;
+    }
+    .message{
+      font-width:400px;
+      font-size: 15px;
+    }
   }
+
   .confirmation-modal-buttons {
     display: flex;
     width: 100%;
@@ -34,10 +39,12 @@
     gap: 0.5rem;
     .no-button {
       color:#FF9559;
+      font-size:15px;
     }
 
     .yes-button {
       color:#FF9559;
+      font-size:15px;
     }
 
   }
@@ -47,8 +54,7 @@
 
 @media screen and (max-width: 450px) {
   .confirmation-modal-main-container {
-    width: 330px;
-
+    width:90%;
   }
 
 }
