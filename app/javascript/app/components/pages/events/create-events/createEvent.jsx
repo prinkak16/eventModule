@@ -1,17 +1,6 @@
 import React, {useEffect, useState} from "react";
 import "./createEvent.scss";
-import {
-    Autocomplete,
-    Box,
-    Chip,
-    FormControlLabel,
-    IconButton,
-    Radio,
-    RadioGroup,
-    Switch,
-    TextField,
-    Tooltip,
-} from "@mui/material";
+import {Autocomplete, Box, Chip, FormControlLabel, IconButton, Radio, RadioGroup, Switch, TextField, Tooltip,} from "@mui/material";
 import {styled} from '@mui/material/styles';
 import dayjs from "dayjs";
 import InfoIcon from '@mui/icons-material/Info';
@@ -47,10 +36,8 @@ export default function CreateEvent({isEdit, editData}) {
     const [dataLevels, setDataLevels] = useState([]);
     const [countryStates, setCountryStates] = useState([]);
     const [image, setImage] = useState(null);
-
     const [loader, setLoader] = useState(false);
     const [allLanguages, setAllLanguages] = useState([]);
-
     const [formFieldValue, setFormFieldValue] = useState({
         selected_languages: ['en'],
         event_title: "",
@@ -76,6 +63,42 @@ export default function CreateEvent({isEdit, editData}) {
     const [childEventsIntersection, setChildEventIntersection] = useState({
         start_datetime: null, end_datetime: null
     })
+
+
+    useEffect(() => {
+        if (isEdit) {
+            if (publishedParamValue === "true") {
+                (async () => {
+                    setLoader(true);
+                    try {
+                        const {data} = await ApiClient.get(`event/publish/${id}`);
+                        if (data?.success) {
+                            navigate(`/events/edit/${id}`);
+                        }
+                    } catch (e) {
+                        toast.error(e.message);
+                    }
+                    setLoader(false);
+                })();
+            } else if (publishedParamValue === "false") {
+                navigate(`/events/edit/${id}`);
+            }
+        }
+
+    }, []);
+
+    useEffect(() => {
+        if (isEdit) {
+            formFieldUpdationByEdit();
+        }
+        if (!isEdit && id) {
+            getParentDetails(id);
+        }
+        getAllData();
+        getLanguages();
+    }, []);
+
+
     const getParentDetails = async (parent_id) => {
         try {
             const {data} = await getEventById(parent_id);
@@ -154,16 +177,6 @@ export default function CreateEvent({isEdit, editData}) {
 
     }
 
-    useEffect(() => {
-        if (isEdit) {
-            formFieldUpdationByEdit();
-        }
-        if (!isEdit && id) {
-            getParentDetails(id);
-        }
-        getAllData();
-        getLanguages();
-    }, []);
 
     const handleLevelChange = (event, value) => {
         setFormFieldValue((prevFormValues) => ({
@@ -317,27 +330,6 @@ export default function CreateEvent({isEdit, editData}) {
     // }, [formFieldValue]);
 
 
-    useEffect(() => {
-        if (isEdit) {
-            if (publishedParamValue === "true") {
-                (async () => {
-                    setLoader(true);
-                    try {
-                        const {data} = await ApiClient.get(`event/publish/${id}`);
-                        if (data?.success) {
-                            navigate(`/events/edit/${id}`);
-                        }
-                    } catch (e) {
-                        toast.error(e.message);
-                    }
-                    setLoader(false);
-                })();
-            } else if (publishedParamValue === "false") {
-                navigate(`/events/edit/${id}`);
-            }
-        }
-
-    }, []);
     const isNextButtonDisabled = () => {
 
         for (let key in formFieldValue) {
@@ -372,6 +364,11 @@ export default function CreateEvent({isEdit, editData}) {
     }
 
     const handleSelectLanguage = (language) => {
+        {/** don't unselect if it is english chip */}
+        if(language?.lang==='en')
+        {
+            return;
+        }
         const containsIncomingLanguage = formFieldValue?.selected_languages?.some((item) => item === language?.lang);
         if (containsIncomingLanguage) {
             const restSelectedLanguages = formFieldValue?.selected_languages?.filter((item) => item !== language?.lang);
@@ -395,12 +392,13 @@ export default function CreateEvent({isEdit, editData}) {
     const startDateTimeChangeHandler = (event) => {
         const minDate = startDateTimeValidation('minDate');
         const maxDate = startDateTimeValidation('maxDate');
-        if (dayjs(event.$d) < minDate) {
+
+        if (minDate&&(dayjs(event.$d) < minDate)) {
             {/** if selected startDateTime is smaller than its parent */
             }
             setFormField(minDate, "start_datetime");
             toast.info('Event start date cannot be smaller than the parent event\'s start date, so the event start date matches with parent\'s start date.', {autoClose: 5000})
-        } else if (dayjs(event.$d) > maxDate) {
+        } else if (maxDate&&(dayjs(event.$d) > maxDate)) {
             {/** if selected startDateTime is greater than its parent */
             }
             setFormField(maxDate, "start_datetime");
@@ -420,12 +418,12 @@ export default function CreateEvent({isEdit, editData}) {
     const endDateTimeChangeHandler = (event) => {
         const minDate = endDateTimeValidation('minDate');
         const maxDate = endDateTimeValidation('maxDate');
-        if (dayjs(event.$d) < minDate) {
+        if (minDate&&(dayjs(event.$d) < minDate)) {
             {/** if selected endDateTime is smaller than its parent */
             }
             setFormField(minDate, "end_datetime");
             toast.info('Event end date cannot be smaller than the parent event\'s end date, so the event end date matches with parent\'s start date.', {autoClose: 5000})
-        } else if (dayjs(event.$d) > maxDate) {
+        } else if (maxDate&&(dayjs(event.$d) > maxDate)) {
             {/** if selected endDatetime is greater than its parent */
             }
             setFormField(maxDate, "end_datetime");
@@ -465,9 +463,6 @@ export default function CreateEvent({isEdit, editData}) {
         }
 
     }
-
-
-    // console.log('start date time is ',startDateTimeValidation('minDate'), startDateTimeValidation(), 'end date time validation i s',endDateTimeValidation('minDate'), endDateTimeValidation())
     return (<div className="create-event-container">
         <EventTitleModal allLanguages={allLanguages} setFormFieldValue={setFormFieldValue}
                          openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}
