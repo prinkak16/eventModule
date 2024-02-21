@@ -78,6 +78,7 @@ group :test do
 end
 
 gem 'saral-locatable', git: "https://github.com/jarvisconsulting/saral-locatable.git", branch: 'new_f_r7_branch'
+# gem 'saral-locatable', path: "../Jarvis/saral-locatable/"
 gem 'sso_client', git: 'https://github.com/jarvisconsulting/sso_client.git', branch: "master-add-views-vt"
 gem 'listen'
 gem 'sidekiq', '~> 6.5', '>= 6.5.8'
@@ -93,3 +94,4 @@ gem 'sendgrid-ruby'
 gem 'httparty'
 gem 'resque'
 gem 'acts_as_list'
+gem "google-cloud-storage", "~> 1.8", require: false

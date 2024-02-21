@@ -21,6 +21,15 @@ module ApplicationHelper
     mail.subject = subject
     mail.add_content(html_content)
     mail.add_personalization(personalization)
+    attachments.each do |att|
+      attachment = Attachment.new
+      attachment.content = Base64.strict_encode64 att[:content]
+      attachment.type = 'application/csv'
+      attachment.filename = att[:filename]
+      attachment.disposition = 'attachment'
+      attachment.content_id = 'CSV'
+      mail.add_attachment(attachment)
+    end
 
     if Rails.env.production?
       sg.client.mail._('send').post(request_body: mail.to_json)
