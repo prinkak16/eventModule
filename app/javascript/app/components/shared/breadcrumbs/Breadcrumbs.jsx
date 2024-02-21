@@ -61,8 +61,9 @@ export default function MyBreadcrumbs() {
         getDynamicRoutes();
     }, [pathname,globalSelectedLanguage]);
 
-    return (<div className={"breadcrumbs-main-container"}>
-            {urls?.length > 0 && <Link onClick={(e)=>clearHistoryStack(e,Object.keys(dynamicRoutes)?.length)}>{capitalizeFirstWord(urls[0])}</Link>}
+    return (
+        <div className={"breadcrumbs-main-container"}>
+            {urls?.length > 0 && <Link onClick={(e)=>clearHistoryStack(e,Object.keys(dynamicRoutes)?.length)}>{capitalizeFirstWord(urls[0]==='forms'?'events':urls[0])}</Link>}
             {Object.keys(dynamicRoutes).length > 0 && <span> &nbsp;/&nbsp; </span>}      {/* if dynamic routes exist add '/' before adding them*/}
             {Object.keys(dynamicRoutes)?.map((key, index) => <span key={index} style={{display: "flex"}}>
          <Link   onClick={(e)=>clearHistoryStack(e,Object.keys(dynamicRoutes)?.length-(index+1))}>
