@@ -17,6 +17,8 @@ const FormDetails = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [parentEvent, setParentEvent] = useState({});
     const {globalSelectedLanguage}=EventState();
+    const urlParams = new URLSearchParams(window.location.search);
+    const isHome = urlParams.get('isHome')??false;
     const getEventAndEventChildren = async () => {
         setIsLoading(true);
         try {
@@ -43,6 +45,7 @@ const FormDetails = () => {
     }, [id,globalSelectedLanguage]);
     return (
         <div className={"form-event-details-main-container"}>
+            <div id={"isHome"} value={isHome}></div>
 {
                 isLoading ? <ReactLoader/> : (
                         (parentEvent&&!parentEvent?.has_sub_event )? <FormSubmission/> :
