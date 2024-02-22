@@ -19,10 +19,10 @@ class EventSerializer < ActiveModel::Serializer
 
   # Here all event location will be state only
   def states
-    state_id = instance_options[:state_id]
-    states = CountryState.where(id: object&.event_locations.pluck(:state_id))
-    states = states.where(id: state_id) if state_id.present?
-    state_names = states.pluck(:name)
+    state_names = []
+    object.event_locations.each do |locations|
+      state_names << locations.location.name
+    end
     "#{state_names.take(2).join(',')} #{state_names.size > 2 ? "+ #{state_names.size - 2}" : ''}"
   end
 
@@ -41,7 +41,11 @@ class EventSerializer < ActiveModel::Serializer
   end
 
   def state_ids
-    CountryState.where(id: object&.event_locations.pluck(:state_id)).select(:id, :name)
+    state_ids = []
+    object.event_locations.each do |locations|
+      state_ids << { "id": locations.location.id, "name": locations.location.name }
+    end
+    state_ids
   end
 
   def create_form_url
