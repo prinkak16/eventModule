@@ -125,10 +125,11 @@ const FormComponent = () => {
      }, [innerWidth]);*/
     return (
         <Box className="form-main-container" ref={myRef}>
+            <div id={'isHome'} value={true}></div>
             {loader ? (isForMobile ?
                     <div className={"form-list-container-horizontal"}>
                         <HorizontalCardShimmerEffect/>
-                    </div>: <ReactLoader/>) :
+                    </div> : <ReactLoader/>) :
                 <>
                     <div className={isForMobile ? 'form-event-search form-event-search-mobile' : 'form-event-search'}>
                         <TextField

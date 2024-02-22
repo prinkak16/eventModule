@@ -8,11 +8,12 @@ import {useNavigate} from "react-router";
 
 const FormEventMobileCardHorizontal = ({event, index}) => {
 
+
     const navigate = useNavigate();
 
     const submissionHandler = (event_id) => {
         // navigate(`/forms/${event_id}`);
-        window.location.href=`${window.location.href}/${event_id}`;
+        window.location.href=`${window.location.href}/${event_id}?isHome=${true}`;
     };
 
     return (
