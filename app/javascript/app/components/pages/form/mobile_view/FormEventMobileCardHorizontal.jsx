@@ -5,10 +5,9 @@ import PlaceIcon from '@mui/icons-material/Place';
 import moment from "moment";
 import EllipsesComponent from "../../../../utils/EllipsesComponent";
 import {useNavigate} from "react-router";
-import {EventState} from "../../../../EventContext";
 
 const FormEventMobileCardHorizontal = ({event, index}) => {
-    const {setIsHomePage}= EventState();
+
 
     const navigate = useNavigate();
 
