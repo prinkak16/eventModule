@@ -78,7 +78,7 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                 </Toolbar> :
 
                 <Toolbar className={redirectFor === 'mobile' ? 'header-form-bg header-form-bg-mobile' : 'header-form-bg'}>
-                    <Tooltip className="header-form-back-button" onClick={() =>
+                    <Tooltip id={"nav_back_button"} className="header-form-back-button" onClick={() =>
                         navigate(-1)
                     }>
                             <IconButton>
