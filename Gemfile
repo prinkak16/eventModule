@@ -49,7 +49,7 @@ gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 gem "bootsnap", require: false
 
 # Use Sass to process CSS
-# gem "sassc-rails"
+gem "sassc-rails"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
@@ -77,8 +77,8 @@ group :test do
   gem "webdrivers"
 end
 
-gem 'saral-locatable', git: "https://github.com/jarvisconsulting/saral-locatable.git", branch: 'new_f_r7_branch'
-gem 'sso_client', git: 'https://github.com/jarvisconsulting/sso_client.git', branch: "master-add-views-vt"
+gem 'saral-locatable', git: "https://github.com/jarvisconsulting/saral-locatable.git", branch: 'new_locatable'
+gem 'sso_client', git: 'https://github.com/jarvisconsulting/sso_client.git', branch: "dual_db_client"
 gem 'listen'
 gem 'sidekiq', '~> 6.5', '>= 6.5.8'
 gem 'sidekiq-cron'

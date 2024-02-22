@@ -8,6 +8,7 @@ defaults: &DEFAULTS
   sso_username: <%= ENV['SSO_USERNAME'] %>
   sso_password: <%= ENV['SSO_USERNAME'] %>
 
+
 development:
   <<: *DEFAULTS
 
