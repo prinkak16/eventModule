@@ -40,7 +40,7 @@ class Event < ApplicationRecord
   end
 
   def get_states
-    Saral::Locatable::State.where(id: self.event_locations.where(location_type: "Saral::Locatable::State").pluck(:location_id)).select(:id, :name).order(:name)
+    CountryState.where(id: self.event_locations.where(location_type: "CountryState").pluck(:location_id)).select(:id, :name).order(:name)
   end
 
   def get_title(language_key = nil)

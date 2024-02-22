@@ -1,0 +1,3 @@
+class UserEventLocation < ApplicationRecord
+
+end

@@ -1,4 +1,5 @@
-class UserTag < ApplicationRecord
+class UserTag < CcdmsRecord
+  self.table_name = 'user_tags'
   belongs_to :data_type
   belongs_to :data_level
   belongs_to :user
