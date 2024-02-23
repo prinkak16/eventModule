@@ -71,7 +71,7 @@ class Api::EventSubmissionController < Api::ApplicationController
     event = Event.find(event_id)
     event_form = EventForm.where(event_id: event_id).first
     if submission_id.present?
-      submission = EventSubmission.where(event_id: event_id, submission_id: submission_id).first
+      submission = EventSubmission.where(event_id: event_id, user_id: current_user.id ,submission_id: submission_id).first
     elsif event_id.present?
       submission_id = SecureRandom.uuid
       submission = EventSubmission.where(event_id: event_id, user_id: current_user.id, submission_id: submission_id, form_id: event_form.form_id).first_or_create!
