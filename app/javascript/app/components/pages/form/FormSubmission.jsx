@@ -65,9 +65,11 @@ const FormSubmission = () => {
             }
 
         } catch (e) {
-            console.log(e)
+            toast.error(e?.message);
             //will only enable the report button if api is failed
             setDisableReportButton(false);
+            setIsLoading(false);
+
         }finally {
             // setIsLoading(false);
         }
