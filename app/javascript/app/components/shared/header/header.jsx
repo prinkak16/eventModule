@@ -78,13 +78,13 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                 </Toolbar> :
 
                 <Toolbar className={redirectFor === 'mobile' ? 'header-form-bg header-form-bg-mobile' : 'header-form-bg'}>
-                    <Tooltip id={"nav_back_button"} className="header-form-back-button" onClick={() =>
+                    <biv id={"nav_back_button"} className="header-form-back-button" onClick={() =>
                         navigate(-1)
                     }>
                             <IconButton>
                                 <ArrowBackIosIcon/>
                             </IconButton>
-                    </Tooltip>
+                    </biv>
 
                     <h2 className="event-name-heading">Events</h2>
                     <div className={"header-form-button-and-lang-select-container"}>
