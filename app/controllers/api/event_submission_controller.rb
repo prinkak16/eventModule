@@ -25,7 +25,7 @@ class Api::EventSubmissionController < Api::ApplicationController
     begin
       events = Event.where(id: params[:event_id])
       events = ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user)
-      submissions = EventSubmission.where(user_id: current_user, event_id: params[:event_id]).order(created_at: :desc)
+      submissions = EventSubmission.where(event_id: params[:event_id], user_id: current_user).order(created_at: :desc)
       puts "Event Module Queries - " + "#{current_user.phone_number}"
       response = HTTParty.post(
         "#{ENV['CLUSTER_FORM_BASE_URL']}api/submissionStatus",
@@ -70,11 +70,11 @@ class Api::EventSubmissionController < Api::ApplicationController
     submission = nil
     event = Event.find(event_id)
     event_form = EventForm.where(event_id: event_id).first
-    if submission_id.present? && event_id.present?
-      submission = EventSubmission.where(submission_id: submission_id, event_id: event_id).first
+    if submission_id.present?
+      submission = EventSubmission.where(event_id: event_id, submission_id: submission_id).first
     elsif event_id.present?
       submission_id = SecureRandom.uuid
-      submission = EventSubmission.where(user_id: current_user.id, event_id: event_id, form_id: event_form.form_id, submission_id: submission_id).first_or_create!
+      submission = EventSubmission.where(event_id: event_id, user_id: current_user.id, submission_id: submission_id, form_id: event_form.form_id).first_or_create!
     end
     raise StandardError, 'Error finding submission' if submission.nil?
     event_meta = {
