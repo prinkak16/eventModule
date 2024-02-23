@@ -400,8 +400,6 @@ export default function CreateEvent({isEdit, editData}) {
             setFormField(minDate, "start_datetime");
             if(hasParentEvent) {
                 toast.info('Event start date cannot be smaller than the parent event\'s start date, so the event start date matches with parent\'s start date.', {autoClose: 5000})
-            } else{
-                toast.info('Event start date & time cannot be smaller than the current date & time, so the event date & time matches with current start date & Time.', {autoClose: 5000})
             }
         } else if (maxDate&&(dayjs(event.$d) > maxDate)) {
             {/** if selected startDateTime is greater than its parent */}
@@ -427,8 +425,6 @@ export default function CreateEvent({isEdit, editData}) {
             setFormField(minDate, "end_datetime");
             if(hasParentEvent) {
                 toast.info('Event end date cannot be smaller than the parent event\'s end date, so the event end date matches with parent\'s start date.', {autoClose: 5000})
-            }else{
-                toast.info('Event end date & time cannot be smaller than the current date & time, so the event end date & time matches with current date & Time.', {autoClose: 5000})
             }
         } else if (maxDate&&(dayjs(event.$d) > maxDate)) {
             {/** if selected endDatetime is greater than its parent */}
