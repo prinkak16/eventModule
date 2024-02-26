@@ -69,11 +69,12 @@ class EventSerializer < ActiveModel::Serializer
       createRedirectionLink: ENV['ROOT_URL'] + 'events/edit/' + object.id.to_s,
       createRedirectionName: object.name,
       logo: object.get_image_url,
+      translated_title: object&.translated_title
     }
     data = { eventId: object.id, formId: object.event_form.form_id, eventName: object.name,
              eventStartDate: object.start_date, isFormCreator: true, eventEndDate: object.end_date,
              user: { name: instance_options[:current_user].name }, dataLevel: object.data_level&.name, eventMeta: event_meta }
-    JWT.encode(data, ENV['JWT_SECRET_KEY'].present? ? ENV['JWT_SECRET_KEY'] : 'thisisasamplesecret')
+    JWT.encode(data, ENV['JWT_SECRET_KEY'].present? ? ENV['JWT_SECRET_KEY'] : '6F59CAC47E5AD7D5E5B8CA41E9173')
   end
 
   def event_level

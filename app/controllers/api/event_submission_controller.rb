@@ -81,7 +81,8 @@ class Api::EventSubmissionController < Api::ApplicationController
       stateIds: event.event_locations.pluck(:state_id),
       userStateId: current_user.country_state_id.present? ? current_user.country_state_id: nil ,
       redirectionLink: ENV['ROOT_URL'] + 'forms/submissions/' + event_id,
-      logo: event.get_image_url
+      logo: event.get_image_url,
+      translated_title: event.translated_title
     }
     data = { eventId: event.id, formId: event_form.form_id, submissionId: submission.submission_id,
              eventName: event.name, eventStartDate: event.start_date,
