@@ -82,7 +82,7 @@ class Api::EventSubmissionController < Api::ApplicationController
       userStateId: current_user&.sso_payload["country_state_id"].present? ? current_user&.sso_payload["country_state_id"]: nil ,
       redirectionLink: ENV['ROOT_URL'] + 'forms/submissions/' + event_id,
       logo: event.get_image_url,
-      event_name_trans: event.translated_title
+      translated_title: event.translated_title
     }
     data = { eventId: event.id, formId: event_form.form_id, submissionId: submission.submission_id,
              eventName: event.name, eventStartDate: event.start_date,
