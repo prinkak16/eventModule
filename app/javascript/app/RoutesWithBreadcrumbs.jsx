@@ -6,7 +6,6 @@ import AdminBreadcrumbs from "./components/shared/breadcrumbs/AdminBreadcrumbs";
 
 const RoutesWithBreadcrumbs = () => {
     const {pathname}=useLocation();
-    console.log('pathname is ',pathname)
     function conditionalBreadcrumbs(){
         if(pathname.startsWith('/events')){
             return <AdminBreadcrumbs/>    /** render this breadcrumbs if we are on admin side*/
