@@ -132,7 +132,7 @@ const EventChildCard = ({event}) => {
                             <div className="date-time-location-inner-container">
                                 <span className={"title-style"}>END DATE & TIME</span>
                                 <span>
-                            {moment(event?.end_date).format("Do MMMM YYYY")}, {moment(event?.start_datetime, "YY-MM-DD hh:mm:ss A").format(
+                            {moment(event?.end_date).format("Do MMMM YYYY")}, {moment(event?.end_datetime, "YY-MM-DD hh:mm:ss A").format(
                                     "hh:mm a"
                                 )}
             </span>
