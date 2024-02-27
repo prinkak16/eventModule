@@ -10,7 +10,7 @@ import Bengali from './i18n-translation/bn/translation.json'
 import Odia from './i18n-translation/or/translation.json'
 import Gujarati from './i18n-translation/gu/transalation.json'
 import Punjabi from './i18n-translation/pa/translation.json'
-import Malayalam from './i18n-translation/mr/translation.json'
+import Malayalam from './i18n-translation/ml/translation.json'
 import Assamese from './i18n-translation/as/translation.json'
 
 

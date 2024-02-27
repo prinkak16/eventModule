@@ -9,5 +9,9 @@
   "Time":"Time",
   "Start Date": "Start Date",
   "Level":"Level",
-  "Create Event":"Create Event"
+  "Create Event":"Create Event",
+  "No reporting has been submitted": "কোন প্রতিবেদন জমা দেওয়া হয়নি",
+  "Photos": "ছবি"
+
+
 }
