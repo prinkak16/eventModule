@@ -59,7 +59,7 @@ const EventSubmissionCard = ({
                             </div>
                     </div>
                     <div className="submission-image-group-container">
-                        {data?.images.length > 0 && <span className={"photo-title"}>Photos</span>}
+                        {data?.images.length > 0 && <span className={"photo-title"}>{t("Photos")}</span>}
                            <div className="submission-image-container"> {data?.images.length > 0 && data?.images?.slice(0, 2).map((item) => <div><img src={item} alt="Loading..."
                                                                             className="submission-image"/></div>)}</div>
 

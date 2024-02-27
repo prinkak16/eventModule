@@ -111,7 +111,7 @@ const FormSubmission = () => {
 
             </div>
             <div className="form-event-submissions">
-                {eventSubmissionsData?.length === 0 && <h3>No Event is submitted yet</h3>}
+                {eventSubmissionsData?.length === 0 && <h3>{t("No reporting has been submitted")}</h3>}
                 {eventSubmissionsData.length > 0 &&
                     <div className="event-total-report">{t("Total Reported")} : {eventSubmissionsData.length}</div>}
                 {eventSubmissionsData?.map((item, index) => <EventSubmissionCard index={index} data={item}
