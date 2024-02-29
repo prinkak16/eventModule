@@ -31,13 +31,12 @@ const FormSubmission = () => {
     useMemo(() => {
         document.addEventListener("visibilitychange", function() {
             if (document.visibilityState === 'visible') {
-                window.location.reload();
+               getUserSubmission();
             }
         });
     }, []);
 
-    useEffect(() => {
-        (async () => {
+    const getUserSubmission=async ()=>{
             setIsLoading(true)
             try {
                 const {data} = await ApiClient.get(`/user/submissions/${id}`);
@@ -55,8 +54,12 @@ const FormSubmission = () => {
             }finally {
                 setIsLoading(false);
             }
-        })();
 
+
+    }
+
+    useEffect(() => {
+         getUserSubmission();
         return () => {
             setIsLoading(false)
         }
