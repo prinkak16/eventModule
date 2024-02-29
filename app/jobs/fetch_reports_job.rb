@@ -66,7 +66,7 @@ module FetchReportsJob
         file_name += '.csv'
         phone_numbers = Hash[EventSubmission.includes(:user).where(event_id: event.id).pluck('submission_id','users.phone_number')]
         if event.report_file.attached?
-          pipeline = conditional_pipeline_query(event, offset, limit)
+          pipeline = conditional_pipeline_query(event)
           begin
             puts "trying with UTF-8"
             file = URI.open(event.report_file.url)
@@ -80,7 +80,6 @@ module FetchReportsJob
           end
           data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
           hashed_data = Hash.new
-          puts "Data Query Processed - #{offset}"
           puts "The size of array - #{data.size}"
           for i in 0...data.size
             row_data = []
@@ -109,17 +108,9 @@ module FetchReportsJob
             k = 2
             while k < (headers.size - 3)
               if hash[headers[k]].present?
-                if data[i]["status"] == "COMPLETED" && hash[headers[k]] == ""
-                  row_data << "NA"
-                else
-                  row_data << hash[headers[k]]
-                end
+                row_data << hash[headers[k]]
               else
-                if data[i]["status"] == "COMPLETED"
-                  row_data << "NA"
-                else
-                  row_data << ""
-                end
+                row_data << ""
               end
               k += 1
             end
@@ -189,17 +180,9 @@ module FetchReportsJob
                 k = 2
                 while k < (headers.size - 3)
                   if hash[headers[k]].present?
-                    if data[i]["status"] == "COMPLETED" && hash[headers[k]] == ""
-                      row_data << "NA"
-                    else
-                      row_data << hash[headers[k]]
-                    end
+                    row_data << hash[headers[k]]
                   else
-                    if data[i]["status"] == "COMPLETED"
-                      row_data << "NA"
-                    else
-                      row_data << ""
-                    end
+                    row_data << ""
                   end
                   k += 1
                 end
@@ -236,7 +219,7 @@ module FetchReportsJob
     end
   end
 
-  def conditional_pipeline_query(event  = nil, offset = nil, limit = nil)
+  def self.conditional_pipeline_query(event  = nil)
     [
       {
         '$match': {
@@ -248,8 +231,6 @@ module FetchReportsJob
         }
       },
       { "$sort": { "createdAt": -1 } },
-      { "$skip": offset },
-      { "$limit": limit },
       {
         '$unwind': "$questions"
       },
@@ -324,7 +305,7 @@ module FetchReportsJob
     ]
   end
 
-  def pipeline_query(event = nil, offset = nil, limit = nil)
+  def self.pipeline_query(event = nil, offset = nil, limit = nil)
     [
       {
         '$match': {

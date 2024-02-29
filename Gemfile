@@ -93,5 +93,7 @@ gem 'mongo', '~> 2.19', '>= 2.19.3'
 gem 'sendgrid-ruby'
 gem 'httparty'
 gem 'resque'
+gem 'dotenv-rails', '~> 3.0', '>= 3.0.3'
+gem 'open-uri'
 gem 'acts_as_list'
 gem "google-cloud-storage", "~> 1.8", require: false
