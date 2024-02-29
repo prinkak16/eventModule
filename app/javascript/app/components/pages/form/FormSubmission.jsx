@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import {useLocation, useNavigate, useParams} from "react-router";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import './form-event-submission.scss'
@@ -27,6 +27,14 @@ const FormSubmission = () => {
     const [eventDeleteId, setEventDeleteId] = useState(-1);
     const [confirmationStatus, setConfirmationStatus] = useState(false);
     const [disableReportButton,setDisableReportButton]=useState(false);
+
+    useMemo(() => {
+        document.addEventListener("visibilitychange", function() {
+            if (document.visibilityState === 'visible') {
+                window.location.reload();
+            }
+        });
+    }, []);
 
     useEffect(() => {
         (async () => {
