@@ -6,7 +6,7 @@ class Api::EventController < Api::ApplicationController
   before_action :authenticate_user_permission
 
   def data_levels
-    levels = DataLevel.select(:id, :name, :level_class).order(:order_id)
+    levels = DataLevel.select(:id, :name, :level_class).order(order_id: :desc)
     render json: { success: true, data: levels || [], message: "Data levels list." }, status: 200
   rescue StandardError => e
     render json: { success: false, message: e.message }, status: 400
