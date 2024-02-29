@@ -1,10 +1,12 @@
 require 'sidekiq/web'
 require 'sidekiq/cron/web'
+require "resque_web"
 Rails.application.routes.draw do
   root "home#index"
   mount SsoClient::Engine, at: '/sso_client', as: 'sso_client'
   # Define your application modules per the DSL in https://guides.rubyonrails.org/routing.html
   mount Sidekiq::Web => "/sidekiq"
+  mount ResqueWeb::Engine => "/resque_web"
   namespace :api do
       get 'event/data_levels' => 'event#data_levels'
       get 'event/states' => 'event#states'
