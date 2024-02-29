@@ -93,3 +93,5 @@ gem 'sendgrid-ruby'
 gem 'httparty'
 gem 'resque'
 gem 'acts_as_list'
+gem "google-cloud-storage", "~> 1.8", require: false
+gem 'open-uri'

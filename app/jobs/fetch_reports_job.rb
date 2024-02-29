@@ -1,10 +1,12 @@
 module FetchReportsJob
   require 'csv'
+  require 'open-uri'
   include ApplicationHelper
   @queue = :report
 
   def self.perform(event_id = nil, mail_ids = nil, time_limit = nil)
     begin
+      check = false
       event = Event.find_by(id: event_id)
       event_form = EventForm.find_by(event_id: event_id)
       mongo_db = Mongo::Client.new(ENV["MONGO_URL"])
@@ -12,7 +14,7 @@ module FetchReportsJob
       content = "Event Report Download processing has been started."
       content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
       ApplicationController.helpers.send_email(subject, content, mail_ids)
-      if event.status_aasm_state == 'Expired' && event.report_file.attached?
+      if event.status_aasm_state == 'Expired' && event.report_file.attached? && event.report_file.created_at >= event.end_date
         file_url = event.report_file.url
         subject = "Event Report Download for event #{event.name}"
         content = "Event Report for #{event.name} has been processed and can be downloaded by clicking on the below url."
@@ -46,7 +48,7 @@ module FetchReportsJob
         ).allow_disk_use(true).to_json)
         puts "Question Query ended"
         db = mongo_db[:formsubmissions]
-        headers = ['Username', 'User Phone Number']
+        headers = ['Username', 'User Phone Number', 'Submission Id']
         for i in 0...questions.first["question"].size
           if questions.first["question"][i]["title"].first["value"] != "Provide your event location."
             if questions.first["question"][i]["isHidden"] == true
@@ -59,107 +61,82 @@ module FetchReportsJob
         headers << 'createdAt'
         headers << 'updatedAt'
         headers << 'status'
-        file_name = "#{event.name}" + "-report"
+        file_name = "#{event.name}_#{DateTime.now.to_date}"
         csv_file = Tempfile.new([file_name, '.csv'])
         file_name += '.csv'
         phone_numbers = Hash[EventSubmission.includes(:user).where(event_id: event.id).pluck('submission_id','users.phone_number')]
-        CSV.open(csv_file, 'w') do |csv|
-          csv << headers
-          offset = 0
-          limit = 50000
+        if event.report_file.attached?
+          pipeline = conditional_pipeline_query(event)
           begin
-            pipeline = [
-              {
-                '$match': {
-                  eventId: "#{event.id}",
-                  '$or': [
-                    {
-                      deletedAt: {
-                        '$exists': false
-                      }
-                    },
-                    {
-                      deletedAt: nil
-                    }
-                  ]
-                }
-              },
-              {
-                '$unwind': "$questions"
-              },
-              { '$match': {
-                "questions.isAnswered": true
-              }
-              },
-              { '$project': {
-                _id: 1,
-                userName: "$user.name",
-                eventId: 1,
-                submissionId: 1,
-                question: { '$arrayElemAt': ["$questions.title.value", 0] },
-                answer: {
-                  '$cond': {
-                    if: {
-                      '$in': [
-                        "$questions.type",
-                        ["imageUpload", "audioUpload", "docUpload", "videoUpload"]
-                      ]
-                    },
-                    then: "$questions.files.value",
-                    else: {
-                      '$cond': {
-                        if: {
-                          '$in': [
-                            "$questions.type",
-                            ["radio", "dropdown"]
-                          ]
-                        },
-                        then: "$questions.options",
-                        else: ["$questions.answer"]
-                      }
-                    }
-                  }
-                },
-                createdAt: 1,
-                updatedAt: 1,
-                status: 1
-              }
-              },
-              { '$group': {
-                _id: {
-                  id: '$_id',
-                  username: '$userName',
-                  eventId: '$eventId',
-                  submissionId: '$submissionId',
-                  createdAt: '$createdAt',
-                  updatedAt: '$updatedAt',
-                  status: '$status',
-                },
-                questions: {
-                  '$push': {
-                    question: "$question",
-                    answer: "$answer"
-                  }
-                }
-              }
-              },
-              { '$project': {
-                _id: 0,
-                id: '$_id.id',
-                username: '$_id.username',
-                eventId: '$_id.eventId',
-                submissionId: '$_id.submissionId',
-                questions: 1,
-                createdAt: '$_id.createdAt',
-                updatedAt: '$_id.updatedAt',
-                status: '$_id.status'
-              }
-              },
-              { "$sort": { "createdAt": -1 } },
-              { "$skip": offset },
-              { "$limit": limit }
-            ]
-            if time_limit != "All-time"
+            puts "trying with UTF-8"
+            file = URI.open(event.report_file.url)
+            file.set_encoding(Encoding.find("UTF-8"))
+            rows = CSV.parse(file.read, headers: true)
+          rescue => _
+            puts "trying with ISO"
+            file = URI.open(event.report_file.url)
+            file.set_encoding(Encoding.find("ISO-8859-1"))
+            rows = CSV.parse(file.read,  headers: true)
+          end
+          data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
+          hashed_data = Hash.new
+          puts "The size of array - #{data.size}"
+          for i in 0...data.size
+            row_data = []
+            row_data << data[i]["username"]
+            row_data << phone_numbers[data[i]["submissionId"]]
+            row_data << data[i]["submissionId"]
+            hash = Hash.new
+            for j in 0...data[i]["questions"].size
+              if data[i]["questions"][j]["answer"].first.class == Hash
+                temp = ""
+                for m in 0...data[i]["questions"][j]["answer"].size
+                  if data[i]["questions"][j]["answer"][m]["isAnswered"] == true
+                    for n in 0..data[i]["questions"][j]["answer"][m]["label"].size
+                      if data[i]["questions"][j]["answer"][m]["label"][n]["lang"] == "en"
+                        temp += data[i]["questions"][j]["answer"][m]["label"][n]["value"] + ":"
+                        break
+                      end
+                    end
+                  end
+                end
+                hash[data[i]["questions"][j]["question"]] = temp.chop
+              else
+                hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
+              end
+            end
+            k = 2
+            while k < (headers.size - 3)
+              if hash[headers[k]].present?
+                row_data << hash[headers[k]]
+              else
+                row_data << ""
+              end
+              k += 1
+            end
+            row_data << DateTime.parse(data[i]["createdAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
+            row_data << DateTime.parse(data[i]["updatedAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
+            row_data <<  data[i]["status"]
+            hashed_data[data[i]["submissionId"]] = row_data
+          end
+          for i in 0...rows.size
+            if hashed_data[rows[i]['Submission Id']].present?
+              rows[i]['Submission Id'] = hashed_data[rows[i]['Submission Id']]
+              hashed_data.delete(rows[i]['Submission Id'])
+            end
+          end
+          hashed_data.each_pair do |key, value|
+            rows << value
+            hashed_data.delete(key)
+          end
+          # event.report_file.attach(io: rows, filename: file_name, content_type: 'text/csv')
+        else
+          CSV.open(csv_file, 'w') do |csv|
+            csv << headers
+            offset = 0
+            limit = 50000
+            if time_limit.split(' ')[0] == "last"
+              check = true
               time = time_limit.split(' ')
               match_stage = {
                 '$match': {
@@ -170,56 +147,71 @@ module FetchReportsJob
               }
               pipeline.unshift(match_stage)
             end
-            data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
-            puts "Data Query Processed - #{offset}"
-            puts "The size of array - #{data.size}"
-            for i in 0...data.size
-              row_data = []
-              row_data << data[i]['username']
-              row_data << phone_numbers[data[i]["submissionId"]]
-              hash = Hash.new
-              for j in 0...data[i]["questions"].size
-                if data[i]["questions"][j]["answer"].first.class == Hash
-                  temp = ""
-                  for m in 0...data[i]["questions"][j]["answer"].size
-                    if data[i]["questions"][j]["answer"][m]["isAnswered"] == true
-                      for n in 0..data[i]["questions"][j]["answer"][m]["label"].size
-                        if data[i]["questions"][j]["answer"][m]["label"][n]["lang"] == "en"
-                          temp += data[i]["questions"][j]["answer"][m]["label"][n]["value"] + ":"
-                          break
+            pipeline = pipeline_query(event, offset, limit)
+            count = db.find({eventId: "#{event_id}", deletedAt: nil}).count()
+            begin
+              data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
+              puts "Data Query Processed - #{offset}"
+              puts "The size of array - #{data.size}"
+              for i in 0...data.size
+                row_data = []
+                row_data << data[i]["username"]
+                row_data << phone_numbers[data[i]["submissionId"]]
+                row_data << data[i]["submissionId"]
+                hash = Hash.new
+                for j in 0...data[i]["questions"].size
+                  if data[i]["questions"][j]["answer"].first.class == Hash
+                    temp = ""
+                    for m in 0...data[i]["questions"][j]["answer"].size
+                      if data[i]["questions"][j]["answer"][m]["isAnswered"] == true
+                        for n in 0..data[i]["questions"][j]["answer"][m]["label"].size
+                          if data[i]["questions"][j]["answer"][m]["label"][n]["lang"] == "en"
+                            temp += data[i]["questions"][j]["answer"][m]["label"][n]["value"] + ":"
+                            break
+                          end
                         end
                       end
                     end
+                    hash[data[i]["questions"][j]["question"]] = temp.chop
+                  else
+                    hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
                   end
-                  hash[data[i]["questions"][j]["question"]] = temp.chomp
-                else
-                  hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
                 end
-              end
-              k = 2
-              while k < (headers.size - 3)
-                if hash[headers[k]].present?
-                  row_data << hash[headers[k]]
-                else
-                  row_data << ""
+                k = 2
+                while k < (headers.size - 3)
+                  if hash[headers[k]].present?
+                    row_data << hash[headers[k]]
+                  else
+                    row_data << ""
+                  end
+                  k += 1
                 end
-                k += 1
+                row_data << DateTime.parse(data[i]["createdAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
+                row_data << DateTime.parse(data[i]["updatedAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
+                row_data <<  data[i]["status"]
+                csv << row_data
               end
-              row_data << DateTime.parse(data[i]["createdAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
-              row_data << DateTime.parse(data[i]["updatedAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
-              row_data <<  data[i]["status"]
-              csv << row_data
-            end
-            offset = offset + limit
-          end while data.size == limit
+              offset = offset + limit
+            end while offset < count
+          end
         end
-        event.report_file.attach(io: csv_file, filename: file_name, content_type: 'text/csv')
-        file_url = event.report_file.url
+        attachment = {}
+        if check
+          attachment[:content] = csv_file
+          attachment[:filename] = "Report_#{DateTime.now.to_date}.csv"
+        else
+          if event.report_file.attached?
+            event.report_file.attach(io: rows, filename: file_name, content_type: 'text/csv')
+          else
+            event.report_file.attach(io: csv_file, filename: file_name, content_type: 'text/csv')
+          end
+          file_url = event.report_file.url
+        end
         subject = "Event Report Download for event #{event.name}"
         content = "Event Report for #{event.name} has been processed and can be downloaded by clicking on the below url."
         content += "<br/><a href=#{file_url}>Click to Download #{event.name} Report.</a><br/>"
         content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
-        ApplicationController.helpers.send_email(subject, content, mail_ids)
+        ApplicationController.helpers.send_email(subject, content, mail_ids, [attachment])
         mongo_db.close
       end
     rescue => e
@@ -227,28 +219,175 @@ module FetchReportsJob
     end
   end
 
-  def check_if_already_in_progress(queue:, args: [])
-    already_in_progress = false
-    enqueued_jobs = Resque.peek(queue, 0, Resque.size(queue) + 2) # adding 2 to avoid nil or {}
-    enqueued_jobs.each do |job|
-      # job {"class"=>"CreateCalleesJobUrgent", "args"=>[793]}
-      already_in_progress = (job['args'] == args)
-      break if already_in_progress
-    end
+  def self.conditional_pipeline_query(event  = nil)
+    [
+      {
+        '$match': {
+          eventId: "#{event.id}",
+          deletedAt: nil,
+          createdAt: {
+            '$gte': event.report_file.created_at
+          }
+        }
+      },
+      { "$sort": { "createdAt": -1 } },
+      {
+        '$unwind': "$questions"
+      },
+      { '$match': {
+        "questions.isAnswered": true
+      }
+      },
+      { '$project': {
+        _id: 1,
+        userName: "$user.name",
+        eventId: 1,
+        submissionId: 1,
+        question: { '$arrayElemAt': ["$questions.title.value", 0] },
+        answer: {
+          '$cond': {
+            if: {
+              '$in': [
+                "$questions.type",
+                ["imageUpload", "audioUpload", "docUpload", "videoUpload"]
+              ]
+            },
+            then: "$questions.files.value",
+            else: {
+              '$cond': {
+                if: {
+                  '$in': [
+                    "$questions.type",
+                    ["radio", "dropdown"]
+                  ]
+                },
+                then: "$questions.options",
+                else: ["$questions.answer"]
+              }
+            }
+          }
+        },
+        createdAt: 1,
+        updatedAt: 1,
+        status: 1
+      }
+      },
+      { '$group': {
+        _id: {
+          id: '$_id',
+          username: '$userName',
+          eventId: '$eventId',
+          submissionId: '$submissionId',
+          createdAt: '$createdAt',
+          updatedAt: '$updatedAt',
+          status: '$status',
+        },
+        questions: {
+          '$push': {
+            question: "$question",
+            answer: "$answer"
+          }
+        }
+      }
+      },
+      { '$project': {
+        _id: 0,
+        id: '$_id.id',
+        username: '$_id.username',
+        eventId: '$_id.eventId',
+        submissionId: '$_id.submissionId',
+        questions: 1,
+        createdAt: '$_id.createdAt',
+        updatedAt: '$_id.updatedAt',
+        status: '$_id.status'
+      }
+      }
+    ]
+  end
 
-    if !already_in_progress
-      # check if in progress
-      workers = Resque.workers
-      workers.each do |worker|
-        job = worker.job
-        # worker {"queue"=>"create_callees_urgent", "run_at"=>"2024-02-13T18:41:57Z", "payload"=>{"class"=>"CreateCalleesJobUrgent", "args"=>[793]}}
-        if job['queue'] == queue
-          already_in_progress = (job['payload']['args'] == args)
-          break if already_in_progress
-        end
-      end
-    end
-    already_in_progress
+  def self.pipeline_query(event = nil, offset = nil, limit = nil)
+    [
+      {
+        '$match': {
+          eventId: "#{event.id}",
+          deletedAt: nil
+        }
+      },
+      { "$sort": { "createdAt": -1 } },
+      { "$skip": offset },
+      { "$limit": limit },
+      {
+        '$unwind': "$questions"
+      },
+      { '$match': {
+        "questions.isAnswered": true
+      }
+      },
+      { '$project': {
+        _id: 1,
+        userName: "$user.name",
+        eventId: 1,
+        submissionId: 1,
+        question: { '$arrayElemAt': ["$questions.title.value", 0] },
+        answer: {
+          '$cond': {
+            if: {
+              '$in': [
+                "$questions.type",
+                ["imageUpload", "audioUpload", "docUpload", "videoUpload"]
+              ]
+            },
+            then: "$questions.files.value",
+            else: {
+              '$cond': {
+                if: {
+                  '$in': [
+                    "$questions.type",
+                    ["radio", "dropdown"]
+                  ]
+                },
+                then: "$questions.options",
+                else: ["$questions.answer"]
+              }
+            }
+          }
+        },
+        createdAt: 1,
+        updatedAt: 1,
+        status: 1
+      }
+      },
+      { '$group': {
+        _id: {
+          id: '$_id',
+          username: '$userName',
+          eventId: '$eventId',
+          submissionId: '$submissionId',
+          createdAt: '$createdAt',
+          updatedAt: '$updatedAt',
+          status: '$status',
+        },
+        questions: {
+          '$push': {
+            question: "$question",
+            answer: "$answer"
+          }
+        }
+      }
+      },
+      { '$project': {
+        _id: 0,
+        id: '$_id.id',
+        username: '$_id.username',
+        eventId: '$_id.eventId',
+        submissionId: '$_id.submissionId',
+        questions: 1,
+        createdAt: '$_id.createdAt',
+        updatedAt: '$_id.updatedAt',
+        status: '$_id.status'
+      }
+      }
+    ]
   end
 
 end
