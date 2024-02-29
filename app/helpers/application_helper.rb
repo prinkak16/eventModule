@@ -23,9 +23,9 @@ module ApplicationHelper
     mail.add_personalization(personalization)
     attachments.each do |att|
       attachment = Attachment.new
-      attachment.content = Base64.strict_encode64 att[:content]
+      attachment.content = Base64.strict_encode64(File.read(att))
       attachment.type = 'application/csv'
-      attachment.filename = att[:filename]
+      attachment.filename = File.basename("Report_#{DateTime.now.to_date}.csv")
       attachment.disposition = 'attachment'
       attachment.content_id = 'CSV'
       mail.add_attachment(attachment)

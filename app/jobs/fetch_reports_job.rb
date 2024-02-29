@@ -6,7 +6,11 @@ module FetchReportsJob
 
   def self.perform(event_id = nil, mail_ids = nil, time_limit = nil)
     begin
-      check = false
+      if time_limit.split(' ')[0] == "Last"
+        check = true
+      else
+        check = false
+      end
       event = Event.find_by(id: event_id)
       event_form = EventForm.find_by(event_id: event_id)
       mongo_db = Mongo::Client.new(ENV["MONGO_URL"])
@@ -65,7 +69,7 @@ module FetchReportsJob
         csv_file = Tempfile.new([file_name, '.csv'])
         file_name += '.csv'
         phone_numbers = Hash[EventSubmission.includes(:user).where(event_id: event.id).pluck('submission_id','users.phone_number')]
-        if event.report_file.attached?
+        if !check && event.report_file.attached?
           pipeline = conditional_pipeline_query(event)
           begin
             puts "trying with UTF-8"
@@ -105,7 +109,7 @@ module FetchReportsJob
                 hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
               end
             end
-            k = 2
+            k = 3
             while k < (headers.size - 3)
               if hash[headers[k]].present?
                 row_data << hash[headers[k]]
@@ -119,15 +123,16 @@ module FetchReportsJob
             row_data <<  data[i]["status"]
             hashed_data[data[i]["submissionId"]] = row_data
           end
-          for i in 0...rows.size
-            if hashed_data[rows[i]['Submission Id']].present?
+          for i in 1...rows.size
+            if !hashed_data.size.present?
+              break
+            elsif hashed_data[rows[i]['Submission Id']].present?
               rows[i]['Submission Id'] = hashed_data[rows[i]['Submission Id']]
               hashed_data.delete(rows[i]['Submission Id'])
             end
           end
           hashed_data.each_pair do |key, value|
             rows << value
-            hashed_data.delete(key)
           end
           # event.report_file.attach(io: rows, filename: file_name, content_type: 'text/csv')
         else
@@ -135,8 +140,8 @@ module FetchReportsJob
             csv << headers
             offset = 0
             limit = 50000
-            if time_limit.split(' ')[0] == "last"
-              check = true
+            pipeline = pipeline_query(event, offset, limit)
+            if check
               time = time_limit.split(' ')
               match_stage = {
                 '$match': {
@@ -147,7 +152,6 @@ module FetchReportsJob
               }
               pipeline.unshift(match_stage)
             end
-            pipeline = pipeline_query(event, offset, limit)
             count = db.find({eventId: "#{event_id}", deletedAt: nil}).count()
             begin
               data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
@@ -177,7 +181,7 @@ module FetchReportsJob
                     hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
                   end
                 end
-                k = 2
+                k = 3
                 while k < (headers.size - 3)
                   if hash[headers[k]].present?
                     row_data << hash[headers[k]]
@@ -195,13 +199,19 @@ module FetchReportsJob
             end while offset < count
           end
         end
-        attachment = {}
+        attachment = []
         if check
-          attachment[:content] = csv_file
-          attachment[:filename] = "Report_#{DateTime.now.to_date}.csv"
+          # attachment[:content] = csv_file
+          # attachment[:filename] = "Report_#{DateTime.now.to_date}.csv"
+          attachment << csv_file.path
         else
           if event.report_file.attached?
-            event.report_file.attach(io: rows, filename: file_name, content_type: 'text/csv')
+            CSV.open(csv_file, 'wb') do |csv|
+              csv << headers
+              rows.each { |row| csv << row }
+            end
+            csv_file.rewind
+            event.report_file.attach(io: csv_file, filename: file_name, content_type: 'text/csv')
           else
             event.report_file.attach(io: csv_file, filename: file_name, content_type: 'text/csv')
           end
@@ -211,7 +221,11 @@ module FetchReportsJob
         content = "Event Report for #{event.name} has been processed and can be downloaded by clicking on the below url."
         content += "<br/><a href=#{file_url}>Click to Download #{event.name} Report.</a><br/>"
         content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
-        ApplicationController.helpers.send_email(subject, content, mail_ids, [attachment])
+        if check
+          ApplicationController.helpers.send_email(subject, content, mail_ids, attachment)
+        else
+          ApplicationController.helpers.send_email(subject, content, mail_ids)
+        end
         mongo_db.close
       end
     rescue => e
