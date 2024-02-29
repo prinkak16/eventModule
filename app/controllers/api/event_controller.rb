@@ -23,71 +23,11 @@ class Api::EventController < Api::ApplicationController
     render json: { success: false, message: e.message }, status: 400
   end
 
-  def pcs
-    state_id = params[:state_id]
-    pcs = Saral::Locatable::ParliamentaryConstituency.where(saral_locatable_state_id: state_id)
-                                                     .select(:id, "(number || ' - ' || name) as name", :number)
-                                                     .order('number::int')
-    render json: { success: true, data: pcs || [], message: "Pcs list" }, status: 200
-  rescue StandardError => e
-    render json: { success: false, message: e.message }, status: 400
-  end
-
-  def acs
-    state_id = params[:state_id]
-    acs = Saral::Locatable::AssemblyConstituency.where(saral_locatable_state_id: state_id)
-                                                .select(:id, "(number || ' - ' || name) as name", :number)
-                                                .order('number::int')
-    render json: { success: true, data: acs || [], message: "Acs list" }, status: 200
-  rescue StandardError => e
-    render json: { success: false, message: e.message }, status: 400
-  end
-
-  def zilas
-    state_id = params[:state_id]
-    zilas = Saral::Locatable::Zila.where(saral_locatable_state_id: state_id).select(:id, :name)
-    render json: { success: true, data: zilas || [], message: "Zilas list" }, status: 200
-  rescue StandardError => e
-    render json: { success: false, message: e.message }, status: 400
-  end
-
-  def mandals
-    zila_id = params[:zila_id]
-    mandals = Saral::Locatable::Zila.find_by(id: zila_id)&.get_mandals&.select(:id, :name)
-    render json: { success: true, data: mandals || [], message: "Mandals list" }, status: 200
-  rescue StandardError => e
-    render json: { success: false, message: e.message }, status: 400
-  end
-
-  def booths
-    ac_id = params[:ac_id]
-    booths = Saral::Locatable::AssemblyConstituency.find_by(id: ac_id)&.get_booths&.select(:id, "(number || ' - ' || name) as name", :number).order('number::int')
-    render json: { success: true, data: booths || [], message: "Booths list" }, status: 200
-  rescue StandardError => e
-    render json: { success: false, message: e.message }, status: 400
-  end
-
-  def sks
-    ac_id = params[:ac_id]
-    sks = Saral::Locatable::ShaktiKendra.where(saral_locatable_assembly_constituency_id: ac_id)&.select(:id, :name)
-    render json: { success: true, data: sks || [], message: "Shakti kendras list" }, status: 200
-  rescue StandardError => e
-    render json: { success: false, message: e.message }, status: 400
-  end
-
-  def state_zones
-    state_id = params[:state_id]
-    state_zones = Saral::Locatable::StateZone.where(saral_locatable_state_id: state_id)&.select(:id, :name)
-    render json: { success: true, data: state_zones || [], message: "State Zones list" }, status: 200
-  rescue StandardError => e
-    render json: { success: false, message: e.message }, status: 400
-  end
-
   # Create or update event and their event locations
   def create_event
     ActiveRecord::Base.transaction do
       begin
-        locations = Saral::Locatable::State.where(id: [params[:location_ids].split(',')])
+        locations = CountryState.where(id: [params[:location_ids].split(',')])
         if params[:event_id].present?
           event = Event.find_by(id: params[:event_id])
         else
@@ -97,8 +37,8 @@ class Api::EventController < Api::ApplicationController
         inherit_from_parent = params[:inherit_from_parent].downcase == "true" ? true : false
         if params[:parent_id].present? && inherit_from_parent
           parent_event = Event.find_by_id(params[:parent_id])
-          location_ids = EventLocation.where(event_id: params[:parent_id], location_type: "Saral::Locatable::State").pluck(:location_id)
-          locations = Saral::Locatable::State.where(id: location_ids)
+          location_ids = EventLocation.where(event_id: params[:parent_id], location_type: "CountryState").pluck(:location_id)
+          locations = CountryState.where(id: location_ids)
         end
         if params[:img].present? && !valid_url(params[:img])
           event.image_url = nil
@@ -190,9 +130,9 @@ class Api::EventController < Api::ApplicationController
     limit = params[:limit].present? ? params[:limit] : 10
     offset = params[:offset].present? ? params[:offset] : 0
     date = DateTime.now
+    state_id = params[:state_id].present? ? params[:state_id] : current_user.country_state_id
     events = Event.where(parent_id: nil, has_sub_event: true).or(Event.where(parent_id: nil, has_sub_event: false, published: true)).where("end_date >= ?", date).where("start_date <= ?", date)
-    events = events.joins(:event_locations).where(event_locations: { state_id: current_user.sso_payload["country_state_id"] })
-    events = events.where(event_locations: { state_id: params[:state_id] }) if params[:state_id].present?
+    events = events.joins(:event_locations).where(event_locations: { state_id: state_id })
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
     events = events.where(pinned: false)
     pinned_events = events.where(pinned: true)
@@ -223,7 +163,7 @@ class Api::EventController < Api::ApplicationController
       name: current_user&.name || '',
       email: current_user&.email || '',
       phone_number: current_user&.phone_number || '',
-      photo: current_user&.sso_payload['avatar'] || '',
+      photo: current_user&.avatar || '',
       logout_url: ENV['SIGN_OUT_URL']
     }
     render json: {
@@ -313,7 +253,7 @@ class Api::EventController < Api::ApplicationController
   def user_list_children
     begin
       event = Event.find_by_id(params[:id])
-      child_events = event.children.joins(:event_locations).where(event_locations: { state_id: current_user.sso_payload["country_state_id"] }).where.not(has_sub_event: false, published: false).order(start_date: :desc)
+      child_events = event.children.joins(:event_locations).where(event_locations: { state_id: current_user.country_state_id }).where.not(has_sub_event: false, published: false).order(start_date: :desc)
       is_child = !event.has_sub_event
       render json: { success: true,
                      data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, language_code: params[:language_code], current_user: current_user),

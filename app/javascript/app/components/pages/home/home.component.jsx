@@ -328,10 +328,7 @@ const HomeComponent = () => {
                 />
 
                 <button className="dynamic-form-submit-button" onClick={addEvent}>
-                    <div style={{display: "flex", gap: "8px"}}>
-                        <span>+</span>
-                        <span>Add Event</span>
-                    </div>
+                    + Add Event
                 </button>
             </div>
             <div className={"home-icon-description"}>
@@ -363,6 +360,7 @@ const HomeComponent = () => {
                         <div className="visible-divs">
                             <div className="event-list-fir">
                                 <img
+                                    loading={"lazy"}
                                     className="event-photo"
                                     src={event.image_url ? event?.image_url : ImageNotFound}
                                 />

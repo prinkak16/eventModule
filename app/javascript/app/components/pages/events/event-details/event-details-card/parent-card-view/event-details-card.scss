@@ -7,17 +7,21 @@ body {
 .event-details-date-time-location-container {
   flex-grow: 2;
   display: flex;
+  justify-content: space-between;
   gap: 15px;
 
   .date-time-location-inner-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 10px;
-    font-family: Quicksand;
     font-size: 16px;
     font-weight: 500;
     line-height: 20px;
-
+    .title-style{
+      align-self: flex-start;
+      color:#838383;
+    }
     .svg-icon {
       width: 20px;
       height: 20px;
@@ -53,7 +57,7 @@ body {
   .event-details-list-sec-part {
     display: flex;
     flex-direction: column;
-    font-family: Quicksand;
+    gap:15px;
     font-size: 1.125rem;
     font-weight: 500;
     padding: 1rem 0;
@@ -63,16 +67,11 @@ body {
 
     .list-name {
       display: flex;
-      gap: 10px;
+      gap: 20px;
 
       .green-line {
-        background: #61be7a;
-        width: 4.6px;
+        border: 3px solid #61be7a !important;
         height: 70.89px;
-
-        border-radius: 5.52px;
-
-
       }
 
       .level-event-container {
@@ -86,7 +85,6 @@ body {
 
 
     .heading {
-      font-family: Quicksand;
       font-size: 2.25rem;
       font-weight: 600;
       letter-spacing: 0.13174602389335632px;

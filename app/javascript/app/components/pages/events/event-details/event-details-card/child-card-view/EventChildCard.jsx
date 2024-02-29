@@ -19,6 +19,7 @@ import {ApiClient} from '../../../../../../services/RestServices/BaseRestService
 import {toast} from "react-toastify";
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
+import EllipsesComponent from "../../../../../../utils/EllipsesComponent";
 
 
 const EventChildCard = ({event}) => {
@@ -111,41 +112,42 @@ const EventChildCard = ({event}) => {
                                 </div>
 
                                 <div className="heading">
-                                    {event?.name}
-
+                                    <EllipsesComponent text=
+                                                           {event?.name}
+                                    />
                                 </div>
                             </div>
                         </div>
 
                         <div className="event-details-child-date-time-location-container">
                             <div className="date-time-location-inner-container">
-                                <CalenderIcon className="svg-icon"/>
+                                <span className={"title-style"}>START DATE & TIME
+                            </span>
+                            <span>
+              {moment(event?.start_date).format("DD MMMM YYYY")}, {moment(event?.start_datetime, "YY-MM-DD hh:mm:ss A").format(
+                                "hh:mm a"
+                            )}
+            </span>
+                        </div>
+                            <div className="date-time-location-inner-container">
+                                <span className={"title-style"}>END DATE & TIME</span>
                                 <span>
-              {moment(event?.start_date).format("DD MMMM YYYY")} -
-                                    {moment(event?.end_date).format("Do MMMM YYYY")}
+                            {moment(event?.end_date).format("Do MMMM YYYY")}, {moment(event?.end_datetime, "YY-MM-DD hh:mm:ss A").format(
+                                    "hh:mm a"
+                                )}
             </span>
                             </div>
                             <div className="date-time-location-inner-container">
-                                <ClockIcon className="svg-icon"/>
+                                <span className={"title-style"}>LOCATION</span>
                                 <span>
-              {moment(event?.start_datetime, "YY-MM-DD hh:mm:ss A").format(
-                  "hh:mm a"
-              )}
-                                    -
-                                    {moment(event?.end_datetime, "YY-MM-DD hh:mm:ss A").format(
-                                        "hh:mm a"
-                                    )}
+                     {event?.states}
             </span>
-                            </div>
-                            <div className="date-time-location-inner-container">
-                                <LocationIcon className="svg-icon"/>
-                                <span>{event?.states}</span>
                             </div>
                         </div>
                     </div>
 
                     <div className="event-details-list-third-part">
-                        <div className={`${event?.status?.class_name} active-button-style`}>
+                    <div className={`${event?.status?.class_name} active-button-style`}>
                             <span>{event?.status?.name}</span>
                         </div>
                         <div>{RenderEventIcon(event?.event_level)}</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_23_123506) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_22_062458) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -94,13 +94,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_123506) do
   create_table "event_submissions", force: :cascade do |t|
     t.string "form_id"
     t.string "submission_id"
+    t.bigint "user_id", null: false
     t.bigint "event_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id"
-    t.index ["created_at"], name: "index_event_submissions_on_created_at", order: :desc
-    t.index ["event_id", "user_id", "submission_id", "form_id"], name: "index_event_submissions_on_event_user_submission_form"
     t.index ["event_id"], name: "index_event_submissions_on_event_id"
+    t.index ["user_id"], name: "index_event_submissions_on_user_id"
   end
 
   create_table "events", force: :cascade do |t|
@@ -193,6 +192,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_23_123506) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "event_locations", "events"
   add_foreign_key "event_submissions", "events"
+  add_foreign_key "event_submissions", "users"
   add_foreign_key "user_event_locations", "user_events"
   add_foreign_key "user_events", "events"
   add_foreign_key "user_permissions", "users"

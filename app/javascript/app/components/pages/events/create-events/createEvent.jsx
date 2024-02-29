@@ -1,17 +1,6 @@
 import React, {useEffect, useState} from "react";
 import "./createEvent.scss";
-import {
-    Autocomplete,
-    Box,
-    Chip,
-    FormControlLabel,
-    IconButton,
-    Radio,
-    RadioGroup,
-    Switch,
-    TextField,
-    Tooltip,
-} from "@mui/material";
+import {Autocomplete, Box, Chip, FormControlLabel, IconButton, Radio, RadioGroup, Switch, TextField, Tooltip,} from "@mui/material";
 import {styled} from '@mui/material/styles';
 import dayjs from "dayjs";
 import InfoIcon from '@mui/icons-material/Info';
@@ -47,10 +36,9 @@ export default function CreateEvent({isEdit, editData}) {
     const [dataLevels, setDataLevels] = useState([]);
     const [countryStates, setCountryStates] = useState([]);
     const [image, setImage] = useState(null);
-
     const [loader, setLoader] = useState(false);
     const [allLanguages, setAllLanguages] = useState([]);
-
+    const [hasParentEvent,setHasParentEvent]=useState(false);  //verifies whether current event has parent or not
     const [formFieldValue, setFormFieldValue] = useState({
         selected_languages: ['en'],
         event_title: "",
@@ -58,7 +46,7 @@ export default function CreateEvent({isEdit, editData}) {
         end_datetime: "",
         level_id: "",
         location_ids: [],
-        event_type: "",
+        event_type: "open_event",
         img: "",
         crop_data: "",
         state_obj: [],
@@ -76,7 +64,44 @@ export default function CreateEvent({isEdit, editData}) {
     const [childEventsIntersection, setChildEventIntersection] = useState({
         start_datetime: null, end_datetime: null
     })
+
+
+    useEffect(() => {
+        if (isEdit) {
+            if (publishedParamValue === "true") {
+                (async () => {
+                    setLoader(true);
+                    try {
+                        const {data} = await ApiClient.get(`event/publish/${id}`);
+                        if (data?.success) {
+                            navigate(`/events/edit/${id}`);
+                        }
+                    } catch (e) {
+                        toast.error(e.message);
+                    }
+                    setLoader(false);
+                })();
+            } else if (publishedParamValue === "false") {
+                navigate(`/events/edit/${id}`);
+            }
+        }
+
+    }, []);
+
+    useEffect(() => {
+        if (isEdit) {
+            formFieldUpdationByEdit();
+        }
+        if (!isEdit && id) {
+            getParentDetails(id);
+        }
+        getAllData();
+        getLanguages();
+    }, []);
+
+
     const getParentDetails = async (parent_id) => {
+        setHasParentEvent(true);
         try {
             const {data} = await getEventById(parent_id);
             if (data?.success) {
@@ -154,16 +179,6 @@ export default function CreateEvent({isEdit, editData}) {
 
     }
 
-    useEffect(() => {
-        if (isEdit) {
-            formFieldUpdationByEdit();
-        }
-        if (!isEdit && id) {
-            getParentDetails(id);
-        }
-        getAllData();
-        getLanguages();
-    }, []);
 
     const handleLevelChange = (event, value) => {
         setFormFieldValue((prevFormValues) => ({
@@ -292,19 +307,22 @@ export default function CreateEvent({isEdit, editData}) {
 
 
     const switchHandler = (e) => {
-        if(e?.target?.checked){
-            setFormFieldValue((prevData) => ({...prevData,...parentEventDetails, [e?.target?.name]: e?.target?.checked}))
-        }else{
+        if (e?.target?.checked) {
+            setFormFieldValue((prevData) => ({
+                ...prevData, ...parentEventDetails,
+                [e?.target?.name]: e?.target?.checked
+            }))
+        } else {
             //to reset all those properties of formFieldValue which we have set when when Inherit from parent switch was turned on
 
-            const newObj={
-                start_datetime:null,
-                end_datetime:null,
+            const newObj = {
+                start_datetime: null,
+                end_datetime: null,
                 level_id: "",
                 location_ids: [],
                 state_obj: [],
             }
-            setFormFieldValue((prevData) => ({...prevData,...newObj, [e?.target?.name]: e?.target?.checked}))
+            setFormFieldValue((prevData) => ({...prevData, ...newObj, [e?.target?.name]: e?.target?.checked}))
 
         }
     }
@@ -314,27 +332,6 @@ export default function CreateEvent({isEdit, editData}) {
     // }, [formFieldValue]);
 
 
-    useEffect(() => {
-        if (isEdit) {
-            if (publishedParamValue === "true") {
-                (async () => {
-                    setLoader(true);
-                    try {
-                        const {data} = await ApiClient.get(`event/publish/${id}`);
-                        if (data?.success) {
-                            navigate(`/events/edit/${id}`);
-                        }
-                    } catch (e) {
-                        toast.error(e.message);
-                    }
-                    setLoader(false);
-                })();
-            } else if (publishedParamValue === "false") {
-                navigate(`/events/edit/${id}`);
-            }
-        }
-
-    }, []);
     const isNextButtonDisabled = () => {
 
         for (let key in formFieldValue) {
@@ -369,6 +366,11 @@ export default function CreateEvent({isEdit, editData}) {
     }
 
     const handleSelectLanguage = (language) => {
+        {/** don't unselect if it is english chip */}
+        if(language?.lang==='en')
+        {
+            return;
+        }
         const containsIncomingLanguage = formFieldValue?.selected_languages?.some((item) => item === language?.lang);
         if (containsIncomingLanguage) {
             const restSelectedLanguages = formFieldValue?.selected_languages?.filter((item) => item !== language?.lang);
@@ -389,7 +391,52 @@ export default function CreateEvent({isEdit, editData}) {
 
     }
 
+    const startDateTimeChangeHandler = (event) => {
+        const minDate = startDateTimeValidation('minDate');
+        const maxDate = startDateTimeValidation('maxDate');
 
+        if (minDate&&(dayjs(event.$d) < minDate)) {
+            {/** if selected startDateTime is smaller than its parent or children*/}
+            setFormField(minDate, "start_datetime");
+            // if(hasParentEvent) {
+            //     toast.info('Event start date cannot be smaller than the parent event\'s start date, so the event start date matches with parent\'s start date.', {autoClose: 5000})
+            // }
+        } else if (maxDate&&(dayjs(event.$d) > maxDate)) {
+            {/** if selected startDateTime is greater than its parent or children*/}
+            setFormField(maxDate, "start_datetime");
+             // toast.info('Event start date cannot be greater than the parent event\'s end date, so the event start date matches with parent\'s end date.', {autoClose: 5000})
+        } else {
+            setFormField(event, "start_datetime");
+            if (formFieldValue.end_datetime) {
+                if (dayjs(event.$d) > dayjs(formFieldValue.end_datetime)) {
+                    setFormField(event, "end_datetime");
+                }
+            }
+        }
+
+
+    }
+
+    const endDateTimeChangeHandler = (event) => {
+        const minDate = endDateTimeValidation('minDate');
+        const maxDate = endDateTimeValidation('maxDate');
+        if (minDate&&(dayjs(event.$d) < minDate)) {
+            {/** if selected endDateTime is smaller than its parent or children */}
+            setFormField(minDate, "end_datetime");
+            // if(hasParentEvent) {
+            //     toast.info('Event end date cannot be smaller than the parent event\'s end date, so the event end date matches with parent\'s start date.', {autoClose: 5000})
+            // }
+        } else if (maxDate&&(dayjs(event.$d) > maxDate)) {
+            {/** if selected endDatetime is greater than its parent or children*/}
+            setFormField(maxDate, "end_datetime");
+            // toast.info('Event end date cannot be greater than the parent event\'s end date, so the event end date matches with parent\'s end date.', {autoClose: 5000})
+
+        } else {
+            setFormField(event, "end_datetime");
+        }
+
+
+    }
     const startDateTimeValidation = (validationFor) => {
         if (validationFor === 'minDate') {
             //min date should not be less than that of its parent event
@@ -408,22 +455,15 @@ export default function CreateEvent({isEdit, editData}) {
     const endDateTimeValidation = (validationFor) => {
         if (validationFor === 'minDate') {
             // if start-date-time is selected then that should be the lower bound for end-date-time selection , otherwise lower-bound for end-date-time will depend on end-date-time of child-event , there is no child event, then lower-bound will the start-date-time of parent-event
-            return childEventsIntersection?.end_datetime ? dayjs(childEventsIntersection?.end_datetime):
+            return childEventsIntersection?.end_datetime ? dayjs(childEventsIntersection?.end_datetime) :
                 (formFieldValue?.start_datetime ? dayjs(formFieldValue?.start_datetime) :
-                    (parentEventDetails?.start_datetime ? dayjs(parentEventDetails?.start_datetime) : null));
+                    (parentEventDetails?.start_datetime ? dayjs(parentEventDetails?.start_datetime) : dayjs(new Date())));
         } else {
             //for upper-bound of end-date-time selection , parent-event end-date-time will be the upper bound
             return parentEventDetails?.end_datetime ? dayjs(parentEventDetails?.end_datetime) : null
         }
 
     }
-
-    const handleInputChange = (event) => {
-        // Prevent changes to the input field programmatically
-        event.preventDefault();
-    };
-
-    // console.log('start date time is ',startDateTimeValidation('minDate'), startDateTimeValidation(), 'end date time validation i s',endDateTimeValidation('minDate'), endDateTimeValidation())
     return (<div className="create-event-container">
         <EventTitleModal allLanguages={allLanguages} setFormFieldValue={setFormFieldValue}
                          openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}
@@ -461,8 +501,11 @@ export default function CreateEvent({isEdit, editData}) {
 
                 </div>
                 {!isEdit && (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) &&
-                    <FormControlLabel control={<Switch name={"inherit_from_parent"} onChange={switchHandler}/>}
-                                      label="Inherit from parent"/>
+                    <div>
+                        <FormControlLabel control={<Switch name={"inherit_from_parent"} onChange={switchHandler}/>}
+                                          label="Inherit from parent"/>
+                    </div>
+
 
                 }
 
@@ -484,45 +527,36 @@ export default function CreateEvent({isEdit, editData}) {
                     {formFieldValue?.selected_languages?.filter((item) => item !== 'en')?.length > 0 &&
                         <IconButton onClick={() => {
                             //removing english , because event title in english is already filled
-
                             setOpenLanguageModal(true)
                         }} className={"language-button-container"}>
                             <LanguageIcon className={"icon-button"}/>
+                            <span style={{color: 'red'}}>*</span>
                         </IconButton>}
                 </div>
 
-                    <div className={"date-time-picker-container"}>
-                        <ReactDateTimePicker
-                            disabled={formFieldValue?.inherit_from_parent || (isEdit && formFieldValue?.status?.toLowerCase() === 'expired')}
-                            ampm={false}
-                            required={true}
-                            title={"Start date & Time"}
-                            minDateTime={startDateTimeValidation('minDate')}
-                            value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
-                            maxDateTime={startDateTimeValidation('maxDate')}
-                            onChange={(event) => {
-                                setFormField(event, "start_datetime");
-                                if (formFieldValue.end_datetime) {
-                                    if (dayjs(event.$d) > dayjs(formFieldValue.end_datetime)) {
-                                        setFormField(event, "end_datetime");
-                                    }
-                                }
-                            }}
-                        />
+                <div className={"date-time-picker-container"}>
+                    <ReactDateTimePicker
+                        disabled={formFieldValue?.inherit_from_parent || (isEdit && formFieldValue?.status?.toLowerCase() === 'expired')}
+                        ampm={false}
+                        required={true}
+                        title={"Start date & Time"}
+                        minDateTime={startDateTimeValidation('minDate')}
+                        value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.start_datetime) : formFieldValue.start_datetime ? dayjs(formFieldValue.start_datetime) : null}
+                        maxDateTime={startDateTimeValidation('maxDate')}
+                        onChange={startDateTimeChangeHandler}
+                    />
 
-                        <ReactDateTimePicker
-                            ampm={false}
-                            disabled={formFieldValue?.inherit_from_parent}
-                            title={" End data & Time"}
-                            required={true}
-                            value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
-                            minDateTime={endDateTimeValidation('minDate')}
-                            maxDateTime={endDateTimeValidation('maxDate')}
-                            onChange={(event) => {
-                                setFormField(event, "end_datetime");
-                            }}
-                        />
-                    </div>
+                    <ReactDateTimePicker
+                        ampm={false}
+                        disabled={formFieldValue?.inherit_from_parent}
+                        title={" End data & Time"}
+                        required={true}
+                        value={formFieldValue?.inherit_from_parent ? dayjs(parentEventDetails?.end_datetime) : formFieldValue.end_datetime ? dayjs(formFieldValue.end_datetime) : null}
+                        minDateTime={endDateTimeValidation('minDate')}
+                        maxDateTime={endDateTimeValidation('maxDate')}
+                        onChange={endDateTimeChangeHandler}
+                    />
+                </div>
                 <div>
                     <p>Upload Image/ Banner{' '}<span style={{color: "red"}}>*</span> :</p>
                     <ImageCroper handleImage={handleImage} Initial_image={formFieldValue?.img} isEditable={isEdit}

@@ -9,8 +9,24 @@ import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import HeaderBar from "./components/shared/header/header";
 import Router from "./Routes";
+import {createTheme, ThemeProvider} from "@mui/material";
 
 const paths = ["forms",];
+const theme = createTheme({
+    typography: {
+        fontFamily:'Quicksand',
+    },
+    components: {
+        MuiCssBaseline: {
+            styleOverrides: `
+        @font-face {
+          font-family: 'Quicksand';
+          font-style: normal;
+           }
+      `,
+        },
+    },
+});
 
 
 function App() {
@@ -40,15 +56,18 @@ function App() {
 
     return (
         <div className={!showNavbar ? "outer-form-div" : ""}>
-            <HeaderBar/>
-            <Router/>
-            <ToastContainer theme="colored"
-                            hideProgressBar={true}
-                            autoClose={3000}
-                            closeOnClick
-                            pauseOnHover
-                            style={customToastStyle}
-            />
+            <ThemeProvider theme={theme}>
+                <HeaderBar/>
+                <Router/>
+                <ToastContainer theme="colored"
+                                hideProgressBar={true}
+                                autoClose={3000}
+                                closeOnClick
+                                pauseOnHover
+                                style={customToastStyle}
+                />
+            </ThemeProvider>
+
         </div>
     );
 }

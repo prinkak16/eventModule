@@ -16,8 +16,6 @@
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
     border-radius: 100px;
     border: none;
-    font-family: "Roboto", sans-serif;
-    font-style: normal;
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
@@ -32,7 +30,7 @@
   .language-button-container {
     .icon-button {
       width: 45px;
-      height: 35px;
+      height: 45px;
     }
   }
 }
@@ -97,7 +95,6 @@
 
 .event-path {
   //styleName: Headline/Medium-H5;
-  font-family: Roboto;
   font-size: 18px;
   font-weight: 500;
   letter-spacing: -0.003em;
@@ -141,7 +138,6 @@
   margin-top: 1rem;
   margin-bottom: 3rem;
   font-size: 1.5rem;
-  font-family: Roboto;
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.10000000149011612px;
@@ -155,7 +151,6 @@
   gap: 10px;
   justify-content: center;
   font-size: 1.5rem;
-  font-family: Roboto;
   font-size: 14px;
   font-weight: 500;
   text-align: center;
@@ -211,7 +206,6 @@
   gap: 10px;
   flex-wrap: wrap;
   //styleName: M3/label/large;
-  font-family: Roboto;
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
@@ -222,7 +216,6 @@
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
   border-radius: 100px;
   border: none;
-  font-family: "Roboto", sans-serif;
   font-style: normal;
   font-weight: 500;
   font-size: 14px;

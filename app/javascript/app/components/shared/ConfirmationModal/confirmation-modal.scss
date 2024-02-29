@@ -3,20 +3,33 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 400px;
+  width: 25%;
+  hight:180px;
   border: none;
   boxShadow: 24px;
   background: white;
   padding: 15px;
-  border-radius: 15px;
+  border-radius: 30px;
 
 }
 
 .confirmation-modal-container {
   display: flex;
-
   flex-direction: column;
-  gap: 50px;
+  gap: 40px;
+  .title-message-container{
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+    .title{
+      font-weight: 400;
+      font-size:24px;
+    }
+    .message{
+      font-width:400px;
+      font-size: 15px;
+    }
+  }
 
   .confirmation-modal-buttons {
     display: flex;
@@ -24,21 +37,14 @@
     justify-content: flex-end;
     align-items: center;
     gap: 0.5rem;
-
     .no-button {
-      border: none;
-      border: 1px solid #55545E;
-      color: #55545E;
-      border-radius: 7px;
+      color:#FF9559;
+      font-size:15px;
     }
 
     .yes-button {
-      border: none;
-      background: #55545E;
-      color: white;
-      border-radius: 7px;
-
-
+      color:#FF9559;
+      font-size:15px;
     }
 
   }
@@ -48,8 +54,7 @@
 
 @media screen and (max-width: 450px) {
   .confirmation-modal-main-container {
-    width: 300px;
-
+    width:90%;
   }
 
 }

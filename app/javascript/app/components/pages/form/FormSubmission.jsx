@@ -65,9 +65,11 @@ const FormSubmission = () => {
             }
 
         } catch (e) {
-            console.log(e)
+            toast.error(e?.message);
             //will only enable the report button if api is failed
             setDisableReportButton(false);
+            setIsLoading(false);
+
         }finally {
             // setIsLoading(false);
         }
@@ -98,7 +100,7 @@ const FormSubmission = () => {
 
 
     return (<Box className="form-event-submission-container">
-        <ConfirmationModal message="Are you sure want to delete ?" showConfirmationModal={showConfirmationModal}
+        <ConfirmationModal title={"Delete Reporting"} message="Are you sure you want to delete the reporting?" showConfirmationModal={showConfirmationModal}
                            setShowConfirmationModal={setShowConfirmationModal}
                            setConfirmationStatus={setConfirmationStatus}/>
         {isLoading ? <ReactLoader/> : <>
@@ -109,7 +111,7 @@ const FormSubmission = () => {
 
             </div>
             <div className="form-event-submissions">
-                {eventSubmissionsData?.length === 0 && <h3>No Event is submitted yet</h3>}
+                {eventSubmissionsData?.length === 0 && <h3>{t("No reporting has been submitted")}</h3>}
                 {eventSubmissionsData.length > 0 &&
                     <div className="event-total-report">{t("Total Reported")} : {eventSubmissionsData.length}</div>}
                 {eventSubmissionsData?.map((item, index) => <EventSubmissionCard index={index} data={item}

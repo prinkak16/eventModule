@@ -6,8 +6,9 @@ import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import './breadcrumbs.scss'
 import {IntermediateEventIcon, LeafEventIcon, PrimaryEventIcon} from "../../../assests/svg";
 import {EventState} from "../../../EventContext";
+import {toast} from "react-toastify";
 
-export default function MyBreadcrumbs() {
+export default function AdminBreadcrumbs() {
 
     const {id} = useParams();
     const {pathname} = useLocation();
@@ -15,19 +16,23 @@ export default function MyBreadcrumbs() {
     let urls = pathname?.split("/").filter(Boolean);
     const {globalSelectedLanguage} = EventState();
 
-    //function to check whether url contains number in the end
+
     function isNumeric(input) {
         return /^\d+$/.test(input);
     }
+
     if (isNumeric(urls[urls.length - 1])) {
-        //don't want number in the breadcrumbs
         urls = urls.slice(0, urls.length - 1);
     }
-    // clear browser history stack
-    const clearHistoryStack = (event,entriesToClear) => {
-        event.preventDefault();
-        window.history.go(-entriesToClear)     //number of steps to go back in browser
+
+
+    const breadcrumbsNames = {
+        events: "Events", create: "Create Event", edit: "Edit Event", view: "View Event "
     };
+
+    function capitalizeFirstWord(inputString) {
+        return inputString.replace(/^\w/, (match) => match.toUpperCase());
+    }
 
     const RenderEventIcon = (event_level) => {
         if (event_level?.toLowerCase() === 'parent') {
@@ -45,7 +50,7 @@ export default function MyBreadcrumbs() {
                 const {data} = await ApiClient.get(`event/path`, {params: {id, language_code: globalSelectedLanguage}})
                 setDynamicRoutes(data?.data);
             } catch (e) {
-                console.log(e?.message);
+                toast.error(e?.message);
             }
 
         }
@@ -53,32 +58,27 @@ export default function MyBreadcrumbs() {
 
     }
 
-    function capitalizeFirstWord(inputString) {
-        return inputString.replace(/^\w/, (match) => match.toUpperCase());
-    }
-
     useEffect(() => {
         getDynamicRoutes();
     }, [pathname,globalSelectedLanguage]);
 
-    return (
-        <div className={"breadcrumbs-main-container"}>
-            {urls?.length > 0 && <Link onClick={(e)=>clearHistoryStack(e,Object.keys(dynamicRoutes)?.length)}>{capitalizeFirstWord(urls[0]==='forms'?'events':urls[0])}</Link>}
-            {Object.keys(dynamicRoutes).length > 0 && <span> &nbsp;/&nbsp; </span>}      {/* if dynamic routes exist add '/' before adding them*/}
-            {Object.keys(dynamicRoutes)?.map((key, index) => <span key={index} style={{display: "flex"}}>
-         <Link   onClick={(e)=>clearHistoryStack(e,Object.keys(dynamicRoutes)?.length-(index+1))}>
-           <span style={{display: "flex", gap: "6px"}}> {RenderEventIcon(dynamicRoutes[key][1])}
-               {capitalizeFirstWord(dynamicRoutes[key][0])}</span>
+    return (<div className={"breadcrumbs-main-container"}>
+        {urls?.length > 0 && <Link to={`/${urls[0]}`}>{capitalizeFirstWord(urls[0]==='forms'?'events':urls[0])}</Link>}
+        {Object.keys(dynamicRoutes).length > 0 && <span> &nbsp;/&nbsp; </span>}
+        {Object.keys(dynamicRoutes)?.map((key, index) => <span key={index} style={{display: "flex"}}>
+         <Link to={`/${urls[0]}/${key}`}>
+           <span style={{display: "flex", gap: "10px"}}> {RenderEventIcon(dynamicRoutes[key][1])}
+               {dynamicRoutes[key][0]}</span>
          </Link>
-                {index < Object.keys(dynamicRoutes).length - 1 && <span> &nbsp;/&nbsp; </span>}
+            {index < Object.keys(dynamicRoutes).length - 1 && <span> &nbsp;/&nbsp; </span>}
       </span>)}
-            {urls.length > 1 && <span> &nbsp;/&nbsp; </span>}
-            {urls.length > 1 && <Link
-                style={{
-                    color: "black"
-                }}
-            >
-                {urls[urls.length - 1]}
-            </Link>}        {/*these paths are from url */}
-        </div>);
+        {urls.length > 1 && <span> &nbsp;/&nbsp; </span>}
+        {urls.length > 1 && <Link
+            style={{
+                color: "black"
+            }}
+        >
+            {urls[urls.length - 1]}
+        </Link>}
+    </div>);
 }

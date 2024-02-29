@@ -123,7 +123,6 @@ body {
 }
 
 .sub-heading {
-  font-family: Mulish;
   color: #868686;
 }
 
@@ -241,7 +240,6 @@ body {
 .event-header-name {
   width: 150px;
   white-space: nowrap;
-  font-family: Quicksand;
   font-size: 24px;
   font-weight: 600;
 
@@ -250,7 +248,6 @@ body {
 .event-header-name-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: Quicksand;
   font-size: 24px;
   font-weight: 600;
 }
@@ -351,7 +348,6 @@ body {
 .event-list-item {
   flex-grow: 1;
   width: 25%;
-  font-family: Quicksand;
   font-size: 18px;
   font-weight: 500;
   display: flex;
@@ -381,7 +377,6 @@ body {
   text-align: center;
   display: flex;
   font-size: 2rem;
-  font-family: revert;
 }
 
 .active-bg {

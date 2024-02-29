@@ -37,15 +37,14 @@
     gap: 5px;
     min-width: 95%;
     max-width: 95%;
-    max-height: 80px;
-    min-height: 80px;
+    max-height: 75px;
+    min-height: 75px;
     padding: 8px;
     position: absolute;
     top: 60%;
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-family: Quicksand;
     font-size: 14px;
     font-weight: 600;
 
@@ -71,11 +70,10 @@
 
       .event-name {
 
-        font-family: Quicksand;
         font-weight: 600;
 
         font-size: 14px;
-        width: 45%;
+        width: 100%;
 
 
       }

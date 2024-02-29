@@ -15,3 +15,9 @@ test:
 production:
   <<: *default
   url: <%= ENV["DATABASE_URL"] || "" %>
+
+secondary_db:
+  <<: *default
+  adapter: postgresql
+  url: <%= ENV["SECONDARY_DATABASE_URL"] || "" %>
+  pool: 5

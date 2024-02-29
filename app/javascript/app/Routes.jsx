@@ -18,7 +18,7 @@ const Router = () => {
             <Route path="/" element={<Navigate to="/forms" replace={true}/>}/>
             <Route path="/forms" element={<FormComponent/>}/>
             <Route element={<RoutesWithBreadcrumbs/>}>
-                <Route path={"/forms/:id"} element={<FormDetails/>}/>
+                <Route path={"/forms/:id"} element={<FormDetails key={new Date().getTime()}/>}/>
             </Route>
             <Route element={<ProtectedRoutes/>}>
                 <Route path="/events" element={<HomeComponent/>}/>

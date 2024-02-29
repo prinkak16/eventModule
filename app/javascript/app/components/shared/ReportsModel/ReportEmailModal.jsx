@@ -20,12 +20,13 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 400,
+    height:300,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
     boxShadow: 24,
     pt: 2,
     px: 4,
     pb: 3,
+    borderRadius:"20px"
 };
 
 
@@ -75,11 +76,11 @@ export default function ReportEmailModal({reportModal, setReportModal, reportEve
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
-                <div className="confirmation-modal-main-container">
+                <div>
                     <label>Report Download</label>
                     <br/>
                     <TextField sx={{marginY: "20px", width: "100%"}} id="outlined-basic" label="Email Address"
-                            name={"email"}   variant="outlined" value={formData?.   email} onChange={handleChange}/>
+                            name={"email"}   variant="outlined" value={formData?.email} onChange={handleChange}/>
                     <br/>
                     <FormControl fullWidth>
                         <InputLabel id="demo-simple-select-label">Select Report Timeline</InputLabel>

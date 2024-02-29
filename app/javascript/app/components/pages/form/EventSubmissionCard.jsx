@@ -1,8 +1,8 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "./event-submission-card.scss";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import moment from "moment";
-import {DeleteIcon, EditIcon} from "../../../assests/svg";
+import {DeleteIcon, EditIcon, LocationIcon} from "../../../assests/svg";
 import {IconButton, Tooltip} from "@mui/material";
 import EllipsesComponent from "../../../utils/EllipsesComponent";
 import {Verified} from "@mui/icons-material";
@@ -25,18 +25,17 @@ const EventSubmissionCard = ({
         try {
             const {data} = await ApiClient.get(`/user/submit_event/${event_id}/${submission_id}`);
             if (data.success) {
-                setIsLoading(false);
                 window.location.href = data?.data?.redirect_url;
-
             }
         } catch (e) {
             setIsLoading(false)
             console.log(error)
         }
-        setIsLoading(false);
-
-
     }
+
+    useEffect(() => {
+        setIsLoading(false);
+    }, []);
 
 
     return (<div className="event-submission-card-container">
@@ -46,33 +45,26 @@ const EventSubmissionCard = ({
                         ({moment(data?.reported_on).format('DD/MM/YYYY')
                         }) {moment(data?.reported_on).format('LT')
                         }</div>
-                        { data?.status === "NA" ? null :
-                            <div className="verified-icon-container">
-                                <Verified className="verified-icon" style={{color: data?.status === "COMPLETED" ? "#61BE7A" : "grey"}}/>
-                            </div>}
+                    {data?.status === "NA" ? null :
+                        <div className="verified-icon-container">
+                            <Verified className="verified-icon"
+                                      style={{color: data?.status === "COMPLETED" ? "#61BE7A" : "grey"}}/>
+                        </div>}
                 </div>
 
-                <div className="event-name">
-                    <EllipsesComponent text=
-
-                                           {event?.name}/>
-                </div>
-                <div className="event-location-image-group-container">
                     <div className="event-location">
-                        <div className="event-location-header">{t("Location")}:&nbsp;({event?.data_level})</div>
-                        <Tooltip title={data?.locations?.join(' , ')}>
-                            <div className="event-location-data">
-                                <EllipsesComponent text=
-                                                       {data?.locations?.filter(Boolean)?.join(' , ')}/></div>
-                        </Tooltip>
+                        <span className="event-location-icon-container"><LocationIcon className={"location-icon"}/></span>
+                            <div className="event-location-data">{
+                                data?.locations?.filter(Boolean)?.join(' , ')}
+                            </div>
                     </div>
                     <div className="submission-image-group-container">
-                        {data?.images.length > 0 && data?.images?.slice(0, 2).map((item) => <div
-                            className="submission-image-container"><img src={item} alt="Loading..."
-                                                                        className="submission-image"/></div>)}
-                    </div>
+                        {data?.images.length > 0 && <span className={"photo-title"}>{t("Photos")}</span>}
+                           <div className="submission-image-container"> {data?.images.length > 0 && data?.images?.slice(0, 2).map((item) => <div><img src={item} alt="Loading..."
+                                                                            className="submission-image"/></div>)}</div>
 
-                </div>
+
+                    </div>
 
 
             </div>
