@@ -24,6 +24,7 @@ class Api::EventSubmissionController < Api::ApplicationController
   def user_submissions
     begin
       events = Event.where(id: params[:event_id])
+      locations = get_event_order_locations(events.first.data_level.name)
       events = ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, state_id: params[:state_id], current_user: current_user)
       submissions = EventSubmission.where(event_id: params[:event_id], user_id: current_user).order(created_at: :desc)
       puts "Event Module Queries - " + "#{current_user.phone_number}"
@@ -45,8 +46,13 @@ class Api::EventSubmissionController < Api::ApplicationController
       submissions.each do |submission|
         res = submissions_data[submission.submission_id]
         if res.present?
+          location_data = []
+          data_hash = res['locations'].each_with_object({}) { |entry, hash| hash[entry["locationType"]] = entry["locationName"] }
+          locations.each do |loc|
+            location_data << data_hash[loc]
+          end
           data << { reported_on: submission.created_at, images: res['images'],
-                    status: res['status'], locations: res['locations'].pluck('locationName'),
+                    status: res['status'], locations: location_data,
                     event_id: submission.event_id, submission_id: submission.submission_id, id: submission.id }
         end
       end
@@ -121,6 +127,7 @@ class Api::EventSubmissionController < Api::ApplicationController
   rescue => e
     render json: { message: e.message }, status: 400
   end
+
 end
 
 
