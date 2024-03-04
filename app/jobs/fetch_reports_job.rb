@@ -65,23 +65,11 @@ module FetchReportsJob
         headers << 'createdAt'
         headers << 'updatedAt'
         headers << 'status'
-        file_name = "#{event.name}_#{DateTime.now.to_date}"
-        csv_file = Tempfile.new([file_name, '.csv'])
-        file_name += '.csv'
+        file_name = "#{event.name}_#{DateTime.now.to_date}.csv"
+        csv_file = Tempfile.new([file_name, ''])
         phone_numbers = Hash[EventSubmission.includes(:user).where(event_id: event.id).pluck('submission_id','users.phone_number')]
         if !check && event.report_file.attached?
           pipeline = conditional_pipeline_query(event)
-          begin
-            puts "trying with UTF-8"
-            file = URI.open(event.report_file.url)
-            file.set_encoding(Encoding.find("UTF-8"))
-            rows = CSV.parse(file.read, headers: true)
-          rescue => _
-            puts "trying with ISO"
-            file = URI.open(event.report_file.url)
-            file.set_encoding(Encoding.find("ISO-8859-1"))
-            rows = CSV.parse(file.read,  headers: true)
-          end
           data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
           hashed_data = Hash.new
           puts "The size of array - #{data.size}"
@@ -123,18 +111,32 @@ module FetchReportsJob
             row_data <<  data[i]["status"]
             hashed_data[data[i]["submissionId"]] = row_data
           end
-          for i in 1...rows.size
-            if !hashed_data.size.present?
-              break
-            elsif hashed_data[rows[i]['Submission Id']].present?
-              rows[i]['Submission Id'] = hashed_data[rows[i]['Submission Id']]
-              hashed_data.delete(rows[i]['Submission Id'])
+          begin
+            puts "trying with UTF-8"
+            file = URI.open(event.report_file.url)
+            file.set_encoding(Encoding.find("UTF-8"))
+          rescue => _
+            puts "trying with ISO"
+            file = URI.open(event.report_file.url)
+            file.set_encoding(Encoding.find("ISO-8859-1"))
+          end
+          chunk_size = 50000
+          CSV.open(csv_file, 'a+') do |csv|
+            csv << headers
+            CSV.parse(file.read, headers: true).each_slice(chunk_size) do |chunk|
+              chunk.each do |row|
+                if hashed_data[row[i]['Submission Id']].present?
+                  csv << hashed_data[rows[i]['Submission Id']]
+                  hashed_data.delete(rows[i]['Submission Id'])
+                else
+                  csv <<  row
+                end
+              end
+            end
+            hashed_data.each_pair do |key, value|
+              csv << value
             end
           end
-          hashed_data.each_pair do |key, value|
-            rows << value
-          end
-          # event.report_file.attach(io: rows, filename: file_name, content_type: 'text/csv')
         else
           CSV.open(csv_file, 'w') do |csv|
             csv << headers
@@ -151,8 +153,10 @@ module FetchReportsJob
                 }
               }
               pipeline.unshift(match_stage)
+              count = db.find({eventId: "#{event_id}", deletedAt: nil , 'createdAt': { '$gte': Time.now - (time[1].to_i).hours } }).count()
+            else
+              count = db.find({eventId: "#{event_id}", deletedAt: nil}).count()
             end
-            count = db.find({eventId: "#{event_id}", deletedAt: nil}).count()
             begin
               data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
               puts "Data Query Processed - #{offset}"
@@ -201,20 +205,9 @@ module FetchReportsJob
         end
         attachment = []
         if check
-          # attachment[:content] = csv_file
-          # attachment[:filename] = "Report_#{DateTime.now.to_date}.csv"
           attachment << csv_file.path
         else
-          if event.report_file.attached?
-            CSV.open(csv_file, 'wb') do |csv|
-              csv << headers
-              rows.each { |row| csv << row }
-            end
-            csv_file.rewind
-            event.report_file.attach(io: csv_file, filename: file_name, content_type: 'text/csv')
-          else
-            event.report_file.attach(io: csv_file, filename: file_name, content_type: 'text/csv')
-          end
+          event.report_file.attach(io: csv_file, filename: file_name, content_type: 'text/csv')
           file_url = event.report_file.url
         end
         subject = "Event Report Download for event #{event.name}"

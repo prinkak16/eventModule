@@ -83,4 +83,29 @@ module ApplicationHelper
     already_in_progress
   end
 
+  def get_event_order_locations(event_location)
+    case event_location
+    when "Pradesh"
+      ["State"]
+    when "Vibhag"
+      ["State", "Vibhag"]
+    when "Sambhag"
+      ["State", "Vibhag"]
+    when "Lok Sabha"
+      ["State", "LokSabha"]
+    when "Zila"
+      ["State", "Zila"]
+    when "Vidhan Sabha"
+      ["State", "VidhanSabha"]
+    when "Mandal"
+      ["State", "Zila", "Mandal"]
+    when "Shakti Kendra"
+      ["State", "VidhanSabha", "ShaktiKendra"]
+    when "Booth"
+      ["State", "VidhanSabha", "Booth"]
+    when "Panna"
+      ["State", "VidhanSabha", "Booth", "Panna"]
+    end
+  end
+
 end
