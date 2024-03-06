@@ -72,6 +72,7 @@ module FetchReportsJob
           pipeline = conditional_pipeline_query(event)
           data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
           hashed_data = Hash.new
+          deleted_data = Hash.new
           puts "The size of array - #{data.size}"
           for i in 0...data.size
             row_data = []
@@ -110,6 +111,9 @@ module FetchReportsJob
             row_data << DateTime.parse(data[i]["updatedAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
             row_data <<  data[i]["status"]
             hashed_data[data[i]["submissionId"]] = row_data
+            if !data[i]["deletedAt"]
+              deleted_data[data[i]["submissionId"]] = true
+            end
           end
           begin
             puts "trying with UTF-8"
@@ -125,10 +129,10 @@ module FetchReportsJob
             csv << headers
             CSV.parse(file.read, headers: true).each_slice(chunk_size) do |chunk|
               chunk.each do |row|
-                if hashed_data[row[i]['Submission Id']].present? && !hashed_data[row[i]['deletedAt']]
+                if hashed_data[row[i]['Submission Id']].present? && !deleted_data[row[i]['Submission Id']]
                   csv << hashed_data[rows[i]['Submission Id']]
                   hashed_data.delete(rows[i]['Submission Id'])
-                elsif !hashed_data[row[i]['deletedAt']]
+                elsif !deleted_data[row[i]['Submission Id']]
                   csv <<  row
                 end
               end
