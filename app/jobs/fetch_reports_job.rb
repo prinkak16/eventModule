@@ -125,10 +125,10 @@ module FetchReportsJob
             csv << headers
             CSV.parse(file.read, headers: true).each_slice(chunk_size) do |chunk|
               chunk.each do |row|
-                if hashed_data[row[i]['Submission Id']].present?
+                if hashed_data[row[i]['Submission Id']].present? && !hashed_data[row[i]['deletedAt']]
                   csv << hashed_data[rows[i]['Submission Id']]
                   hashed_data.delete(rows[i]['Submission Id'])
-                else
+                elsif !hashed_data[row[i]['deletedAt']]
                   csv <<  row
                 end
               end
@@ -231,13 +231,12 @@ module FetchReportsJob
       {
         '$match': {
           eventId: "#{event.id}",
-          deletedAt: nil,
-          createdAt: {
+          updatedAt: {
             '$gte': event.report_file.created_at
           }
         }
       },
-      { "$sort": { "createdAt": -1 } },
+      { "$sort": { "updatedAt": -1 } },
       {
         '$unwind': "$questions"
       },
