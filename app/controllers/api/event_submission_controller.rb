@@ -51,7 +51,7 @@ class Api::EventSubmissionController < Api::ApplicationController
           locations.each do |loc|
             location_data << data_hash[loc]
           end
-          data << { reported_on: submission.created_at, images: res['images'],
+          data << { reported_on: submission.created_at, updated_on: submission.updated_at, images: res['images'],
                     status: res['status'], locations: location_data,
                     event_id: submission.event_id, submission_id: submission.submission_id, id: submission.id }
         end
@@ -60,7 +60,7 @@ class Api::EventSubmissionController < Api::ApplicationController
     rescue Net::OpenTimeout , Net::ReadTimeout => e
       data = []
       submissions.each do |submission|
-        data << { reported_on: submission.created_at, images: [],
+        data << { reported_on: submission.created_at, updated_on: submission.updated_at, images: [],
                   status: "NA", locations: [],
                   event_id: submission.event_id, submission_id: submission.submission_id, id: submission.id }
       end
