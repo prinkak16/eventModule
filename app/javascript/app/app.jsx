@@ -34,6 +34,7 @@ const theme = createTheme({
 function App() {
     const navigate = useNavigate();
     const {pathname} = useLocation();
+    console.log('pathname is',pathname);
 
     const [showNavbar, setShowNavbar] = useState(true);
 
@@ -60,8 +61,13 @@ function App() {
         <div className={!showNavbar ? "outer-form-div" : ""}>
             <ErrorBoundary
                 fallbackRender={ErrorFallback}
-                onReset={(details) =>
-                    navigate('/forms')
+                onReset={(details) => {
+                    if(pathname.startsWith('/forms')) {
+                        navigate('/forms')
+                    }else {
+                        navigate('/events')
+                    }
+                }
                 }
             >
             <ThemeProvider theme={theme}>
