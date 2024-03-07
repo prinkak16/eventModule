@@ -129,10 +129,12 @@ module FetchReportsJob
             csv << headers
             CSV.parse(file.read, headers: true).each_slice(chunk_size) do |chunk|
               chunk.each do |row|
-                if hashed_data[row['Submission Id']].present? && !deleted_data[row['Submission Id']]
+                if deleted_data[row['Submission Id']]
+                  hashed_data.delete(row['Submission Id'])
+                elsif hashed_data[row['Submission Id']].present?
                   csv << hashed_data[row['Submission Id']]
                   hashed_data.delete(row['Submission Id'])
-                elsif !deleted_data[row['Submission Id']]
+                else
                   csv <<  row
                 end
               end
@@ -235,12 +237,20 @@ module FetchReportsJob
       {
         '$match': {
           eventId: "#{event.id}",
-          updatedAt: {
-            '$gte': event.report_file.created_at
-          }
+          '$or': [
+            {
+              updatedAt: {
+                '$gte': event.report_file.created_at
+              }
+            },
+            {
+              deletedAt: {
+                '$gte': event.report_file.created_at
+              }
+            }
+          ]
         }
       },
-      { "$sort": { "updatedAt": -1 } },
       {
         '$unwind': "$questions"
       },
@@ -279,6 +289,7 @@ module FetchReportsJob
         },
         createdAt: 1,
         updatedAt: 1,
+        deletedAt: 1,
         status: 1
       }
       },
@@ -290,6 +301,7 @@ module FetchReportsJob
           submissionId: '$submissionId',
           createdAt: '$createdAt',
           updatedAt: '$updatedAt',
+          deletedAt: '$deletedAt',
           status: '$status',
         },
         questions: {
@@ -309,6 +321,7 @@ module FetchReportsJob
         questions: 1,
         createdAt: '$_id.createdAt',
         updatedAt: '$_id.updatedAt',
+        deletedAt: '$_id.deletedAt',
         status: '$_id.status'
       }
       }
