@@ -46,12 +46,13 @@ class Api::EventSubmissionController < Api::ApplicationController
       submissions.each do |submission|
         res = submissions_data[submission.submission_id]
         if res.present?
+          puts "VIjay - #{res}"
           location_data = []
           data_hash = res['locations'].each_with_object({}) { |entry, hash| hash[entry["locationType"]] = entry["locationName"] }
           locations.each do |loc|
             location_data << data_hash[loc]
           end
-          data << { reported_on: submission.created_at, updated_on: submission.updated_at, images: res['images'],
+          data << { reported_on: res['createdAt'].present? ? res['createdAt'] : submission.created_at, updated_on: res['updatedAt'].present? ? res['updatedAt'] : submission.updated_at, images: res['images'],
                     status: res['status'], locations: location_data,
                     event_id: submission.event_id, submission_id: submission.submission_id, id: submission.id }
         end
