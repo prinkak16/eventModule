@@ -76,4 +76,4 @@ const FormDetails = () => {
     )
 }
 
-export default WithParamReload(FormDetails,"id");
+export default FormDetails;

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import {useLocation, useNavigate, useParams} from "react-router";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import './form-event-submission.scss'
@@ -28,8 +28,15 @@ const FormSubmission = () => {
     const [confirmationStatus, setConfirmationStatus] = useState(false);
     const [disableReportButton,setDisableReportButton]=useState(false);
 
-    useEffect(() => {
-        (async () => {
+    useMemo(() => {
+        document.addEventListener("visibilitychange", function() {
+            if (document.visibilityState === 'visible') {
+               getUserSubmission();
+            }
+        });
+    }, []);
+
+    const getUserSubmission=async ()=>{
             setIsLoading(true)
             try {
                 const {data} = await ApiClient.get(`/user/submissions/${id}`);
@@ -47,8 +54,12 @@ const FormSubmission = () => {
             }finally {
                 setIsLoading(false);
             }
-        })();
 
+
+    }
+
+    useEffect(() => {
+         getUserSubmission();
         return () => {
             setIsLoading(false)
         }

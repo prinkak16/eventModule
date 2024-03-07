@@ -41,10 +41,29 @@ const EventSubmissionCard = ({
     return (<div className="event-submission-card-container">
             <div className="event-submission-card-details">
                 <div className="report-time-verified-icon-container">
-                    <div className="report-time"> {index + 1}  &nbsp;  {t("Reported on")} :
-                        ({moment(data?.reported_on).format('DD/MM/YYYY')
-                        }) {moment(data?.reported_on).format('LT')
-                        }</div>
+                        <div className="report-time">
+                            <div>
+                                {index + 1}
+                            </div>
+                            <div>
+                                <div>
+                                    {t("Reported on")} :
+                                    ({moment(data?.reported_on).format('DD/MM/YYYY')
+                                })&nbsp;
+                                    {moment(data?.reported_on).format('LT')
+                                    }
+                                </div>
+                               <div className="report-time">  {t("Updated at")} :
+                                        ({moment(data?.updated_on).format('DD/MM/YYYY')
+                                        })&nbsp;
+                                        {moment(data?.updated_on).format('LT')
+                                        }
+                                    </div>
+
+                            </div>
+
+                        </div>
+
                     {data?.status === "NA" ? null :
                         <div className="verified-icon-container">
                             <Verified className="verified-icon"
@@ -52,19 +71,21 @@ const EventSubmissionCard = ({
                         </div>}
                 </div>
 
-                    <div className="event-location">
-                        <span className="event-location-icon-container"><LocationIcon className={"location-icon"}/></span>
-                            <div className="event-location-data">{
-                                data?.locations?.filter(Boolean)?.join(' , ')}
-                            </div>
+                <div className="event-location">
+                    <span className="event-location-icon-container"><LocationIcon className={"location-icon"}/></span>
+                    <div className="event-location-data">{
+                        data?.locations?.filter(Boolean)?.join(' , ')}
                     </div>
-                    <div className="submission-image-group-container">
-                        {data?.images.length > 0 && <span className={"photo-title"}>{t("Photos")}</span>}
-                           <div className="submission-image-container"> {data?.images.length > 0 && data?.images?.slice(0, 2).map((item) => <div><img src={item} alt="Loading..."
-                                                                            className="submission-image"/></div>)}</div>
+                </div>
+                <div className="submission-image-group-container">
+                    {data?.images.length > 0 && <span className={"photo-title"}>{t("Photos")}</span>}
+                    <div
+                        className="submission-image-container"> {data?.images.length > 0 && data?.images?.slice(0, 2).map((item) =>
+                        <div><img src={item} alt="Loading..."
+                                  className="submission-image"/></div>)}</div>
 
 
-                    </div>
+                </div>
 
 
             </div>
