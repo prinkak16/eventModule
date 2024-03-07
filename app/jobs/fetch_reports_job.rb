@@ -129,14 +129,15 @@ module FetchReportsJob
             csv << headers
             CSV.parse(file.read, headers: true).each_slice(chunk_size) do |chunk|
               chunk.each do |row|
-                if hashed_data[row[i]['Submission Id']].present? && !deleted_data[row[i]['Submission Id']]
-                  csv << hashed_data[rows[i]['Submission Id']]
-                  hashed_data.delete(rows[i]['Submission Id'])
-                elsif !deleted_data[row[i]['Submission Id']]
+                if hashed_data[row['Submission Id']].present? && !deleted_data[row['Submission Id']]
+                  csv << hashed_data[row['Submission Id']]
+                  hashed_data.delete(row['Submission Id'])
+                elsif !deleted_data[row['Submission Id']]
                   csv <<  row
                 end
               end
             end
+            puts "gsgs"
             hashed_data.each_pair do |key, value|
               csv << value
             end
