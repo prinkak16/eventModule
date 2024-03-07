@@ -137,7 +137,6 @@ module FetchReportsJob
                 end
               end
             end
-            puts "gsgs"
             hashed_data.each_pair do |key, value|
               csv << value
             end
