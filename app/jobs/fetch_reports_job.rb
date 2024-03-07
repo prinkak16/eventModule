@@ -111,7 +111,7 @@ module FetchReportsJob
             row_data << DateTime.parse(data[i]["updatedAt"]).in_ist.strftime("%B %e, %Y %H:%M:%S")
             row_data <<  data[i]["status"]
             hashed_data[data[i]["submissionId"]] = row_data
-            if !data[i]["deletedAt"]
+            if data[i]["deletedAt"].present?
               deleted_data[data[i]["submissionId"]] = true
             end
           end
