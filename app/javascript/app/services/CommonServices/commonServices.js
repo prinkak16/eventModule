@@ -17,7 +17,7 @@ export const getDataLevels = (queryParams) => {
 };
 
 /**
- *
+ * returns all languages
  */
 
 export const getAllLanguages=()=>{

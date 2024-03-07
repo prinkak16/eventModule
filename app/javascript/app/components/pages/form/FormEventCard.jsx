@@ -45,7 +45,6 @@ const FormEventCard = ({event}) => {
 
                         <div className="heading">
                             {event?.name}
-
                         </div>
                     </div>
                 </div>

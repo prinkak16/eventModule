@@ -8,8 +8,7 @@ import {ImageNotFound} from "../../../../assests/png";
 import './form-details.scss'
 import FormSubmission from "../FormSubmission";
 import FormEventMobileCard from "../mobile_view/FormEventMobileCard";
-import {EventState} from "../../../../EventContext";
-import WithParamReload from "../../../../middlewares/withParamReload";
+import {EventState} from "../../../../context/EventContext";
 
 const FormDetails = () => {
     const {id} = useParams();

@@ -46,7 +46,6 @@ class Api::EventSubmissionController < Api::ApplicationController
       submissions.each do |submission|
         res = submissions_data[submission.submission_id]
         if res.present?
-          puts "VIjay - #{res}"
           location_data = []
           data_hash = res['locations'].each_with_object({}) { |entry, hash| hash[entry["locationType"]] = entry["locationName"] }
           locations.each do |loc|

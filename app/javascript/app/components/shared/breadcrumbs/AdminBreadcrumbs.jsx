@@ -5,7 +5,7 @@ import {Link, useParams} from "react-router-dom";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import './breadcrumbs.scss'
 import {IntermediateEventIcon, LeafEventIcon, PrimaryEventIcon} from "../../../assests/svg";
-import {EventState} from "../../../EventContext";
+import {EventState} from "../../../context/EventContext";
 import {toast} from "react-toastify";
 
 export default function AdminBreadcrumbs() {
