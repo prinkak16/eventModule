@@ -12,7 +12,7 @@ const ErrorFallback=({error,resetErrorBoundary})=>{
                 </div>
                 <h2>Something went wrong:</h2>
                 <pre style={{color: "red"}}>{error.message}</pre>
-                <Button variant={"contained"} onClick={resetErrorBoundary}>Try Again</Button>
+                <Button variant={"contained"} onClick={resetErrorBoundary}>Go to home</Button>
             </div>
         </div>
     );

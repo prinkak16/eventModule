@@ -61,7 +61,7 @@ function App() {
             <ErrorBoundary
                 fallbackRender={ErrorFallback}
                 onReset={(details) =>
-                    window.location.reload()
+                    navigate('/forms')
                 }
             >
             <ThemeProvider theme={theme}>
