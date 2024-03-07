@@ -10,6 +10,8 @@ import "react-toastify/dist/ReactToastify.css";
 import HeaderBar from "./components/shared/header/header";
 import Router from "./Routes";
 import {createTheme, ThemeProvider} from "@mui/material";
+import {ErrorBoundary} from "react-error-boundary";
+import ErrorFallback from "./components/shared/error/ErrorFallback";
 
 const paths = ["forms",];
 const theme = createTheme({
@@ -32,6 +34,7 @@ const theme = createTheme({
 function App() {
     const navigate = useNavigate();
     const {pathname} = useLocation();
+    console.log('pathname is',pathname);
 
     const [showNavbar, setShowNavbar] = useState(true);
 
@@ -56,7 +59,19 @@ function App() {
 
     return (
         <div className={!showNavbar ? "outer-form-div" : ""}>
+            <ErrorBoundary
+                fallbackRender={ErrorFallback}
+                onReset={(details) => {
+                    if(pathname.startsWith('/forms')) {
+                        navigate('/forms')
+                    }else {
+                        navigate('/events')
+                    }
+                }
+                }
+            >
             <ThemeProvider theme={theme}>
+
                 <HeaderBar/>
                 <Router/>
                 <ToastContainer theme="colored"
@@ -67,7 +82,7 @@ function App() {
                                 style={customToastStyle}
                 />
             </ThemeProvider>
-
+            </ErrorBoundary>
         </div>
     );
 }

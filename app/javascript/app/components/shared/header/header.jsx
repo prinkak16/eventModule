@@ -4,7 +4,7 @@ import './header.scss';
 import {Link, useNavigate} from "react-router-dom";
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import {useLocation} from "react-router"; // Import your CSS file
-import {EventState} from "../../../EventContext";
+import {EventState} from "../../../context/EventContext";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
