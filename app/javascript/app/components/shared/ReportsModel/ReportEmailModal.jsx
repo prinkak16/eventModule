@@ -31,12 +31,13 @@ const style = {
 
 
 export default function ReportEmailModal({reportModal, setReportModal, reportEventId,}) {
-    const [email,setEmail] = useState("");
     const [formData,setFormData]=useState({email:"",reportTimeline:""});
+    const [disableSendButton,setDisableSendButton]=useState(false);
     const handleClose = () => setReportModal(false);
 
         const fetchReport = () => {
             (async () => {
+                setDisableSendButton(true);
                 try {
                     const {data} = await ApiClient.get(`/event/reports?email_id=${formData?.email}&event_id=${reportEventId}&report_timeline=${formData?.reportTimeline}`);
                     if (data?.success) {
@@ -48,6 +49,7 @@ export default function ReportEmailModal({reportModal, setReportModal, reportEve
                     toast.error('Failed to fetch Reports')
                 } finally {
                     console.log("triggered Successfully");
+                    setDisableSendButton(false);
                 }
             })();
         }
@@ -99,7 +101,7 @@ export default function ReportEmailModal({reportModal, setReportModal, reportEve
                     <br/>
                     <br/>
 
-                    <Button variant="contained" onClick={sendReportToEmail} component="label"
+                    <Button disabled={disableSendButton} variant="contained" onClick={sendReportToEmail} component="label"
                             size="medium"
                             style={{textTransform: "none", border: "1px solid #fffff"}}
                             sx={{
