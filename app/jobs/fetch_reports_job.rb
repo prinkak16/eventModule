@@ -67,7 +67,11 @@ module FetchReportsJob
         headers << 'status'
         file_name = "#{event.name}_#{DateTime.now.to_date}.csv"
         csv_file = Tempfile.new([file_name, ''])
-        phone_numbers = Hash[EventSubmission.includes(:user).where(event_id: event.id).pluck('submission_id','users.phone_number')]
+        phone_numbers = Hash.new
+        event_submissions = EventSubmission.where(event_id: event.id)
+        event_submissions.each do |submission|
+          phone_numbers[submission.submission_id] = submission.user.phone_number
+        end
         if !check && event.report_file.attached?
           pipeline = conditional_pipeline_query(event)
           data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
