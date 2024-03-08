@@ -15,7 +15,7 @@ module FetchReportsJob
       event_form = EventForm.find_by(event_id: event_id)
       mongo_db = Mongo::Client.new(ENV["MONGO_URL"])
       subject = "Event Report Download for event #{event.name}"
-      content = "Event Report Download processing has been started."
+      content = "Event Report Download for event - #{event.name} requested at #{DateTime.now.in_ist.strftime("%B %e, %Y %H:%M:%S")}."
       content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
       ApplicationController.helpers.send_email(subject, content, mail_ids)
       if event.status_aasm_state == 'Expired' && event.report_file.attached? && event.report_file.created_at >= event.end_date
@@ -221,12 +221,14 @@ module FetchReportsJob
           file_url = event.report_file.url
         end
         subject = "Event Report Download for event #{event.name}"
-        content = "Event Report for #{event.name} has been processed and can be downloaded by clicking on the below url."
-        content += "<br/><a href=#{file_url}>Click to Download #{event.name} Report.</a><br/>"
-        content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
         if check
+          content = "The event report for #{event.name} requested at #{DateTime.now.in_ist.strftime("%B %e, %Y %H:%M:%S")} has been attached to the email. Please find the attachment."
+          content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
           ApplicationController.helpers.send_email(subject, content, mail_ids, attachment)
         else
+          content = "The event report for #{event.name} requested at #{DateTime.now.in_ist.strftime("%B %e, %Y %H:%M:%S")} has been processed and can be downloaded by clicking the below url."
+          content += "<br/><a href=#{file_url}>Click to Download #{event.name} Report.</a><br/>"
+          content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
           ApplicationController.helpers.send_email(subject, content, mail_ids)
         end
         mongo_db.close
