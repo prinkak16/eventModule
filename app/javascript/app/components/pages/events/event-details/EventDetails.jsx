@@ -72,17 +72,17 @@ const EventDetails = () => {
             </>
             }
             {!parentEvent?.has_sub_event && <>
-                {parentEvent?.status?.name?.toLowerCase() !== 'expired' &&
+
                     <div className={"add-event-button-container"} style={{display:"flex", gap:"20px"}}>
-                        <Button onClick={() => handleClick('go_to_form')} className={"add-event-button"}
-                                variant={"contained"}>Go to form</Button>
+                        {parentEvent?.status?.name?.toLowerCase() !== 'expired' && <Button onClick={() => handleClick('go_to_form')} className={"add-event-button"}
+                                variant={"contained"}>Go to form</Button>}
                         <Button onClick={() => {
                             setReportEventId(id)
                             setReportModal(true)
                         }} className={"add-event-button"}
                                 variant={"contained"}>Download Report</Button>
                     </div>
-                }
+
                 <div className={"heading"}>Form View</div>
                 <div className={"iframe-container"}>
                     <iframe src={parentEvent?.preview_url} height="700px" width="100%" title="Iframe Example"/>
