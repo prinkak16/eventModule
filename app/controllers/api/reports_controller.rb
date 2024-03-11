@@ -1,5 +1,5 @@
 class Api::ReportsController < ApplicationController
-
+  before_action :authenticate_user_permission
   def fetch_reports
     begin
       if !check_if_already_in_progress( queue: "report", args: [params[:event_id], params[:email_id].split(','), params[:report_timeline]])
