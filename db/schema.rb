@@ -72,6 +72,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_12_071419) do
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.index ["created_at"], name: "index_event_submissions_on_created_at", order: :desc
+    t.index ["event_id", "user_id", "submission_id", "form_id"], name: "index_event_submissions_on_event_user_submission_form"
     t.index ["event_id"], name: "index_event_submissions_on_event_id"
   end
 
