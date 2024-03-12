@@ -8,9 +8,9 @@ import {useLocation} from "react-router";
 import './event-details.scss'
 import {toast} from "react-toastify";
 import ReportEmailModal from "../../../shared/ReportsModel/ReportEmailModal";
-import { DndContext } from "@dnd-kit/core";
-import Droppable from "./Droppable";
-import Draggable from "./Draggable";
+// import { DndContext } from "@dnd-kit/core";
+// import Droppable from "./Droppable";
+// import Draggable from "./Draggable";
 import DraggableList from "./drag-and-drop-components/DraggableList";
 
 
@@ -48,34 +48,46 @@ const EventDetails = () => {
     }
 
 
-    // handle drag function
-    const onDragEnd = ({ destination, source }) => {
-        // Dropped outside the list
-        if (!destination) return;
 
 
-        const updatedContainers = [...childEvents];
-        [updatedContainers[source.index], updatedContainers[destination.index]] = [
-            updatedContainers[destination.index],
-            updatedContainers[source.index],
-        ];
 
-        //updating the list of child events
-        setChildEVents(updatedContainers);
-    };
 
-    const updateChildrenEventsPosition=async (body)=>{
-        console.log('body is ',body)
-        try {
-            const {data}=await ApiClient.post('/event/update/position',body);
-            if(!data?.success){
-                toast.error('Failed during position update')
-            }
-        }catch (e) {
+// handle drag function
+const onDragEnd = ({ destination, source }) => {
+    // Dropped outside the list
+    if (!destination) return;
+
+    const updatedChildEvents = [...childEvents];
+
+    //getting the element which is getting dragged
+    const targetEvent=updatedChildEvents[source?.index];
+
+    //remove the element from its initial position
+    updatedChildEvents?.splice(source?.index,1);
+
+    //inserting the element to its target position
+    updatedChildEvents?.splice(destination?.index,0,targetEvent);
+
+    //list of updated positions of the event
+    const updatedPositionsOfChildEvents=updatedChildEvents?.map((event)=>event?.id);
+
+    updateChildrenEventsPosition({data:updatedPositionsOfChildEvents});
+
+    //updating the list of child events
+    setChildEVents(updatedChildEvents);
+};
+
+const updateChildrenEventsPosition=async (body)=>{
+    console.log('body is ',body)
+    try {
+        const {data}=await ApiClient.post('/event/update_position',body);
+        if(!data?.success){
             toast.error('Failed during position update')
         }
+    }catch (e) {
+        toast.error('Failed during position update')
     }
-
+}
 
     useEffect(() => {
         getEventDetails();
