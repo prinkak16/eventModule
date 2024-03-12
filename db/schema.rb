@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_22_062458) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_12_071419) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -42,33 +42,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_22_062458) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "app_permissions", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "action", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "client_apps", force: :cascade do |t|
-    t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "data_levels", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "level_class", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "order_id"
-  end
-
-  create_table "data_types", force: :cascade do |t|
-    t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "event_forms", force: :cascade do |t|
     t.integer "event_id"
     t.string "form_id"
@@ -94,12 +67,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_22_062458) do
   create_table "event_submissions", force: :cascade do |t|
     t.string "form_id"
     t.string "submission_id"
-    t.bigint "user_id", null: false
     t.bigint "event_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id"
+    t.index ["created_at"], name: "index_event_submissions_on_created_at", order: :desc
+    t.index ["event_id", "user_id", "submission_id", "form_id"], name: "index_event_submissions_on_event_user_submission_form"
     t.index ["event_id"], name: "index_event_submissions_on_event_id"
-    t.index ["user_id"], name: "index_event_submissions_on_user_id"
   end
 
   create_table "events", force: :cascade do |t|
@@ -146,58 +120,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_22_062458) do
     t.index ["phone_number"], name: "index_user_events_on_phone_number"
   end
 
-  create_table "user_permissions", force: :cascade do |t|
-    t.bigint "user_id"
-    t.integer "app_permission_id"
-    t.integer "user_tag_id"
-    t.integer "client_app_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_user_permissions_on_user_id"
-  end
-
-  create_table "user_tag_locations", force: :cascade do |t|
-    t.bigint "user_tag_id"
-    t.integer "location_id"
-    t.string "location_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_tag_id"], name: "index_user_tag_locations_on_user_tag_id"
-  end
-
-  create_table "user_tags", force: :cascade do |t|
-    t.bigint "data_type_id"
-    t.bigint "data_level_id"
-    t.bigint "user_id"
-    t.integer "saral_tag_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["data_level_id"], name: "index_user_tags_on_data_level_id"
-    t.index ["data_type_id"], name: "index_user_tags_on_data_type_id"
-    t.index ["user_id"], name: "index_user_tags_on_user_id"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string "uuid", null: false
-    t.string "email", null: false
-    t.string "name", null: false
-    t.string "role", null: false
-    t.string "phone_number", null: false
-    t.jsonb "sso_payload", default: "{}", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "event_locations", "events"
   add_foreign_key "event_submissions", "events"
-  add_foreign_key "event_submissions", "users"
   add_foreign_key "user_event_locations", "user_events"
   add_foreign_key "user_events", "events"
-  add_foreign_key "user_permissions", "users"
-  add_foreign_key "user_tag_locations", "user_tags"
-  add_foreign_key "user_tags", "data_levels"
-  add_foreign_key "user_tags", "data_types"
-  add_foreign_key "user_tags", "users"
 end
