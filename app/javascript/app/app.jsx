@@ -34,8 +34,6 @@ const theme = createTheme({
 function App() {
     const navigate = useNavigate();
     const {pathname} = useLocation();
-    console.log('pathname is',pathname);
-
     const [showNavbar, setShowNavbar] = useState(true);
 
     const toggleNavbar = () => {

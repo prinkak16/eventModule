@@ -285,7 +285,6 @@ const HomeComponent = () => {
     }
 
     const RenderEventIcon = (event_level) => {
-        console.log('event level is ', event_level);
         if (event_level.toLowerCase() === 'parent') {
             return <span className={"event-primary-icon-container"}><PrimaryEventIcon/></span>
         } else if (event_level.toLowerCase() === 'intermediate') {

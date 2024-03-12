@@ -8,8 +8,12 @@ import {useLocation} from "react-router";
 import './event-details.scss'
 import {toast} from "react-toastify";
 import ReportEmailModal from "../../../shared/ReportsModel/ReportEmailModal";
+import DraggableList from "./drag-and-drop-components/DraggableList";
+
 
 const EventDetails = () => {
+    const [parent, setParent] = useState(null);
+
     const {pathname} = useLocation();
     const navigate = useNavigate();
     const [parentEvent, setParentEvent] = useState({});
@@ -40,6 +44,47 @@ const EventDetails = () => {
 
     }
 
+
+
+
+
+
+// handle drag function
+const onDragEnd = ({ destination, source }) => {
+    // Dropped outside the list
+    if (!destination) return;
+
+    const updatedChildEvents = [...childEvents];
+
+    //getting the element which is getting dragged
+    const targetEvent=updatedChildEvents[source?.index];
+
+    //remove the element from its initial position
+    updatedChildEvents?.splice(source?.index,1);
+
+    //inserting the element to its target position
+    updatedChildEvents?.splice(destination?.index,0,targetEvent);
+
+    //list of updated positions of the event
+    const updatedPositionsOfChildEvents=updatedChildEvents?.map((event)=>event?.id);
+
+    updateChildrenEventsPosition({data:updatedPositionsOfChildEvents});
+
+    //updating the list of child events
+    setChildEVents(updatedChildEvents);
+};
+
+const updateChildrenEventsPosition=async (body)=>{
+    try {
+        const {data}=await ApiClient.post('/event/update_position',body);
+        if(!data?.success){
+            toast.error('Failed during position update')
+        }
+    }catch (e) {
+        toast.error('Failed during position update')
+    }
+}
+
     useEffect(() => {
         getEventDetails();
     }, [pathname]);
@@ -52,6 +97,8 @@ const EventDetails = () => {
         }
     }
 
+
+
     return (
         <div className={"event-details-main-container"}>
             <ReportEmailModal reportModal={reportModal} setReportModal={setReportModal} reportEventId={reportEventId}/>
@@ -62,13 +109,18 @@ const EventDetails = () => {
                     <div className={"add-event-button-container"}>
                         <Button onClick={() => handleClick('create_event')} className={"add-event-button"}
                                 variant={"contained"}>+ Add Sub Event</Button>
-                    </div>}
+                    </div>
+                }
 
                 <div className={"heading"}>Sub Events</div>
-                <div>{childEvents?.length === 0 &&
-                    <h5 className={"no-sub-event-style"}>No sub event is created yet</h5>}</div>
-                <div>{childEvents?.length > 0 && childEvents?.map((childEvent, index) => <EventChildCard
-                    event={childEvent} key={index}/>)}</div>
+                <div>
+                    {childEvents?.length === 0 && <h5 className={"no-sub-event-style"}>No sub event is created yet</h5>}
+                </div>
+
+                {childEvents?.length > 0&&
+                <DraggableList items={childEvents} onDragEnd={onDragEnd} />
+                }
+
             </>
             }
             {!parentEvent?.has_sub_event && <>

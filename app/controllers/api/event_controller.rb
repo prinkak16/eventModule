@@ -209,7 +209,7 @@ class Api::EventController < Api::ApplicationController
   def individual_event_data
     begin
       event = Event.find_by_id(params[:id])
-      child_events = event.children
+      child_events = event.children.order(position: :asc)
       is_child = !event.has_sub_event
       render json: { success: true,
                      data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, language_code: params[:language_code], current_user: current_user),
@@ -253,7 +253,7 @@ class Api::EventController < Api::ApplicationController
   def user_list_children
     begin
       event = Event.find_by_id(params[:id])
-      child_events = event.children.joins(:event_locations).where(event_locations: { state_id: current_user.country_state_id }).where.not(has_sub_event: false, published: false).order(start_date: :desc)
+      child_events = event.children.joins(:event_locations).where(event_locations: { state_id: current_user.country_state_id }).where.not(has_sub_event: false, published: false).order(:position)
       is_child = !event.has_sub_event
       render json: { success: true,
                      data: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, language_code: params[:language_code], current_user: current_user),
@@ -285,9 +285,10 @@ class Api::EventController < Api::ApplicationController
       data.each do |event_position|
         event = Event.find_by(id: event_position)
         event.set_list_position(index) if event.present?
+        puts "event - #{event_position} , index - #{index}"
         index = index + 1
       end
-      render json: { success: true, message: "successfully position update" }, status: :ok
+      render json: { success: true, message: "position updated successfully" }, status: :ok
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end
