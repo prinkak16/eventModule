@@ -6,7 +6,7 @@ import {Box} from "@mui/material";
 import {ImageNotFound} from '../../../assests/png'
 import EventSubmissionCard from "./EventSubmissionCard";
 
-import {EventState} from "../../../EventContext";
+import {EventState} from "../../../context/EventContext";
 import ConfirmationModal from "../../shared/ConfirmationModal/ConfirmationModal";
 import ReactLoader from "../../shared/loader/Loader";
 import Button from "@mui/material/Button";

@@ -2,7 +2,7 @@ import React, {useState,useEffect,useRef} from 'react';
 /*
 import { useContext } from "react";
 import { LanguageContext } from "../../provider/language-provider";*/
-import {EventState} from "../../EventContext";
+import {EventState} from "../../context/EventContext";
 import {LanguageIcon} from "../../assests/svg";
 import './index.scss'
 import {useTranslation} from "react-i18next";

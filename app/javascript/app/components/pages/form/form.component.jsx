@@ -12,7 +12,7 @@ import FormEventMobileCard from "./mobile_view/FormEventMobileCard";
 
 import {ApiClient} from "../../../services/RestServices/BaseRestServices";
 import FormEventCard from "./FormEventCard";
-import {EventState} from "../../../EventContext";
+import {EventState} from "../../../context/EventContext";
 
 import ReactLoader from "../../shared/loader/Loader";
 import {useTranslation} from "react-i18next";

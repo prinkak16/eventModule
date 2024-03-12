@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import './event-title-modal.scss'
-import {EventState} from "../../../../../EventContext";
+import {EventState} from "../../../../../context/EventContext";
 import {TextField} from "@mui/material";
 
 const style = {

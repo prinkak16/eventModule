@@ -73,7 +73,6 @@ const ImageCropper = ({
             const heightFactor = canvasData.naturalHeight / canvasData.height;
             const cropData = `${cropBoxData.width * widthFactor}x${cropBoxData.height * heightFactor}+${(cropBoxData.left - cropBoxData.minLeft) * widthFactor}+${(cropBoxData.top - cropBoxData.minTop) * heightFactor}`
 
-            console.log('file size ', file.size, ' uncropped file size', pickedImage?.current.size);
             setFinalImageFile([{
                 file: file,
                 un_cropped_file: pickedImage.current,
