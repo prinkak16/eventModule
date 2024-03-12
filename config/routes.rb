@@ -3,10 +3,19 @@ require 'sidekiq/cron/web'
 require "resque_web"
 Rails.application.routes.draw do
   root "home#index"
+  class CreateConstraint
+    def matches?(request)
+      return false unless request.session[:user_id]
+      user = User.find(request.session[:user_id])
+      user&.has_create_permission
+    end
+  end
   mount SsoClient::Engine, at: '/sso_client', as: 'sso_client'
   # Define your application modules per the DSL in https://guides.rubyonrails.org/routing.html
-  mount Sidekiq::Web => "/sidekiq"
-  mount ResqueWeb::Engine => "/resque_web"
+  constraints CreateConstraint.new do
+    mount Sidekiq::Web => "/sidekiq"
+    mount ResqueWeb::Engine => "/resque_web"
+  end
   namespace :api do
       get 'event/data_levels' => 'event#data_levels'
       get 'event/states' => 'event#states'
