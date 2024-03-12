@@ -40,7 +40,7 @@ Rails.application.routes.draw do
       get 'event/languages', to: 'translation#fetch_languages'
       get 'event/reports', to: 'reports#fetch_reports'
       get 'event/pin', to: 'event#pin_event'
-      get 'event/update_position', to: 'event#update_position'
+      post 'event/update_position', to: 'event#update_position'
   end
   #noinspection RailsParamDefResolve
   match '*path', to: 'home#index', via: :all, constraints: lambda { |req|

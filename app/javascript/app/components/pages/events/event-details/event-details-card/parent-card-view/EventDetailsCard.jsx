@@ -1,6 +1,6 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import "./event-details-card.scss";
-import {motion} from "framer-motion";
+import { motion } from "framer-motion";
 
 import {
     CalenderIcon,

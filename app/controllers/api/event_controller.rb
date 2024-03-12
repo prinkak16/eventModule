@@ -285,9 +285,10 @@ class Api::EventController < Api::ApplicationController
       data.each do |event_position|
         event = Event.find_by(id: event_position)
         event.set_list_position(index) if event.present?
+        puts "event - #{event_position} , index - #{index}"
         index = index + 1
       end
-      render json: { success: true, message: "successfully position update" }, status: :ok
+      render json: { success: true, message: "position updated successfully" }, status: :ok
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end
