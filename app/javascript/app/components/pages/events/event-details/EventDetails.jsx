@@ -8,9 +8,6 @@ import {useLocation} from "react-router";
 import './event-details.scss'
 import {toast} from "react-toastify";
 import ReportEmailModal from "../../../shared/ReportsModel/ReportEmailModal";
-// import { DndContext } from "@dnd-kit/core";
-// import Droppable from "./Droppable";
-// import Draggable from "./Draggable";
 import DraggableList from "./drag-and-drop-components/DraggableList";
 
 
@@ -78,7 +75,6 @@ const onDragEnd = ({ destination, source }) => {
 };
 
 const updateChildrenEventsPosition=async (body)=>{
-    console.log('body is ',body)
     try {
         const {data}=await ApiClient.post('/event/update_position',body);
         if(!data?.success){
