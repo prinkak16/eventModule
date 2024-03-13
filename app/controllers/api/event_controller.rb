@@ -294,4 +294,18 @@ class Api::EventController < Api::ApplicationController
     end
   end
 
+  def set_event_to_hidden
+    begin
+      event = Event.find_by(id: params[:event_id])
+      operation = true
+      if params[:is_hidden].downcase == 'false'
+        operation = false
+      end
+      event.update(is_hidden: operation)
+      event.children.update_all(is_hidden: operation)
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
+
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_12_071419) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_13_063509) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,7 +71,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_12_071419) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
+    t.datetime "deleted_at"
     t.index ["created_at"], name: "index_event_submissions_on_created_at", order: :desc
+    t.index ["deleted_at"], name: "index_event_submissions_on_deleted_at"
     t.index ["event_id", "user_id", "submission_id", "form_id"], name: "index_event_submissions_on_event_user_submission_form"
     t.index ["event_id"], name: "index_event_submissions_on_event_id"
   end
@@ -95,12 +97,36 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_12_071419) do
     t.boolean "pinned", default: false
     t.integer "created_by_id"
     t.integer "data_level_id"
+    t.boolean "is_hidden", default: false
     t.index ["deleted_at"], name: "index_events_on_deleted_at"
     t.index ["translated_title"], name: "index_events_on_translated_title", using: :gin
+  end
+
+  create_table "user_event_locations", force: :cascade do |t|
+    t.string "location_type"
+    t.bigint "location_id"
+    t.bigint "user_event_id"
+    t.integer "country_state_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["location_type", "location_id"], name: "index_user_event_locations_on_location"
+    t.index ["user_event_id"], name: "index_user_event_locations_on_user_event_id"
+  end
+
+  create_table "user_events", force: :cascade do |t|
+    t.string "phone_number"
+    t.boolean "disabled", default: false
+    t.bigint "event_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_user_events_on_event_id"
+    t.index ["phone_number"], name: "index_user_events_on_phone_number"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "event_locations", "events"
   add_foreign_key "event_submissions", "events"
+  add_foreign_key "user_event_locations", "user_events"
+  add_foreign_key "user_events", "events"
 end

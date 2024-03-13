@@ -1,5 +1,5 @@
 class EventSerializer < ActiveModel::Serializer
-  attributes :id, :name, :start_date, :end_date, :data_level_id, :event_type, :data_level, :start_datetime, :end_datetime, :status, :states, :image_url, :state_ids, :create_form_url, :preview_url, :event_level, :has_sub_event, :parent_id, :translated_title
+  attributes :id, :name, :start_date, :end_date, :data_level_id, :event_type, :data_level, :start_datetime, :end_datetime, :status, :states, :image_url, :state_ids, :create_form_url, :preview_url, :event_level, :has_sub_event, :parent_id, :translated_title, :is_hidden
 
   def name
     object.get_title(instance_options[:language_code].present? ? instance_options[:language_code]: 'en')
@@ -79,6 +79,10 @@ class EventSerializer < ActiveModel::Serializer
 
   def event_level
     object.get_event_level
+  end
+
+  def is_hidden
+    object.is_hidden
   end
 
 end
