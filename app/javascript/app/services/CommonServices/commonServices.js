@@ -24,3 +24,12 @@ export const getAllLanguages=()=>{
     return ApiClient.get('/event/languages');
 }
 
+/**
+ *
+ * @param body - contains is_hidden - boolean and  event_id as json
+ * @returns {Promise<axios.AxiosResponse<any>>}
+ */
+export const hideUnhideEvents=(body)=>{
+    return ApiClient.post('/event/hide_event',body)
+}
+

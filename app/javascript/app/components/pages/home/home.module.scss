@@ -307,6 +307,20 @@ body {
     }
 
   }
+  .hide-unhide-button{
+    background:#F04136;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .hide-unhide-icon{
+      width: 25px;
+      height: 25px;
+    }
+
+  }
 
   .view-button {
     background: #60D669;

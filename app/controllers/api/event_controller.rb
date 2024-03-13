@@ -298,11 +298,12 @@ class Api::EventController < Api::ApplicationController
     begin
       event = Event.find_by(id: params[:event_id])
       operation = true
-      if params[:is_hidden].downcase == 'false'
+      if params[:is_hidden] == false
         operation = false
       end
       event.update(is_hidden: operation)
       event.children.update_all(is_hidden: operation)
+      render json: { success: true, message: "Record Updation for #{operation ? "Hide" : "Unhide" } Successfully" }, status: :ok
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end
