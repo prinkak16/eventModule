@@ -41,6 +41,7 @@ Rails.application.routes.draw do
       get 'event/reports', to: 'reports#fetch_reports'
       get 'event/pin', to: 'event#pin_event'
       post 'event/update_position', to: 'event#update_position'
+      post 'event/hide_event', to: 'event#set_event_to_hidden'
   end
   #noinspection RailsParamDefResolve
   match '*path', to: 'home#index', via: :all, constraints: lambda { |req|

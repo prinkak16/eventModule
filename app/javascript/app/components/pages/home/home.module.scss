@@ -173,6 +173,15 @@ body {
   border-radius: 15px;
   padding: 0.8rem 1.5rem;
 }
+.active-hide-tag-container{
+  display: flex;
+  flex-direction: column;
+  gap:5px;
+  .hide-tag{
+    background: #fe938d;
+    color: #6e0802;
+  }
+}
 
 .event-list {
   height: 7.5rem;
@@ -304,6 +313,20 @@ body {
     .edit-icon {
       width: 20px;
       height: 20px;
+    }
+
+  }
+  .hide-unhide-button{
+    background:#F04136;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .hide-unhide-icon{
+      width: 25px;
+      height: 25px;
     }
 
   }

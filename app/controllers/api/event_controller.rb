@@ -73,7 +73,7 @@ class Api::EventController < Api::ApplicationController
           EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank? #only leaf event can create form
         end
         event = Event.find(event.id)
-        render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer ,state_id: nil, current_user: current_user) }, status: 200
+        render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
         raise ActiveRecord::Rollback
@@ -115,8 +115,8 @@ class Api::EventController < Api::ApplicationController
     total = events.size
     events = events.order(created_at: :desc).limit(limit).offset(offset)
     render json: {
-      data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, language_code: params[:language_code],state_id: params[:state_id], current_user: current_user),
-      pinned_events: ActiveModelSerializers::SerializableResource.new(pinned_events, each_serializer: EventSerializer, language_code: params[:language_code],state_id: params[:state_id], current_user: current_user),
+      data: ActiveModelSerializers::SerializableResource.new(events, each_serializer: EventSerializer, language_code: params[:language_code], state_id: params[:state_id], current_user: current_user),
+      pinned_events: ActiveModelSerializers::SerializableResource.new(pinned_events, each_serializer: EventSerializer, language_code: params[:language_code], state_id: params[:state_id], current_user: current_user),
       message: ['Event list'],
       success: true,
       total: total,
@@ -131,7 +131,7 @@ class Api::EventController < Api::ApplicationController
     offset = params[:offset].present? ? params[:offset] : 0
     date = DateTime.now
     state_id = params[:state_id].present? ? params[:state_id] : current_user.country_state_id
-    events = Event.where(parent_id: nil, has_sub_event: true).or(Event.where(parent_id: nil, has_sub_event: false, published: true)).where("end_date >= ?", date).where("start_date <= ?", date)
+    events = Event.where(parent_id: nil, has_sub_event: true).or(Event.where(parent_id: nil, has_sub_event: false, published: true)).where("end_date >= ? AND start_date <= ?", date, date).where(is_hidden: false)
     events = events.joins(:event_locations).where(event_locations: { state_id: state_id })
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
     events = events.where(pinned: false)
@@ -268,7 +268,7 @@ class Api::EventController < Api::ApplicationController
   def pin_event
     begin
       event = Event.find_by(id: params[:event_id])
-      operation = params[:operation] == "pin" ? true: false
+      operation = params[:operation] == "pin" ? true : false
       event.update!(pinned: operation)
       if operation == false
         event.update!(position: nil)
@@ -289,6 +289,23 @@ class Api::EventController < Api::ApplicationController
         index = index + 1
       end
       render json: { success: true, message: "position updated successfully" }, status: :ok
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
+
+  def set_event_to_hidden
+    begin
+      operation = params[:is_hidden] == true
+      events = Event.where(id: params[:event_id])
+      children_event = events
+      loop do
+        children_event = Event.where(parent: children_event)
+        break if children_event.blank?
+        events = events.or(children_event)
+      end
+      events.update_all(is_hidden: operation)
+      render json: { success: true, message: "Record Updation for #{operation ? "Hide" : "Unhide" } Successfully" }, status: :ok
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end
