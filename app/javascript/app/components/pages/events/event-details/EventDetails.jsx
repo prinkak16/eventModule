@@ -93,9 +93,6 @@ const hideAndUnhideEvents=async (body)=>{
         const {data}=await hideUnhideEvents(body);
         if(data?.success){
             toast.success(data?.message);
-            // const updateParentEvent={...parentEvent};
-            // updateParentEvent["is_hidden"]=body?.is_hidden;
-            // setParentEvent(updateParentEvent);
             getEventDetails();
         }else{
             toast.error(data?.message);
