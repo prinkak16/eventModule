@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_13_063509) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_13_125100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -100,6 +100,23 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_13_063509) do
     t.boolean "is_hidden", default: false
     t.index ["deleted_at"], name: "index_events_on_deleted_at"
     t.index ["translated_title"], name: "index_events_on_translated_title", using: :gin
+  end
+
+  create_table "table_event_user_locations", force: :cascade do |t|
+    t.bigint "event_user_id"
+    t.string "location_type"
+    t.bigint "location_id"
+    t.integer "country_state_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "table_event_users", force: :cascade do |t|
+    t.bigint "event_id"
+    t.boolean "disabled"
+    t.string "phone_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "user_event_locations", force: :cascade do |t|
