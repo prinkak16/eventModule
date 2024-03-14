@@ -11,6 +11,7 @@ import ReportEmailModal from "../../../shared/ReportsModel/ReportEmailModal";
 import DraggableList from "./drag-and-drop-components/DraggableList";
 import {hideUnhideEvents} from "../../../../services/CommonServices/commonServices";
 import CircularProgress from "@mui/material/CircularProgress";
+import ReactLoader from "../../../shared/loader/Loader";
 
 
 const EventDetails = () => {
@@ -18,6 +19,7 @@ const EventDetails = () => {
 
     const {pathname} = useLocation();
     const navigate = useNavigate();
+    const [loader,setLoader]=useState(false);
     const [parentEvent, setParentEvent] = useState({});
     const [childEvents, setChildEVents] = useState([]);
     const [isChildEvent, setIsChildEvent] = useState(false)
@@ -29,6 +31,7 @@ const EventDetails = () => {
     const {id} = useParams();
 
     const getEventDetails = async () => {
+        setLoader(true);
         try {
             const {data} = await ApiClient.get('event/event_data', {params: {id}})
             if (data?.success) {
@@ -43,6 +46,8 @@ const EventDetails = () => {
         } catch (e) {
             toast.error(e?.message);
 
+        }finally {
+            setLoader(false);
         }
 
 
@@ -86,12 +91,12 @@ const hideAndUnhideEvents=async (body)=>{
     setHideButtonLoader(true)
     try{
         const {data}=await hideUnhideEvents(body);
-        console.log('data of hide ',data);
         if(data?.success){
             toast.success(data?.message);
-            const updateParentEvent={...parentEvent};
-            updateParentEvent["is_hidden"]=body?.is_hidden;
-            setParentEvent(updateParentEvent);
+            // const updateParentEvent={...parentEvent};
+            // updateParentEvent["is_hidden"]=body?.is_hidden;
+            // setParentEvent(updateParentEvent);
+            getEventDetails();
         }else{
             toast.error(data?.message);
         }
@@ -118,6 +123,7 @@ const hideAndUnhideEvents=async (body)=>{
 
     return (
         <div className={"event-details-main-container"}>
+            {loader?<ReactLoader/>:<>
             <ReportEmailModal reportModal={reportModal} setReportModal={setReportModal} reportEventId={reportEventId}/>
             <div className={"heading"}>Event Details</div>
             <EventDetailsCard event={parentEvent}/>
@@ -179,7 +185,8 @@ const hideAndUnhideEvents=async (body)=>{
                 </div>
             </>
             }
-
+</>
+            }
         </div>
     )
 }
