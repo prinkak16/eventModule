@@ -173,6 +173,15 @@ body {
   border-radius: 15px;
   padding: 0.8rem 1.5rem;
 }
+.active-hide-tag-container{
+  display: flex;
+  flex-direction: column;
+  gap:5px;
+  .hide-tag{
+    background: #fe938d;
+    color: #6e0802;
+  }
+}
 
 .event-list {
   height: 7.5rem;

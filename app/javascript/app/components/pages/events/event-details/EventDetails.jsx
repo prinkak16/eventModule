@@ -9,6 +9,8 @@ import './event-details.scss'
 import {toast} from "react-toastify";
 import ReportEmailModal from "../../../shared/ReportsModel/ReportEmailModal";
 import DraggableList from "./drag-and-drop-components/DraggableList";
+import {hideUnhideEvents} from "../../../../services/CommonServices/commonServices";
+import CircularProgress from "@mui/material/CircularProgress";
 
 
 const EventDetails = () => {
@@ -21,6 +23,8 @@ const EventDetails = () => {
     const [isChildEvent, setIsChildEvent] = useState(false)
     const [reportEventId, setReportEventId] = useState("");
     const [reportModal, setReportModal] = useState(false);
+    const [hideButtonLoader,setHideButtonLoader]=useState(false);
+
 
     const {id} = useParams();
 
@@ -43,12 +47,6 @@ const EventDetails = () => {
 
 
     }
-
-
-
-
-
-
 // handle drag function
 const onDragEnd = ({ destination, source }) => {
     // Dropped outside the list
@@ -84,6 +82,25 @@ const updateChildrenEventsPosition=async (body)=>{
         toast.error('Failed during position update')
     }
 }
+const hideAndUnhideEvents=async (body)=>{
+    setHideButtonLoader(true)
+    try{
+        const {data}=await hideUnhideEvents(body);
+        console.log('data of hide ',data);
+        if(data?.success){
+            toast.success(data?.message);
+            const updateParentEvent={...parentEvent};
+            updateParentEvent["is_hidden"]=body?.is_hidden;
+            setParentEvent(updateParentEvent);
+        }else{
+            toast.error(data?.message);
+        }
+    }catch (e){
+      toast.error(e?.message);
+    }finally {
+        setHideButtonLoader(false)
+    }
+}
 
     useEffect(() => {
         getEventDetails();
@@ -109,6 +126,16 @@ const updateChildrenEventsPosition=async (body)=>{
                     <div className={"add-event-button-container"}>
                         <Button onClick={() => handleClick('create_event')} className={"add-event-button"}
                                 variant={"contained"}>+ Add Sub Event</Button>
+                        <Button disabled={hideButtonLoader} onClick={() => {
+                            const body = {
+                                event_id: parentEvent?.id,
+                                is_hidden: !parentEvent?.is_hidden
+                            }
+                            hideAndUnhideEvents(body)
+                        }} className={`add-event-button ${hideButtonLoader&&'loader-button-style'}`}
+                                variant={"contained"}>{hideButtonLoader?<CircularProgress className={"loader-style"}/>: (parentEvent?.is_hidden?"UnHide event":"Hide event")}</Button>
+
+
                     </div>
                 }
 
@@ -126,8 +153,19 @@ const updateChildrenEventsPosition=async (body)=>{
             {!parentEvent?.has_sub_event && <>
 
                     <div className={"add-event-button-container"} style={{display:"flex", gap:"20px"}}>
-                        {parentEvent?.status?.name?.toLowerCase() !== 'expired' && <Button onClick={() => handleClick('go_to_form')} className={"add-event-button"}
-                                variant={"contained"}>Go to form</Button>}
+                        {parentEvent?.status?.name?.toLowerCase() !== 'expired' &&
+                            <Button onClick={() => handleClick('go_to_form')} className={"add-event-button"}
+                                variant={"contained"}>Go to form</Button>
+                        }
+                        <Button disabled={hideButtonLoader} onClick={() => {
+                            const body = {
+                                event_id: parentEvent?.id,
+                                is_hidden: !parentEvent?.is_hidden
+                            }
+                            hideAndUnhideEvents(body)
+                        }} className={`add-event-button ${hideButtonLoader&&'loader-button-style'}`}
+                                variant={"contained"}> {hideButtonLoader?<CircularProgress className={"loader-style"}/>: (parentEvent?.is_hidden?"UnHide event":"Hide event")} </Button>
+
                         <Button onClick={() => {
                             setReportEventId(id)
                             setReportModal(true)

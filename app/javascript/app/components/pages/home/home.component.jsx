@@ -26,6 +26,7 @@ import {
 import moment from "moment";
 import {ImageNotFound} from "../../../assests/png";
 import Button from "@mui/material/Button";
+import CircularProgress from '@mui/material/CircularProgress';
 import ReportEmailModal from "../../shared/ReportsModel/ReportEmailModal";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import {hideUnhideEvents} from "../../../services/CommonServices/commonServices";
@@ -52,7 +53,7 @@ const HomeComponent = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [clearFilter, setClearFilter] = useState(false);
     const [eventName, setEventName] = useState(null);
-
+    const [hideButtonLoader, setHideButtonLoader] = useState(false);
     const filterList = ["Level", "State", "Event Status"];
     const [filtersFieldData, setFiltersFieldData] = useState({
         levels: [{id: "", name: ""}],
@@ -280,6 +281,7 @@ const HomeComponent = () => {
     }
 
     const hideAndUnhideEvents = async (body) => {
+        setHideButtonLoader(true);
         try {
             const {data} = await hideUnhideEvents(body);
             if (data?.success) {
@@ -292,19 +294,15 @@ const HomeComponent = () => {
                 setAllEventList(updatedEventList);
                 toast.success(data?.message);
 
+            } else {
+                toast.error(data?.success)
             }
-            toast.error(data?.success)
         } catch (e) {
             toast.error(e?.message);
         } finally {
-
+            setHideButtonLoader(false)
         }
     }
-
-    useEffect(() => {
-        console.log('event list ', allEventList)
-    }, [allEventList])
-
     const RenderEventIcon = (event_level) => {
         if (event_level.toLowerCase() === 'parent') {
             return <span className={"event-primary-icon-container"}><PrimaryEventIcon/></span>
@@ -392,9 +390,17 @@ const HomeComponent = () => {
                         Level : {event.data_level}
                       </span>
                                 </div>
-                                <div className={`${event.status.class_name} active-button`}>
-                                    <span>{event.status.name}</span>
+                                <div className={"active-hide-tag-container"}>
+                                    <div className={`${event.status.class_name} active-button`}>
+                                        <span>{event.status.name}</span>
+                                    </div>
+                                    {event?.is_hidden &&
+                                        <div className={`${event.status.class_name} active-button hide-tag`}>
+                                            <span>Hidden</span>
+                                        </div>
+                                    }
                                 </div>
+
                                 <div>
                                     {RenderEventIcon(event?.event_level)}
                                 </div>
@@ -456,8 +462,9 @@ const HomeComponent = () => {
                                 </IconButton>
                                 <span className="font1-2rem">Edit</span>
                             </div>
-                            <div
-                                className="edit-bar-sub-div cursor-pointer"
+                            <button
+                                disabled={hideButtonLoader}
+                                className="edit-bar-sub-div cursor-pointer hide-button-style"
                                 onClick={() => {
                                     const body = {
                                         event_id: event?.id,
@@ -467,15 +474,23 @@ const HomeComponent = () => {
                                 }
                                 }
                             >
-                                <IconButton>
-                                    <div className={"hide-unhide-button"}>
-                                        {event?.is_hidden ?  <UnhideButtonIcon className={"hide-unhide-icon"}/> :
+
+
+
+                                <IconButton disabled={hideButtonLoader}>
+                                    {hideButtonLoader && <CircularProgress/>}
+                                    {!hideButtonLoader&&<div className={"hide-unhide-button"}>
+                                        {event?.is_hidden ? <UnhideButtonIcon className={"hide-unhide-icon"}/> :
                                             <HideButtonIcon className={"hide-unhide-icon"}/>}
                                     </div>
+                                    }
 
                                 </IconButton>
+
+
                                 <span className="font1-2rem">{event?.is_hidden ? "Unhide" : "Hide"}</span>
-                            </div>
+                            </button>
+
 
 
                             {/*<div className="edit-bar-sub-div cursor-pointer" onClick={() => {*/}

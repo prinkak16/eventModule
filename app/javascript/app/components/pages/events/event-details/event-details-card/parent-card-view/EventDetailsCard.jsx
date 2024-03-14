@@ -111,8 +111,15 @@ const EventDetailsCard = ({event}) => {
             </div>
 
             <div className="event-details-list-third-part">
-                <div className={`${event?.status?.class_name} active-button-style`}>
-                    <span>{event?.status?.name}</span>
+                <div className={"active-hide-tag-container"}>
+                    <div className={`${event?.status?.class_name} active-button-style`}>
+                        <span>{event?.status?.name}</span>
+                    </div>
+                    {event?.is_hidden&&
+                    <div className={`${event?.status?.class_name} active-button-style hide-tag`}>
+                        <span>Hidden</span>
+                    </div>
+                    }
                 </div>
                 <div>{RenderEventIcon(event?.event_level)}</div>
 
