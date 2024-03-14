@@ -3,13 +3,13 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 25%;
-  hight:180px;
+  width: 30%;
+  hight:190px;
   border: none;
   boxShadow: 24px;
   background: white;
   padding: 15px;
-  border-radius: 30px;
+  border-radius: 20px;
 
 }
 
@@ -23,11 +23,16 @@
     gap:10px;
     .title{
       font-weight: 400;
-      font-size:24px;
+      font-size:32px;
     }
     .message{
       font-width:400px;
-      font-size: 15px;
+      font-size: 21px;
+    }
+    .note{
+      color:#888282;
+      font-width:300px;
+      font-size: 17px;
     }
   }
 
@@ -50,11 +55,51 @@
   }
 
 }
-
+@media screen and (max-width: 1000px) {
+  .confirmation-modal-main-container {
+    width: 60%;
+  }
+}
 
 @media screen and (max-width: 450px) {
   .confirmation-modal-main-container {
     width:90%;
+  }
+
+  .confirmation-modal-container {
+    .title-message-container{
+      .title{
+        font-weight: 400;
+        font-size:24px;
+      }
+      .message{
+        font-width:400px;
+        font-size: 15px;
+      }
+      .note{
+        font-width:300px;
+        font-size: 11px;
+      }
+    }
+
+    .confirmation-modal-buttons {
+      display: flex;
+      width: 100%;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.5rem;
+      .no-button {
+        color:#FF9559;
+        font-size:15px;
+      }
+
+      .yes-button {
+        color:#FF9559;
+        font-size:15px;
+      }
+
+    }
+
   }
 
 }

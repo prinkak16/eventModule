@@ -31,20 +31,21 @@ import ReportEmailModal from "../../shared/ReportsModel/ReportEmailModal";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import {hideUnhideEvents} from "../../../services/CommonServices/commonServices";
 
+//static data
+const eventLevelArray = [{id: 1, name: "Parent"}, {id: 2, name: "Intermediate"}, {id: 3, name: "Leaf"}]
+const eventStatusArray = [{
+    id: 1, name: "Active",
+}, {
+    id: 2, name: "Expired",
+}, {
+    id: 3, name: "Upcoming",
+},];
+
+const filterList = ["Level", "State", "Event Status"];
+
 const HomeComponent = () => {
-    const eventStatusArray = [{
-        id: 1, name: "Active",
-    }, {
-        id: 2, name: "Expired",
-    }, {
-        id: 3, name: "Upcoming",
-    },];
 
-    const eventLevelArray = [{id: 1, name: "Parent"}, {id: 2, name: "Intermediate"}, {id: 3, name: "Leaf"}]
-
-    const imgDefault = "https://storage.googleapis.com/public-saral/public_document/upload-img.jpg";
     const navigate = useNavigate();
-    const [eventsList, setEventsList] = useState([]);
     const [allEventList, setAllEventList] = useState([]);
 
     const [loader, setLoader] = useState(false);
@@ -54,7 +55,6 @@ const HomeComponent = () => {
     const [clearFilter, setClearFilter] = useState(false);
     const [eventName, setEventName] = useState(null);
     const [hideButtonLoader, setHideButtonLoader] = useState(false);
-    const filterList = ["Level", "State", "Event Status"];
     const [filtersFieldData, setFiltersFieldData] = useState({
         levels: [{id: "", name: ""}],
         states: [{id: "", name: ""}],
@@ -69,13 +69,20 @@ const HomeComponent = () => {
         event_status_id: {name: "", id: ""},
         event_level: {name: "Parent", id: "1"},
     });
-
-
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [confirmationStatus, setConfirmationStatus] = useState(false);
     const [eventDeleteId, setEventDeleteId] = useState(-1);
     const [reportEventId, setReportEventId] = useState("");
     const [reportModal, setReportModal] = useState(false);
+
+    //states relate to hide-unhide-modal
+   const [hideUnhideData,setHideUnhideData]=useState({title:"",
+                                                                           message:"",
+                                                                           body:"",
+                                                                           confirmationButtonText:"",
+       note:"",
+   event_id:"",
+   is_hidden:""});
 
     useEffect(() => {
         getEventsList();
@@ -87,7 +94,7 @@ const HomeComponent = () => {
 
     useEffect(() => {
         if (confirmationStatus) {
-            archieveHandler();
+            hideAndUnhideEvents();
         }
     }, [confirmationStatus]);
 
@@ -108,8 +115,6 @@ const HomeComponent = () => {
             clearTimeout(timer);
         };
     }, [eventName]);
-
-
     async function getApisValue(filerType, apiPath) {
         let levels = await fetch(`api/event/${apiPath}`, {
             method: "GET", headers: {
@@ -212,7 +217,6 @@ const HomeComponent = () => {
                 },
             });
             if (data?.success) {
-                setEventsList(data?.data);
                 setAllEventList(data?.data);
                 setTotalCount(data?.total ?? data?.data?.length);
                 window.scrollTo({top: 0});
@@ -241,19 +245,15 @@ const HomeComponent = () => {
     function EditEvent(id) {
         navigate(`/events/edit/${id}`);
     }
-
-
-    const archieveHandler = async () => {
-        const {data} = await ApiClient.get(`event/archive/${eventDeleteId}`)
-        if (data?.success) {
-            setAllEventList(allEventList?.filter((event) => event?.id !== eventDeleteId));
-        }
-        setConfirmationStatus(false);
-
-
-    }
-
-
+    // const archieveHandler = async () => {
+    //     const {data} = await ApiClient.get(`event/archive/${eventDeleteId}`)
+    //     if (data?.success) {
+    //         setAllEventList(allEventList?.filter((event) => event?.id !== eventDeleteId));
+    //     }
+    //     setConfirmationStatus(false);
+    //
+    //
+    // }
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -280,7 +280,9 @@ const HomeComponent = () => {
         navigate(`/events/${event_id}`)
     }
 
-    const hideAndUnhideEvents = async (body) => {
+    const hideAndUnhideEvents = async () => {
+        const body={is_hidden:!hideUnhideData?.is_hidden,
+        event_id:hideUnhideData?.event_id}
         setHideButtonLoader(true);
         try {
             const {data} = await hideUnhideEvents(body);
@@ -301,7 +303,17 @@ const HomeComponent = () => {
             toast.error(e?.message);
         } finally {
             setHideButtonLoader(false)
+            setConfirmationStatus(false);
         }
+    }
+
+    const enableHideConfirmationModal=(body)=>{
+        const title=body?.is_hidden?"Unhide Event":"Hide Event";
+        const message=body?.is_hidden?"Are you sure you want to unhide the event ?":"Are you sure you want to hide the event";
+        const confirmationButtonText=body?.is_hidden?"Unhide":"Hide";
+       const  note=body?.is_hidden?"Unhiding this event will show its sub-events to users": "Hiding this event will hide its sub-events from users"
+        setHideUnhideData((prevData)=>({...prevData,message: message,title: title,confirmationButtonText: confirmationButtonText,event_id:body?.event_id,is_hidden: body?.is_hidden,note:note}))
+        setShowConfirmationModal(true)
     }
     const RenderEventIcon = (event_level) => {
         if (event_level.toLowerCase() === 'parent') {
@@ -315,9 +327,10 @@ const HomeComponent = () => {
     }
 
     return <div className="home-main-container">
-        <ConfirmationModal message="Are you sure want to archive ?" showConfirmationModal={showConfirmationModal}
+        <ConfirmationModal title={hideUnhideData?.title} message={hideUnhideData?.message} note={hideUnhideData?.note} showConfirmationModal={showConfirmationModal}
                            setShowConfirmationModal={setShowConfirmationModal}
-                           setConfirmationStatus={setConfirmationStatus}/>
+                           setConfirmationStatus={setConfirmationStatus}
+                           confirmationButtonText={hideUnhideData?.confirmationButtonText}/>
         <ReportEmailModal reportModal={reportModal} setReportModal={setReportModal} reportEventId={reportEventId}/>
         {loader ? <Loader
             type="bubble-ping"
@@ -468,9 +481,9 @@ const HomeComponent = () => {
                                 onClick={() => {
                                     const body = {
                                         event_id: event?.id,
-                                        is_hidden: !event?.is_hidden
+                                        is_hidden:event?.is_hidden
                                     }
-                                    hideAndUnhideEvents(body)
+                                    enableHideConfirmationModal(body)
                                 }
                                 }
                             >
