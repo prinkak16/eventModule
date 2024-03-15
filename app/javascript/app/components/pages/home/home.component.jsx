@@ -76,13 +76,15 @@ const HomeComponent = () => {
     const [reportModal, setReportModal] = useState(false);
 
     //states relate to hide-unhide-modal
-   const [hideUnhideData,setHideUnhideData]=useState({title:"",
-                                                                           message:"",
-                                                                           body:"",
-                                                                           confirmationButtonText:"",
-       note:"",
-   event_id:"",
-   is_hidden:""});
+    const [hideUnhideData, setHideUnhideData] = useState({
+        title: "",
+        message: "",
+        body: "",
+        confirmationButtonText: "",
+        note: "",
+        event_id: "",
+        is_hidden: ""
+    });
 
     useEffect(() => {
         getEventsList();
@@ -115,6 +117,7 @@ const HomeComponent = () => {
             clearTimeout(timer);
         };
     }, [eventName]);
+
     async function getApisValue(filerType, apiPath) {
         let levels = await fetch(`api/event/${apiPath}`, {
             method: "GET", headers: {
@@ -245,6 +248,7 @@ const HomeComponent = () => {
     function EditEvent(id) {
         navigate(`/events/edit/${id}`);
     }
+
     // const archieveHandler = async () => {
     //     const {data} = await ApiClient.get(`event/archive/${eventDeleteId}`)
     //     if (data?.success) {
@@ -281,8 +285,10 @@ const HomeComponent = () => {
     }
 
     const hideAndUnhideEvents = async () => {
-        const body={is_hidden:!hideUnhideData?.is_hidden,
-        event_id:hideUnhideData?.event_id}
+        const body = {
+            is_hidden: !hideUnhideData?.is_hidden,
+            event_id: hideUnhideData?.event_id
+        }
         setHideButtonLoader(true);
         try {
             const {data} = await hideUnhideEvents(body);
@@ -307,12 +313,20 @@ const HomeComponent = () => {
         }
     }
 
-    const enableHideConfirmationModal=(body)=>{
-        const title=body?.is_hidden?"Unhide Event":"Hide Event";
-        const message=body?.is_hidden?"Are you sure you want to unhide the event ?":"Are you sure you want to hide the event";
-        const confirmationButtonText=body?.is_hidden?"Unhide":"Hide";
-       const  note=body?.is_hidden?"Unhiding this event will show its sub-events to users": "Hiding this event will hide its sub-events from users"
-        setHideUnhideData((prevData)=>({...prevData,message: message,title: title,confirmationButtonText: confirmationButtonText,event_id:body?.event_id,is_hidden: body?.is_hidden,note:note}))
+    const enableHideConfirmationModal = (body) => {
+        const title = body?.is_hidden ? "Unhide Event" : "Hide Event";
+        const message = body?.is_hidden ? "Are you sure you want to unhide the event ?" : "Are you sure you want to hide the event";
+        const confirmationButtonText = body?.is_hidden ? "Unhide" : "Hide";
+        const note = body?.is_hidden ? "Unhiding this event will show its sub-events to users" : "Hiding this event will hide its sub-events from users"
+        setHideUnhideData((prevData) => ({
+            ...prevData,
+            message: message,
+            title: title,
+            confirmationButtonText: confirmationButtonText,
+            event_id: body?.event_id,
+            is_hidden: body?.is_hidden,
+            note: note
+        }))
         setShowConfirmationModal(true)
     }
     const RenderEventIcon = (event_level) => {
@@ -327,7 +341,8 @@ const HomeComponent = () => {
     }
 
     return <div className="home-main-container">
-        <ConfirmationModal title={hideUnhideData?.title} message={hideUnhideData?.message} note={hideUnhideData?.note} showConfirmationModal={showConfirmationModal}
+        <ConfirmationModal title={hideUnhideData?.title} message={hideUnhideData?.message} note={hideUnhideData?.note}
+                           showConfirmationModal={showConfirmationModal}
                            setShowConfirmationModal={setShowConfirmationModal}
                            setConfirmationStatus={setConfirmationStatus}
                            confirmationButtonText={hideUnhideData?.confirmationButtonText}/>
@@ -481,7 +496,7 @@ const HomeComponent = () => {
                                 onClick={() => {
                                     const body = {
                                         event_id: event?.id,
-                                        is_hidden:event?.is_hidden
+                                        is_hidden: event?.is_hidden
                                     }
                                     enableHideConfirmationModal(body)
                                 }
@@ -489,10 +504,9 @@ const HomeComponent = () => {
                             >
 
 
-
                                 <IconButton disabled={hideButtonLoader}>
                                     {hideButtonLoader && <CircularProgress/>}
-                                    {!hideButtonLoader&&<div className={"hide-unhide-button"}>
+                                    {!hideButtonLoader && <div className={"hide-unhide-button"}>
                                         {event?.is_hidden ? <UnhideButtonIcon className={"hide-unhide-icon"}/> :
                                             <HideButtonIcon className={"hide-unhide-icon"}/>}
                                     </div>
@@ -503,7 +517,6 @@ const HomeComponent = () => {
 
                                 <span className="font1-2rem">{event?.is_hidden ? "Unhide" : "Hide"}</span>
                             </button>
-
 
 
                             {/*<div className="edit-bar-sub-div cursor-pointer" onClick={() => {*/}
