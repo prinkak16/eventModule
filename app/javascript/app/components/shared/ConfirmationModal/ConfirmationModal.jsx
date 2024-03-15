@@ -38,7 +38,7 @@ export default function ConfirmationModal({  title,
                         <Typography className={"message"}>
                             {message}
                         </Typography>  <Typography className={"note"}>
-                            {note? `Note : ${note}`:""}
+                            {note? `Note: ${note}`:""}
                         </Typography>
                     </div>
                     <div className="confirmation-modal-buttons">

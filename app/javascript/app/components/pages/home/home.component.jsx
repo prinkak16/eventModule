@@ -315,7 +315,7 @@ const HomeComponent = () => {
 
     const enableHideConfirmationModal = (body) => {
         const title = body?.is_hidden ? "Unhide Event" : "Hide Event";
-        const message = body?.is_hidden ? "Are you sure you want to unhide the event ?" : "Are you sure you want to hide the event";
+        const message = body?.is_hidden ? "Are you sure you want to unhide the event?" : "Are you sure you want to hide the event?";
         const confirmationButtonText = body?.is_hidden ? "Unhide" : "Hide";
         const note = body?.is_hidden ? "Unhiding this event will show its sub-events to users" : "Hiding this event will hide its sub-events from users"
         setHideUnhideData((prevData) => ({
