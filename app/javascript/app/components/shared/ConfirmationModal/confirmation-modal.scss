@@ -3,7 +3,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 30%;
+  width: 38%;
   hight:190px;
   border: none;
   boxShadow: 24px;
@@ -55,7 +55,7 @@
   }
 
 }
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1200px) {
   .confirmation-modal-main-container {
     width: 60%;
   }
