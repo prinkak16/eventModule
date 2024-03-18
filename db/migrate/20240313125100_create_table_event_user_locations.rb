@@ -1,6 +1,6 @@
 class CreateTableEventUserLocations < ActiveRecord::Migration[7.0]
   def change
-    create_table :table_event_user_locations do |t|
+    create_table :event_user_locations do |t|
       t.bigint :event_user_id
       t.string :location_type
       t.bigint :location_id

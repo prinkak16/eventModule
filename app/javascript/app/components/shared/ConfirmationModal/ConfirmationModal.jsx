@@ -10,6 +10,8 @@ const style = {};
 
 export default function ConfirmationModal({  title,
                                               message,
+                                              note,
+                                              confirmationButtonText,
                                               showConfirmationModal,
                                               setShowConfirmationModal,
                                               setConfirmationStatus
@@ -35,11 +37,13 @@ export default function ConfirmationModal({  title,
                         <Typography className={"title"}>{title}</Typography>
                         <Typography className={"message"}>
                             {message}
+                        </Typography>  <Typography className={"note"}>
+                            {note? `Note: ${note}`:""}
                         </Typography>
                     </div>
                     <div className="confirmation-modal-buttons">
                         <Button className="no-button" onClick={handleClose}>No thanks</Button>
-                        <Button variant={"text"} className="yes-button" onClick={handleConfirmation}>Delete</Button>
+                        <Button variant={"text"} className="yes-button" onClick={handleConfirmation}>{confirmationButtonText}</Button>
                     </div>
                 </div>
             </Box>

@@ -113,7 +113,7 @@ const FormSubmission = () => {
     return (<Box className="form-event-submission-container">
         <ConfirmationModal title={"Delete Reporting"} message="Are you sure you want to delete the reporting?" showConfirmationModal={showConfirmationModal}
                            setShowConfirmationModal={setShowConfirmationModal}
-                           setConfirmationStatus={setConfirmationStatus}/>
+                           setConfirmationStatus={setConfirmationStatus} confirmationButtonText={"Delete"}/>
         {isLoading ? <ReactLoader/> : <>
             <div className="event-image-container">
                 <img src={eventDetails?.image_url ? eventDetails?.image_url : ImageNotFound}

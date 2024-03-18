@@ -98,9 +98,20 @@ body {
     margin-right: 15px;
     gap: 10px;
 
-    .active-button-style {
-      margin: 0;
+    .active-hide-tag-container{
+      display: flex;
+      flex-direction: column;
+      gap:5px;
+      .hide-tag{
+        background: #fe938d;
+        color: #6e0802;
+      }
+      .active-button-style {
+        margin: 0;
+      }
     }
+
+
   }
 
 }
