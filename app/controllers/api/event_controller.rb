@@ -312,4 +312,32 @@ class Api::EventController < Api::ApplicationController
     end
   end
 
+  def get_latest_uploaded_csv
+    begin
+      event = Event.joins(:report_file_attachment).order(created_at: :desc).limit(5)
+      data = []
+      event.each do |record|
+        data << { file_name: record.report_file.blob.file_name.to_s, date: record.report_file.created_at }
+      end
+      render json: { success: true, message: "Record Fetched Successfully", data: data }, status: :ok
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
+
+  def get_event_user_location
+    begin
+      data = []
+      event = Event.find_by(id: params[:event_id])
+      location_data = EventUserLocation.where(event_id: event).group(:location_type).count
+      event_user_location = EventUserLocation.joins(:event_user).where(event_id: event)
+      event_user_location.each do |doc|
+        data << { phone_number: doc.event_user.phone_number, state: doc.country_state.name, location_type: doc.location_type, location_id: doc.location_id }
+      end
+      render json: { success: true, message: "Record Fetched Successfully", location_data: location_data,data: data }, status: :ok
+    rescue => e
+      render json: { success: false, message: e.message }, status: :e.message
+    end
+  end
+
 end

@@ -1,4 +1,6 @@
 module UserUploadCsvJob
+  include ApplicationHelper
+  require 'csv'
 
   def self.perform(event_id = nil)
     event = Event.find_by(id: event_id)
@@ -12,48 +14,67 @@ module UserUploadCsvJob
       file.set_encoding(Encoding.find("ISO-8859-1"))
     end
     chunk_size = 5000
+    order = get_event_location_order(event.data_level.name)
+    level = order.last
     CSV.parse(file.read, headers: true).each_slice(chunk_size) do |chunk|
       insert_array = []
       chunk.each do |row|
-        event_user = EventUser.new
-        event_user.event_id = event.id
-        event_user.phone_number = row['phone_number']
-        event_user.event_user_locations.build(country_state_id: row['country_state_id'], )
+        country_state = CountryState.find_by_name(row['country_state'])
+        case level
+        when 'CountryState'
+          location = level.constantize.where(name: row['location_name'])&.first
+        when 'Mandal'
+          location = Zila.where(name: row['location_filter'], country_state: country_state)&.first.get_mandals&.where(name: row['location_name'])&.first
+        when 'ShaktiKendra'
+          location = AssemblyConstituency.where(number: row['location_filter'], country_state: country_state)&.first&.get_shakti_kendras&.where(name: row['location_name'])&.first
+        when 'Booth'
+          location = AssemblyConstituency.where(number: row['location_filter'], country_state: country_state)&.first&.get_booths&.where(number: row['location_name'])&.first
+        when 'ParliamentaryConstituency', 'AssemblyConstituency'
+          location = level.constantize.where(number: row['location_name'], country_state: country_state)&.first
+        else
+          location = level.constantize.where(name: row['location_name'], country_state: country_state)&.first
+        end
+        if location.present?
+          event_user = EventUser.new
+          event_user.event_id = event.id
+          event_user.phone_number = row['phone_number']
+          event_user.event_user_locations.build(country_state_id: row['country_state_id'], location: location )
+          insert_array << event_user
+        else
+          next
+        end
+      end
+      begin
+        EventUser.import insert_array, recursive: true, batch_size: 5000, on_duplicate_key_ignore: true
+      rescue => e
+        puts e.message
       end
     end
   end
 
-end
-
-
-all_callees.find_in_batches(batch_size: 1000) do |batch|
-  insert_array = []
-  batch.each do |ac|
-    new_callee = ac.dup
-    new_callee.campaign_id = dup_camp_id
-    new_callee.user_id = nil
-    new_callee.assigned_at = nil
-    new_callee.retry_count = nil
-    new_callee.is_disposed = false
-    new_callee.back_off_time = nil
-    new_callee.call_status_type_id = nil
-    new_callee.rejected_at = nil
-    new_callee.verified_at = nil
-    new_callee.mismatched_at = nil
-    new_callee.dial_count = 0
-    new_callee.last_user_id = nil
-    new_callee.aasm_state = 'unassigned'
-    ac.callee_fields.each do |cf|
-      new_callee.callee_fields.build(name: cf.name, value: cf.value, is_correct: cf.is_correct, alternate_value: cf.alternate_value)
+  def self.get_event_location_order(data_level = nil)
+    case data_level
+    when "Pradesh"
+      ["CountryState"]
+    when "Vibhag"
+      ["CountryState", "StateZone"]
+    when "Sambhag"
+      ["CountryState", "StateZone"]
+    when "Lok Sabha"
+      ["CountryState", "ParliamentaryConstituency"]
+    when "Zila"
+      ["CountryState", "Zila"]
+    when "Vidhan Sabha"
+      ["CountryState", "AssemblyConstituency"]
+    when "Mandal"
+      ["CountryState", "Zila", "Mandal"]
+    when "Shakti Kendra"
+      ["CountryState", "AssemblyConstituency", "ShaktiKendra"]
+    when "Booth"
+      ["CountryState", "AssemblyConstituency", "Booth"]
+    when "Panna"
+      ["CountryState", "AssemblyConstituency", "Booth", "Panna"]
     end
-    insert_array << new_callee
   end
 
-  begin
-    Callee.import insert_array, recursive: true, batch_size: 10_00, on_duplicate_key_ignore: true
-  rescue ActiveRecord::RecordNotUnique => _
-    # ignored
-    # No need to report database validation errors due to race conditions.
-    puts "Got RecordNotUnique exception"
-  end
 end

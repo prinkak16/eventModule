@@ -242,7 +242,7 @@ module FetchReportsJob
           '$or': [
             {
               updatedAt: {
-                '$gte': event.report_file.created_at
+                '$gte': event.report_file.created_at - 30.minutes
               }
             },
             {
