@@ -328,9 +328,11 @@ class Api::EventController < Api::ApplicationController
   def get_event_user_location
     begin
       data = []
+      limit = params[:limit].present? ? params[:limit] : 10
+      offset = params[:offset].present? ? params[:offset] : 0
       event = Event.find_by(id: params[:event_id])
       location_data = EventUserLocation.where(event_id: event).group(:location_type).count
-      event_user_location = EventUserLocation.joins(:event_user).where(event_id: event)
+      event_user_location = EventUserLocation.joins(:event_user).where(event_id: event).limit(limit).offset(offset)
       event_user_location.each do |doc|
         data << { phone_number: doc.event_user.phone_number, state: doc.country_state.name, location_type: doc.location_type, location_id: doc.location_id }
       end
