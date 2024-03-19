@@ -340,7 +340,7 @@ class Api::EventController < Api::ApplicationController
         total_count += value
       end
       location_data["Total Count"] = total_count
-      event_user_location = EventUserLocation.joins(:event_user).where(event_id: event).limit(limit).offset(offset)
+      event_user_location = EventUserLocation.joins(:event_user).where(event_user_id: event_user.id).where("event_users.phone_number LIKE ?", "%#{params[:search_query]}%").limit(limit).offset(offset)
       event_user_location.each do |doc|
         data << { phone_number: doc.event_user.phone_number, state: doc.country_state.name, location_type: doc.location_type, location_id: doc.location_id }
       end
