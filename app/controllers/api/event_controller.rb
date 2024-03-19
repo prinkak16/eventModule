@@ -345,4 +345,19 @@ class Api::EventController < Api::ApplicationController
     end
   end
 
+  def remove_event_user_location
+    begin
+      event_user = EventUser.find_by(event_id: params[:event_id], phone_number: current_user.phone_number)
+      country_state_id = CountryState.find_by(name: params[:country_state_name])
+      event_user_location = EventUserLocation.find_by(event_user_id: event_user.id, location_type: params[:location_type], location_id: params[:location_id], country_state_id: country_state_id)
+      event_user_location.destroy!
+      locations = EventUserLocation.where(event_user_id: event_user.id)
+      if locations.size.blank?
+        event_user.destroy!
+      end
+      render json: { success: true, message: "Record Deleted Successfully" }, status: :ok
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
 end
