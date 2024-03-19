@@ -333,15 +333,20 @@ class Api::EventController < Api::ApplicationController
       data = []
       limit = params[:limit].present? ? params[:limit] : 10
       offset = params[:offset].present? ? params[:offset] : 0
-      event = Event.find_by(id: params[:event_id])
-      location_data = EventUserLocation.where(event_id: event).group(:location_type).count
+      event_user = EventUser.find_by(event_id: params[:event_id], phone_number: current_user.phone_number)
+      location_data = EventUserLocation.where(event_user_id: event_user.id).group(:location_type).count
+      total_count = 0
+      location_data.each_value do |value|
+        total_count += value
+      end
+      location_data["Total Count"] = total_count
       event_user_location = EventUserLocation.joins(:event_user).where(event_id: event).limit(limit).offset(offset)
       event_user_location.each do |doc|
         data << { phone_number: doc.event_user.phone_number, state: doc.country_state.name, location_type: doc.location_type, location_id: doc.location_id }
       end
       render json: { success: true, message: "Record Fetched Successfully", location_data: location_data,data: data }, status: :ok
     rescue => e
-      render json: { success: false, message: e.message }, status: :e.message
+      render json: { success: false, message: e.message }, status: :bad_request
     end
   end
 
