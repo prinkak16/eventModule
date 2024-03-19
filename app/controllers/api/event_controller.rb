@@ -73,6 +73,9 @@ class Api::EventController < Api::ApplicationController
           EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank? #only leaf event can create form
         end
         event = Event.find(event.id)
+        if event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.order(created_at: :desc).first.id])
+          Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.order(created_at: :desc).first.id )
+        end
         render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
@@ -131,7 +134,7 @@ class Api::EventController < Api::ApplicationController
     offset = params[:offset].present? ? params[:offset] : 0
     date = DateTime.now
     state_id = params[:state_id].present? ? params[:state_id] : current_user.country_state_id
-    events = Event.where(parent_id: nil, has_sub_event: true).or(Event.where(parent_id: nil, has_sub_event: false, published: true)).where("end_date >= ? AND start_date <= ?", date, date).where(is_hidden: false)
+    events = Event.where(parent_id: nil, has_sub_event: true).or(Event.where(parent_id: nil, has_sub_event: false, published: true)).or(Event.includes(:event_users).where(event_users: { phone_number: current_user.phone_number })).where("end_date >= ? AND start_date <= ?", date, date).where(is_hidden: false)
     events = events.joins(:event_locations).where(event_locations: { state_id: state_id })
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
     events = events.where(pinned: false)
