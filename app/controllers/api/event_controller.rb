@@ -360,4 +360,16 @@ class Api::EventController < Api::ApplicationController
       render json: { success: false, message: e.message }, status: :bad_request
     end
   end
+
+  def schedule_event_user_location_job
+    begin
+      event = Event.find_by(id: params[:event_id])
+      event.csv_file.attach(params[:file])
+      if !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.order(created_at: :desc).first.id])
+        Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.order(created_at: :desc).first.id )
+      end
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
 end
