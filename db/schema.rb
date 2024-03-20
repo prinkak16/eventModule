@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_13_125100) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_15_064254) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -74,7 +74,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_13_125100) do
     t.datetime "deleted_at"
     t.index ["created_at"], name: "index_event_submissions_on_created_at", order: :desc
     t.index ["deleted_at"], name: "index_event_submissions_on_deleted_at"
-    t.index ["event_id", "user_id", "submission_id", "form_id"], name: "index_event_submissions_on_event_user_submission_form"
     t.index ["event_id"], name: "index_event_submissions_on_event_id"
   end
 

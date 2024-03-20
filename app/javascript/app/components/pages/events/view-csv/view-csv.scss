@@ -1,0 +1,96 @@
+.view-csv-main-container{
+  display: flex;
+  flex-direction: column;
+  gap:30px;
+  .recent-file-and-button-container{
+    font-size: 16px;
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid #eaeaeb;
+    padding-bottom: 15px;
+    .recent-files-dropdown-container{
+      border: none;
+      outline: none;
+      background: #f7f7f7;
+    }
+    .csv-button{
+      display: flex;
+      height: 40px;
+      border-radius: 10px ;
+      justify-content: center ;
+      background: #55545E;
+      color: #ffffff;
+      border: none;
+      padding:15px 25px;
+      align-items: center;
+      font-size: 16px;
+      font-weight: 500;
+    }
+}
+  .level-filer-container{
+    display: flex;
+    width: 100%;
+    justify-content:space-between;
+    flex-wrap: wrap;
+    gap:10px;
+    .level-filter-chip{
+      padding:20px 25px;
+      background: #E3ECFF;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .highlighted-chip{
+     background: #163560;
+      color:white;
+    }
+
+  }
+  .search-bar-container{
+  display: flex;
+    gap:30px;
+    .search-bar{
+      width: 31%;
+      border-radius:10px;
+      height:40px;
+      border:1px solid #ababab;
+      outline: none;
+      padding:10px;
+      background: #fafafb;
+    }
+  }
+  .table-container{
+    display: flex;
+    flex-direction: column;
+    gap:30px;
+    border-right:100px;
+    table{
+      width: 100%;
+      border-radius: 10px;
+      border-spacing: 0;
+      border-collapse: separate;
+      border: 1.5px solid #cfcfcf;
+      overflow: hidden;
+
+      th, td {
+        border: 1px solid #ece6e6;;
+        padding: 12px;
+        text-align: center;
+        vertical-align: middle
+      }
+      tr:first-child td,
+      tr:first-child th {
+        border-bottom: none;
+      }
+      .table-header{
+        background:#f1f8ff;;
+        height:49px;
+      }
+    }
+    .pagination-item{
+      align-self: flex-end;
+    }
+  }
+
+}
