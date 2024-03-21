@@ -73,8 +73,8 @@ class Api::EventController < Api::ApplicationController
           EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank? #only leaf event can create form
         end
         event = Event.find(event.id)
-        if event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.order(created_at: :desc).first.id])
-          Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.order(created_at: :desc).first.id )
+        if event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id])
+          Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id )
         end
         render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
@@ -336,25 +336,29 @@ class Api::EventController < Api::ApplicationController
     begin
       limit = params[:limit].present? ? params[:limit] : 10
       offset = params[:offset].present? ? params[:offset] : 0
-      event_user = EventUser.where(event_id: params[:event_id])
-      headers = [ "Phone Number" , "Country State", "Location Type", "Location Name", "Location Filter" ]
-      if event_user.present?
+      search_query = params[:search_query].present? ? params[:search_query] : ""
+      event_user_ids = EventUser.where(event_id: params[:event_id]).pluck(:id)
+      headers = [ "Phone Number" , "State", "Location Type", "Location Name", "Location Filter" ]
+      if event_user_ids.present?
         data = []
-        location_data = EventUserLocation.where(event_user_id: event_user.id).group(:location_type).count
+        location_data = EventUserLocation.where(event_user_id: event_user_ids).group(:location_type).count
         total_count = 0
         location_data.each_value do |value|
           total_count += value
         end
         location_data["Total Count"] = total_count
-        event_user_location = EventUserLocation.joins(:event_user).where(event_user_id: event_user.id).where("event_users.phone_number LIKE ?", "%#{params[:search_query]}%").limit(limit).offset(offset)
+        event_user_location = EventUserLocation.joins(:event_user).where(event_user_id: event_user_ids).where("event_users.phone_number LIKE ?", "%#{search_query}%")
+        count = event_user_location.count
+        event_user_location = event_user_location.limit(limit).offset(offset)
         event_user_location.each do |doc|
           data << [ doc.event_user.phone_number, doc.country_state.name, doc.location_type, doc.location_id ]
         end
       else
-        location_data = []
+        location_data = Hash.new
+        location_data["Total Count"] = 0
         data = []
       end
-      render json: { success: true, message: "Record Fetched Successfully", location_data: location_data,data: data, headers: headers }, status: :ok
+      render json: { success: true, message: "Record Fetched Successfully", location_data: location_data , data: data, headers: headers, count: count }, status: :ok
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end

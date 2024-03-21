@@ -57,7 +57,7 @@ module UserUploadCsvJob
         end
       end
       begin
-        EventUser.import insert_array, recursive: true, batch_size: 5000, on_duplicate_key_ignore: true
+        EventUser.import insert_array, recursive: true, batch_size: 50000, on_duplicate_key_ignore: true
       rescue => e
         puts e.message
       end
