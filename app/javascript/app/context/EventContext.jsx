@@ -8,18 +8,19 @@ const EventContext = ({children}) => {
     const [isSubmissionPage, setIsSubmissionPage] = useState(false);
     const [eventDeleteId, setEventDeleteId] = useState(-1);
     const [globalSelectedLanguage, setGlobalSelectedLanguage] = useState('en');
-    return (
-        <Event.Provider value={{
-            eventName,
-            setEventName,
-            isSubmissionPage,
-            setIsSubmissionPage,
-            globalSelectedLanguage,
-            setGlobalSelectedLanguage
-        }}>
-            {children}
-        </Event.Provider>
-    )
+    const [showCsvModal,setShowCsvModal]=useState(false);
+    return (<Event.Provider value={{
+        eventName,
+        setEventName,
+        isSubmissionPage,
+        setIsSubmissionPage,
+        globalSelectedLanguage,
+        setGlobalSelectedLanguage,
+        showCsvModal,
+        setShowCsvModal
+    }}>
+        {children}
+    </Event.Provider>)
 
 }
 

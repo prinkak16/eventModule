@@ -33,3 +33,26 @@ export const hideUnhideEvents=(body)=>{
     return ApiClient.post('/event/hide_event',body)
 }
 
+
+/**
+ * @param  - contains event_id and search_query
+ */
+
+export  const getEventCsvData=(queryParams)=>{
+    return ApiClient.get('event/event_user_location',{params:queryParams});
+}
+
+/**
+ *
+ */
+export const postEventCsvData=(body)=>{
+    return ApiClient.post('event/event_user_location',body)
+}
+
+
+/**
+ * returns all recent uploaded csv files
+ */
+export const getLatestCsvUploads=()=>{
+    return ApiClient.get('event/latest_uploads');
+}

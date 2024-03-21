@@ -12,9 +12,11 @@ import {hideUnhideEvents} from "../../../../services/CommonServices/commonServic
 import CircularProgress from "@mui/material/CircularProgress";
 import ReactLoader from "../../../shared/loader/Loader";
 import ConfirmationModal from "../../../shared/ConfirmationModal/ConfirmationModal";
-
+import {GotoIcon} from "../../../../assests/svg";
 
 const EventDetails = () => {
+    const [parent, setParent] = useState(null);
+
     const {pathname} = useLocation();
     const navigate = useNavigate();
     const [loader, setLoader] = useState(false);
@@ -163,6 +165,7 @@ const EventDetails = () => {
                                       reportEventId={reportEventId}/>
                     <div className={"heading"}>Event Details</div>
                     <EventDetailsCard event={parentEvent}/>
+                    {parentEvent?.event_type==='csv_upload'&&<div className={"csv-redirect"} onClick={()=>navigate(`/events/view-csv/${parentEvent?.id}`)}> <u>View CSV</u> <GotoIcon className={"goto-icon"}/></div>}
                     <div>
                         {parentEvent?.has_sub_event && <>
                         <div className={"add-event-button-container"}>

@@ -9,6 +9,19 @@ font-size: 24px;
 font-weight: 400;
 color: #000000;
 }
+ .csv-redirect{
+   align-self: flex-end;
+   display: flex;
+   color:#3B82F6;
+   justify-content: center;
+   align-items: center;
+   gap: 5px;
+   .goto-icon{
+     width:16px;
+     height:16px;
+   }
+
+ }
 
 .add-event-button-container {
 display: flex;

@@ -27,7 +27,8 @@ export default function AdminBreadcrumbs() {
 
 
     const breadcrumbsNames = {
-        events: "Events", create: "Create Event", edit: "Edit Event", view: "View Event "
+        events: "Events", create: "Create", edit: "Edit", view: "View",
+        'view-csv':"View CSV"
     };
 
     function capitalizeFirstWord(inputString) {
@@ -60,10 +61,11 @@ export default function AdminBreadcrumbs() {
 
     useEffect(() => {
         getDynamicRoutes();
-    }, [pathname,globalSelectedLanguage]);
+    }, [pathname, globalSelectedLanguage]);
 
     return (<div className={"breadcrumbs-main-container"}>
-        {urls?.length > 0 && <Link to={`/${urls[0]}`}>{capitalizeFirstWord(urls[0]==='forms'?'events':urls[0])}</Link>}
+        {urls?.length > 0 &&
+            <Link to={`/${urls[0]}`}>{capitalizeFirstWord(urls[0] === 'forms' ? 'events' : urls[0])}</Link>}
         {Object.keys(dynamicRoutes).length > 0 && <span> &nbsp;/&nbsp; </span>}
         {Object.keys(dynamicRoutes)?.map((key, index) => <span key={index} style={{display: "flex"}}>
          <Link to={`/${urls[0]}/${key}`}>
@@ -78,7 +80,7 @@ export default function AdminBreadcrumbs() {
                 color: "black"
             }}
         >
-            {urls[urls.length - 1]}
+            {breadcrumbsNames[urls[urls.length - 1]]}
         </Link>}
     </div>);
 }
