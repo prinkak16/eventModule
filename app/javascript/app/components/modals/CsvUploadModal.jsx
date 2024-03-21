@@ -97,6 +97,40 @@ export default function CsvModal    ({formFieldValue={},setFormFieldValue=()=>{}
         }
     }
 
+    const downloadFile = ({ data, fileName, fileType }) => {
+        const blob = new Blob([data], { type: fileType });
+
+        const a = document.createElement("a");
+        a.download = fileName;
+        a.href = window.URL.createObjectURL(blob);
+        const clickEvt = new MouseEvent("click", {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        });
+        a.dispatchEvent(clickEvt);
+        a.remove();
+    };
+
+    const exportToCsv = (e) => {
+        e.preventDefault();
+
+        // Headers for each column
+        let headers = [
+            "S.No.",
+            "Phone No.",
+            "State",
+            "Location Type",
+            "Location Name/No.",
+            "Location Filter",
+        ];
+
+        downloadFile({
+            data: [...headers],
+            fileName: "CsvReportSample.csv",
+            fileType: "text/csv",
+        });
+    };
     return (
         <div>
             <Modal
@@ -133,7 +167,7 @@ export default function CsvModal    ({formFieldValue={},setFormFieldValue=()=>{}
                                     </div>
                                 </span>
                                     <Button component="label" variant="contained" startIcon={<DownloadIcon/>}
-                                            className={"button-style"}>
+                                            className={"button-style"} onClick={exportToCsv}>
                                         Download
                                     </Button>
                                 </div>

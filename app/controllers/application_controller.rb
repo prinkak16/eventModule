@@ -9,4 +9,17 @@ class ApplicationController < ActionController::Base
     end
   end
 
+def authenticate_user
+  token = (request.env["HTTP_AUTHORIZATION"] || "")&.split(" ")&.last
+  if token&.present?
+    user = handle_api_auth(api_token: token)
+    session[:user_id] = user
+  else
+    if session[:user_id].present?
+      current_user
+    else
+      redirect_to ENV['SIGN_IN_URL'], allow_other_host: true
+    end
+  end
+end
 end

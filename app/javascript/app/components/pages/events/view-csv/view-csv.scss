@@ -13,7 +13,13 @@
       border: none;
       outline: none;
       background: #f7f7f7;
-    }
+      font-weight: 500;
+      width: 30%;
+      border:none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      }
     .csv-button{
       display: flex;
       height: 40px;
