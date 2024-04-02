@@ -278,6 +278,7 @@ class Api::EventController < Api::ApplicationController
       if operation == false
         event.update!(position: nil)
       end
+      render json: { success: true, message: "Event Pinned Successfully" }, status: :ok
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end
@@ -389,6 +390,7 @@ class Api::EventController < Api::ApplicationController
       if !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.order(created_at: :desc).last.id])
         Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.order(created_at: :desc).last.id )
       end
+      render json: { success: true, message: "Job Created Successfully"}, status: :ok
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end
