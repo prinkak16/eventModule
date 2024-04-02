@@ -131,15 +131,16 @@ module FetchReportsJob
                   next
                 end
                 batch.each do |batch_row|
-                  if deleted_data[row["Submission Id"]]
-                    hashed_data.delete(row["Submission Id"])
-                  elsif hashed_data[row["Submission Id"]].present?
-                    csv << hashed_data[row["Submission Id"]]
-                    hashed_data.delete(row["Submission Id"])
+                  if deleted_data[batch_row["Submission Id"]]
+                    hashed_data.delete(batch_row["Submission Id"])
+                  elsif hashed_data[batch_row["Submission Id"]].present?
+                    csv << hashed_data[batch_row["Submission Id"]]
+                    hashed_data.delete(batch_row["Submission Id"])
                   else
                     csv << row
                   end
                 end
+                batch = []
               end
             end
           end
