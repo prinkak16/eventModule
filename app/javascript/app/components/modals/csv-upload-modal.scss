@@ -23,10 +23,8 @@
     justify-content: center;
     align-items: center;
     gap:15px;
-     .css-1u3bzj6-MuiFormControl-root-MuiTextField-root {
-      width: 66%;
-      border: 1px solid gray;
-      border-radius: 10px;
+    .MuiTextField-root{
+       width: 66%;
     }
     .download-and-upload-container{
       display: flex;
