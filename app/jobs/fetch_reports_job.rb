@@ -118,15 +118,6 @@ module FetchReportsJob
             deleted_data[data[i]["submissionId"]] = true
           end
         end
-        begin
-          puts "trying with UTF-8"
-          file = URI.open(event.report_file.url)
-          file.set_encoding(Encoding.find("UTF-8"))
-        rescue => _
-          puts "trying with ISO"
-          file = URI.open(event.report_file.url)
-          file.set_encoding(Encoding.find("ISO-8859-1"))
-        end
         batch_size = 10000
         blob = event.report_file.blob
         CSV.open(csv_file, 'a+') do |csv|
