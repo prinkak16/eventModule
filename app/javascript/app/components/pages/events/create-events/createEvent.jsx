@@ -115,46 +115,6 @@ export default function CreateEvent({isEdit, editData}) {
         }
 
     }, []);
-
-    // const formFieldUpdationByEdit=async ()=> {
-    //     try {
-    //         const {data} = await getEventById(id);
-    //         if (data?.success) {
-    //             setImage(data?.data[0]?.image_url);
-    //
-    //             //taking parent_id from current event if exists
-    //             const parent_id = data?.data[0]?.parent_id;
-    //             // fetching parent event details to provide start_date and end_date validation
-    //             if (parent_id) {
-    //                 getParentDetails(parent_id);
-    //             }
-    //
-    //             const newObj = {
-    //                 event_id: data?.data[0]?.id,
-    //                 event_title: data?.data[0]?.name,
-    //                 img: data?.data[0]?.image_url,
-    //                 start_datetime: data?.data[0]?.start_date,
-    //                 end_datetime: data?.data[0]?.end_date,
-    //                 level_id: data?.data[0]?.data_level_id,
-    //                 event_type: data?.data[0]?.event_type,
-    //                 location_ids: data?.data[0]?.state_ids?.map((obj) => obj.id),
-    //                 state_obj: data?.data[0]?.state_ids ?? [],
-    //                 has_sub_event: data?.data[0]?.has_sub_event,
-    //                 status: data?.data[0]?.status?.name ?? "",
-    //             }
-    //
-    //             setFormFieldValue((prevData) => ({
-    //                 ...prevData,
-    //                 ...newObj
-    //             }))
-    //         } else {
-    //             toast?.error('Faild to get event details')
-    //         }
-    //     } catch (e) {
-    //         toast.error(e?.message);
-    //     }
-    // }
-
     const getParentDetails = async (parent_id) => {
         setHasParentEvent(true);
         try {
@@ -282,7 +242,6 @@ export default function CreateEvent({isEdit, editData}) {
         } catch (error) {
             console.log("error is ", error);
         }
-
         try {
             const dataLevelResponse = await getDataLevels();
             if (dataLevelResponse?.data?.success) {
@@ -290,59 +249,12 @@ export default function CreateEvent({isEdit, editData}) {
                        const defaultId = dataLevelResponse?.data?.data[0]?.id;
                        setFormFieldValue((prevData) => ({...prevData, level_id: defaultId}))
                    }*/
-
                 setDataLevels(dataLevelResponse?.data?.data);
-
-
             }
         } catch (error) {
             console.log("error is ", error);
         }
-        // const data = await Promise.allSettled([getStates(), getDataLevels()]);
-        // console.log("data of promise all", data);
     };
-
-    // async function CreateEvents(type, id) {
-    //     setLoader(true);
-    //     const formData = new FormData();
-    //     formData.append("start_datetime", formFieldValue?.start_datetime);
-    //     formData.append("event_title", formFieldValue?.event_title);
-    //     formData.append("end_datetime", formFieldValue?.end_datetime);
-    //     formData.append("level_id", formFieldValue?.level_id);
-    //     formData.append("location_ids", formFieldValue?.location_ids);
-    //     formData.append("event_type", formFieldValue?.event_type);
-    //     formData.append("crop_data", formFieldValue?.crop_data ?? "");
-    //
-    //     formData.append("img", formFieldValue?.img ?? "");
-    //     formData.append('has_sub_event', formFieldValue?.has_sub_event)
-    //     formData?.append('inherit_from_parent', formFieldValue?.inherit_from_parent);
-    //     if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
-    //         formData.append('parent_id', formFieldValue?.parent_id);
-    //     }
-    //     try {
-    //         const response = await createEvent(formData, {event_id: id});
-    //         const eventId = response?.data?.event?.id;
-    //         if (response?.data?.success) {
-    //             setLoader(false);
-    //             if (type === 'create' || type === 'save') {
-    //                 toast.success(`Event ${type}d successfully`);
-    //                 navigate(`/events/${eventId}`);
-    //             } else if (type === 'go_to_form') {
-    //                 window.location.href = response?.data?.event?.create_form_url;
-    //             }
-    //         } else {
-    //             setLoader(false);
-    //             toast.error(response?.data?.message);
-    //         }
-    //
-    //     } catch (error) {
-    //         toast.error(error?.message);
-    //     }
-    //
-    //     setLoader(false);
-    //
-    // }
-
     async function CreateEvents(type, id) {
         setLoader(true);
         const formData = new FormData();
