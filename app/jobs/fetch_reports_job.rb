@@ -122,9 +122,27 @@ module FetchReportsJob
         blob = event.report_file.blob
         CSV.open(csv_file, 'a+') do |csv|
           csv << headers
+          batch = []
           if blob.present?
             blob.open do |file|
-              CSV.foreach(file, headers: true).each_slice(batch_size) do |batch|
+              CSV.foreach(file, headers: true) do |row|
+                if batch.size < batch_size
+                  batch << row
+                  next
+                end
+                batch.each do |batch_row|
+                  if deleted_data[batch_row["Submission Id"]].present?
+                    hashed_data.delete(batch_row["Submission Id"])
+                  elsif hashed_data[batch_row["Submission Id"]].present?
+                    csv << hashed_data[batch_row["Submission Id"]]
+                    hashed_data.delete(batch_row["Submission Id"])
+                  else
+                    csv << batch_row
+                  end
+                end
+                batch = []
+              end
+              if batch.present?
                 batch.each do |batch_row|
                   if deleted_data[batch_row["Submission Id"]].present?
                     hashed_data.delete(batch_row["Submission Id"])
