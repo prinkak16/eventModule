@@ -10,6 +10,7 @@ import {
 } from "../../../../services/CommonServices/commonServices";
 import {toast} from "react-toastify";
 import {useParams} from "react-router";
+import CircularProgress from "@mui/material/CircularProgress";
 const ViewCsv = () => {
     const {id} = useParams();
     const rowPerPage = 10;
@@ -22,6 +23,7 @@ const ViewCsv = () => {
 
     })
     const [recentlyUploadedFiles,setRecentlyUploadedFiles]=useState([]);
+    const [loader,setLoader]=useState(false);
     const [searchQuery, setSearchQuery] = useState(null);
     const {setShowCsvModal} = EventState();
     useEffect(() => {
@@ -47,6 +49,7 @@ const ViewCsv = () => {
     }, [searchQuery]);
     const fetchCsvData = async () => {
         const queryParams = {event_id: id,searchQuery, offset: (page - 1) * rowPerPage, limit: rowPerPage}
+        setLoader(true);
         try {
             const {data} = await getEventCsvData(queryParams);
             if(data?.success){
@@ -57,6 +60,8 @@ const ViewCsv = () => {
             }
         } catch (e) {
             toast.error(e?.message)
+        }finally {
+            setLoader(false);
         }
     }
     const fetchLatestCsvUploads = async () => {
@@ -78,7 +83,12 @@ const ViewCsv = () => {
         csvDataDetails.append('event_id',body?.id);
         try {
             const {data}=await postEventCsvData(csvDataDetails);
-            console.log('data is ',data);
+           if(data?.success){
+               toast.success(data?.message);
+               fetchCsvData();
+           }else{
+               toast.error(data?.message);
+           }
         }catch (e) {
             toast.error(e?.message);
         }
@@ -114,6 +124,8 @@ const ViewCsv = () => {
                        onChange={(e) => setSearchQuery(e?.target?.value)}/>
             </div>
             <div className={"table-container"}>
+                {loader?<CircularProgress/>:
+                    <>
                 <table>
                     <tr className={`table-header`}>
                         {csvDetails?.tableHeader?.map((header) => <th>{header}</th>)}
@@ -126,6 +138,9 @@ const ViewCsv = () => {
                             page={page}
                             onChange={handlePageChange}
                 />
+                    </>
+
+                }
             </div>
         </div>
     )
