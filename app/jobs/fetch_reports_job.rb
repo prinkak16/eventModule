@@ -127,18 +127,28 @@ module FetchReportsJob
           file = URI.open(event.report_file.url)
           file.set_encoding(Encoding.find("ISO-8859-1"))
         end
-        chunk_size = 50000
+        batch_size = 10000
+        blob = event.report_file.blob
         CSV.open(csv_file, 'a+') do |csv|
           csv << headers
-          CSV.parse(file.read, headers: true).each_slice(chunk_size) do |chunk|
-            chunk.each do |row|
-              if deleted_data[row['Submission Id']]
-                hashed_data.delete(row['Submission Id'])
-              elsif hashed_data[row['Submission Id']].present?
-                csv << hashed_data[row['Submission Id']]
-                hashed_data.delete(row['Submission Id'])
-              else
-                csv << row
+          if blob.present?
+            blob.open do |file|
+              batch = []
+              CSV.foreach(file, headers: true) do |row|
+                if batch.size < batch_size
+                  batch << row
+                  next
+                end
+                batch.each do |batch_row|
+                  if deleted_data[row["Submission Id"]]
+                    hashed_data.delete(row["Submission Id"])
+                  elsif hashed_data[row["Submission Id"]].present?
+                    csv << hashed_data[row["Submission Id"]]
+                    hashed_data.delete(row["Submission Id"])
+                  else
+                    csv << row
+                  end
+                end
               end
             end
           end
