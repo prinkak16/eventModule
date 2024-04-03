@@ -10,8 +10,6 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash
 RUN apt install nodejs -y
 RUN apt autoremove -y
 
-RUN groupadd -r Jarvis && useradd -r -g Jarvis -m -d /home/Jarvis Jarvis
-ENV APP_HOME=/usr/src/
 
 RUN apt-get update
 RUN apt  install -y imagemagick libmagickwand-dev ghostscript
@@ -24,13 +22,10 @@ ARG _RAILS_MASTER_KEY
 ENV RAILS_MASTER_KEY=$_RAILS_MASTER_KEY
 ARG _ACCESS_TOKEN
 ENV ACCESS_TOKEN=$_ACCESS_TOKEN
+ARG _REDIS_PROVIDER
+ENV REDIS_PROVIDER=$_REDIS_PROVIDER
 
-# WORKDIR /usr/src/
-WORKDIR $APP_HOME 
-
-RUN chown -R Jarvis:Jarvis $APP_HOME
-USER Jarvis
-
+WORKDIR /usr/src/
 
 COPY Gemfile Gemfile
 #COPY Gemfile.lock Gemfile.lock
