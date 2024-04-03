@@ -11,6 +11,7 @@ import {
 import {toast} from "react-toastify";
 import {useParams} from "react-router";
 import CircularProgress from "@mui/material/CircularProgress";
+import ReactLoader from "../../../shared/loader/Loader";
 const ViewCsv = () => {
     const {id} = useParams();
     const rowPerPage = 10;
@@ -24,6 +25,7 @@ const ViewCsv = () => {
     })
     const [recentlyUploadedFiles,setRecentlyUploadedFiles]=useState([]);
     const [loader,setLoader]=useState(false);
+    const [csvUploadLoader,setCsvUploadLoader]=useState(false);
     const [searchQuery, setSearchQuery] = useState(null);
     const {setShowCsvModal} = EventState();
     useEffect(() => {
@@ -81,6 +83,7 @@ const ViewCsv = () => {
         csvDataDetails.append('email',body?.email);
         csvDataDetails.append('csv_file',body?.csvFile);
         csvDataDetails.append('event_id',body?.id);
+        setCsvUploadLoader(true);
         try {
             const {data}=await postEventCsvData(csvDataDetails);
            if(data?.success){
@@ -91,6 +94,8 @@ const ViewCsv = () => {
            }
         }catch (e) {
             toast.error(e?.message);
+        }finally {
+            setCsvUploadLoader(false)
         }
     }
     const handlePageChange = (e, newPage) => {
@@ -99,49 +104,53 @@ const ViewCsv = () => {
 
     return (
         <div className={"view-csv-main-container"}>
-            <CsvModal  uploadCsv={uploadCsvDetails}/>
-            <div className={"recent-file-and-button-container"}>
-                <div htmlFor={"recent-files"}>
-                    <label htmlFor="recent-files">Show</label>
-                    <select name="recent-files" id="recent-files" className={"recent-files-dropdown-container"}>
-                        <option disabled selected value="default">Recent Files</option>
-                        {recentlyUploadedFiles?.map((item) => <option value={`${item?.file_name} ${item?.date}`}>{`${item?.file_name} ${item?.date}`}</option>
-                        )}
-                    </select>
+            {csvUploadLoader?<ReactLoader/>:
+            <>
+                <CsvModal  uploadCsv={uploadCsvDetails}/>
+                <div className={"recent-file-and-button-container"}>
+                    <div htmlFor={"recent-files"}>
+                        <label htmlFor="recent-files">Show</label>
+                        <select name="recent-files" id="recent-files" className={"recent-files-dropdown-container"}>
+                            <option disabled selected value="default">Recent Files</option>
+                            {recentlyUploadedFiles?.map((item) => <option value={`${item?.file_name} ${item?.date}`}>{`${item?.file_name} ${item?.date}`}</option>
+                            )}
+                        </select>
+                    </div>
+                    <button className={"csv-button"} onClick={() => setShowCsvModal(true)}>Add / Delete Reportees</button>
                 </div>
-                <button className={"csv-button"} onClick={() => setShowCsvModal(true)}>Add / Delete Reportees</button>
-            </div>
-            <div className={"level-filer-container"}>
-                {Object.keys(csvDetails?.locationData)?.map(key=><Chip
-                    label={`${key} ${csvDetails?.locationData[key]}`}
-                    className={`level-filter-chip ${key.toLowerCase()==='total count'?'highlighted-chip':''}`}
-                />)
-                }
-            </div>
-            <div className={'search-bar-container'}>
-                <h2>CSV List</h2>
-                <input placeholder={"Search by phone number"} className={"search-bar"} type={"tel"}
-                       onChange={(e) => setSearchQuery(e?.target?.value)}/>
-            </div>
-            <div className={"table-container"}>
-                {loader?<CircularProgress/>:
-                    <>
-                <table>
-                    <tr className={`table-header`}>
-                        {csvDetails?.tableHeader?.map((header) => <th>{header}</th>)}
-                    </tr>
-                    {csvDetails?.tableContent?.map((tableRow) => <tr>
-                        {tableRow?.map(data => <td>{data}</td>)}
-                    </tr>)}
-                </table>
-                <Pagination count={Math.ceil(csvDetails?.totalCount/rowPerPage)} variant="outlined" shape="rounded" className={"pagination-item"} colSpan={3}
-                            page={page}
-                            onChange={handlePageChange}
-                />
-                    </>
+                <div className={"level-filer-container"}>
+                    {Object.keys(csvDetails?.locationData)?.map(key=><Chip
+                        label={`${key} ${csvDetails?.locationData[key]}`}
+                        className={`level-filter-chip ${key.toLowerCase()==='total count'?'highlighted-chip':''}`}
+                    />)
+                    }
+                </div>
+                <div className={'search-bar-container'}>
+                    <h2>CSV List</h2>
+                    <input placeholder={"Search by phone number"} className={"search-bar"} type={"tel"}
+                           onChange={(e) => setSearchQuery(e?.target?.value)}/>
+                </div>
+                <div className={"table-container"}>
+                    {loader?<CircularProgress/>:
+                        <>
+                            <table>
+                                <tr className={`table-header`}>
+                                    {csvDetails?.tableHeader?.map((header) => <th>{header}</th>)}
+                                </tr>
+                                {csvDetails?.tableContent?.map((tableRow) => <tr>
+                                    {tableRow?.map(data => <td>{data}</td>)}
+                                </tr>)}
+                            </table>
+                            <Pagination count={Math.ceil(csvDetails?.totalCount/rowPerPage)} variant="outlined" shape="rounded" className={"pagination-item"} colSpan={3}
+                                        page={page}
+                                        onChange={handlePageChange}
+                            />
+                        </>
 
-                }
-            </div>
+                    }
+                </div>
+            </>
+            }
         </div>
     )
 }
