@@ -11,7 +11,7 @@ RUN apt install nodejs -y
 RUN apt autoremove -y
 
 RUN groupadd -r Jarvis && useradd -r -g Jarvis -m -d /home/Jarvis Jarvis
-ENV APP_HOME /usr/src/
+ENV APP_HOME=/usr/src/
 
 RUN apt-get update
 RUN apt  install -y imagemagick libmagickwand-dev ghostscript
