@@ -73,10 +73,12 @@ class Api::EventController < Api::ApplicationController
           EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank? #only leaf event can create form
         end
         event = Event.find(event.id)
-        if event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id])
-          Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id )
+        message = "Event Created Successfully."
+        if event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email_id].split(',')])
+          Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email_id].split(',') )
+          message = "Job For event users creation has been scheduled successfully you will be kept updated of the process on email."
         end
-        render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
+        render json: { success: true, message: message, event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
         raise ActiveRecord::Rollback
@@ -319,13 +321,9 @@ class Api::EventController < Api::ApplicationController
 
   def get_latest_uploaded_csv
     begin
-      csv_records = Event.includes(:csv_file_attachments).where.not(csv_file_attachments: { id: nil })
-      all_csv_files = csv_records.map(&:csv_file).flatten
-      sorted_csv_files = all_csv_files.sort_by(&:created_at).reverse
-      records = sorted_csv_files.take(5)
-      data = []
-      records.each do |record|
-        data << { file_name: record.filename.to_json, date: record.created_at.strftime("%d-%m-%y %I:%M:%S %p") }
+      data = Rails.cache.fetch("get_latest_uploaded_csv_#{params[:event_id]}", expires_in: 24.hours) do
+        csv_records = Event.find_by(name: params[:event_id]).csv_file.order(created_at: :desc).limit(5)
+        csv_records.map { |file| { file_name: file.filename.to_s, date: file.created_at.strftime("%d-%m-%y %I:%M:%S %p") } }
       end
       render json: { success: true, message: "Record Fetched Successfully", data: data }, status: :ok
     rescue => e
@@ -371,10 +369,10 @@ class Api::EventController < Api::ApplicationController
       country_state_id = CountryState.find_by(name: params[:country_state_name])
       if event_user.present?
         event_user_location = EventUserLocation.find_by(event_user_id: event_user.id, location_type: params[:location_type], location_id: params[:location_id], country_state_id: country_state_id)
-        event_user_location.destroy!
+        event_user_location.destroy
         locations = EventUserLocation.where(event_user_id: event_user.id)
         if locations.size.blank?
-          event_user.destroy!
+          event_user.destroy
         end
       end
       render json: { success: true, message: "Record Deleted Successfully" }, status: :ok
@@ -387,10 +385,11 @@ class Api::EventController < Api::ApplicationController
     begin
       event = Event.find_by(id: params[:event_id])
       event.csv_file.attach(params[:file])
-      if !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.order(created_at: :desc).last.id])
-        Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.order(created_at: :desc).last.id )
+      if !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email_id].split(',')])
+        Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email_id].split(',') )
+        Rails.cache.delete("get_latest_uploaded_csv_#{params[:event_id]}")
       end
-      render json: { success: true, message: "Job Created Successfully"}, status: :ok
+      render json: { success: true, message: "Event User Creation has been started Successfully."}, status: :ok
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end
