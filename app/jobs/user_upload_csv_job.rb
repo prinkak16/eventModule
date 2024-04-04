@@ -28,7 +28,8 @@ module UserUploadCsvJob
           batch.each do |batch_row|
             begin
               if batch_row['operation'] == 'delete'
-                event_user = EventUser.find_by(event_id: event_id, phone_number: batch_row['phone_number'])
+                event_user = EventUser.with_deleted.find_by(event_id: event_id, phone_number: batch_row['phone_number'])
+                event_user.restore if event_user.deleted_at.present?
                 country_state_id = CountryState.find_by(name: batch_row['country_state'])
                 event_user_location = EventUserLocation.find_by(event_user_id: event_user.id, location_type: batch_row['location_type'], location_id: batch_row['location_name'], country_state_id: country_state_id)
                 event_user_location.destroy
@@ -89,7 +90,8 @@ module UserUploadCsvJob
           batch.each do |batch_row|
             begin
               if batch_row['operation'] == 'delete'
-                event_user = EventUser.find_by(event_id: event_id, phone_number: batch_row['phone_number'])
+                event_user = EventUser.with_deleted.find_by(event_id: event_id, phone_number: batch_row['phone_number'])
+                event_user.restore if event_user.deleted_at.present?
                 country_state_id = CountryState.find_by(name: batch_row['country_state'])
                 event_user_location = EventUserLocation.find_by(event_user_id: event_user.id, location_type: batch_row['location_type'], location_id: batch_row['location_name'], country_state_id: country_state_id)
                 event_user_location.destroy
