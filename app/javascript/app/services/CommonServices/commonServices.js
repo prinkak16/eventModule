@@ -53,6 +53,6 @@ export const postEventCsvData=(body)=>{
 /**
  * returns all recent uploaded csv files
  */
-export const getLatestCsvUploads=()=>{
-    return ApiClient.get('event/latest_uploads');
+export const getLatestCsvUploads=(queryParams)=>{
+    return ApiClient.get('event/latest_uploads',{params:queryParams});
 }

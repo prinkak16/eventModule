@@ -68,7 +68,7 @@ const ViewCsv = () => {
     }
     const fetchLatestCsvUploads = async () => {
         try {
-            const {data} = await getLatestCsvUploads();
+            const {data} = await getLatestCsvUploads({event_id:id});
            if(data?.success){
                setRecentlyUploadedFiles(data?.data);
            }else{
