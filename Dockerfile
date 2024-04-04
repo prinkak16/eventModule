@@ -31,8 +31,10 @@ ARG _REDIS_PROVIDER
 ENV REDIS_PROVIDER=$_REDIS_PROVIDER
 ENV APP_HOME /home/Jarvis/app
 
-
-
+RUN useradd -m -r -s /bin/bash Jarvis && \
+    mkdir -p $APP_HOME && \
+    chown -R Jarvis:Jarvis $APP_HOME && \
+    chmod -R 755 $APP_HOME
 
 # WORKDIR /usr/src/
 WORKDIR ${APP_HOME}
@@ -41,19 +43,12 @@ COPY Gemfile Gemfile
 RUN bundle config github.com $ACCESS_TOKEN
 COPY . .
 
-
 #RUN yarn install --ignore-engines
 RUN bundle install
 #RUN bundle update saral-locatable
 
-
-
 RUN bundle exec rails assets:precompile
 EXPOSE 3000
-RUN groupadd -r Jarvis && useradd -r -g Jarvis -m -d /home/Jarvis Jarvis && \
-    chown -R Jarvis:Jarvis ${APP_HOME} && \
-    chmod -R 755 ${APP_HOME}
-USER Jarvis
 
 # Configure the main process to run when running the image
 CMD ["rails", "server", "-b", "0.0.0.0"]
