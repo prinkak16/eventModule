@@ -1,21 +1,37 @@
 import React, {useEffect, useState} from "react";
 import "./createEvent.scss";
-import {Autocomplete, Box, Chip, FormControlLabel, IconButton, Radio, RadioGroup, Switch, TextField, Tooltip,} from "@mui/material";
+import {
+    Autocomplete,
+    Box,
+    Chip,
+    FormControlLabel,
+    IconButton,
+    Radio,
+    RadioGroup,
+    Switch,
+    TextField,
+    Tooltip,
+} from "@mui/material";
 import {styled} from '@mui/material/styles';
 import dayjs from "dayjs";
 import InfoIcon from '@mui/icons-material/Info';
 import {toast} from "react-toastify";
 import {useNavigate, useParams} from "react-router-dom";
-import {createEvent} from "../../../../services/RestServices/Modules/EventServices/CreateEventServices";
 import {getAllLanguages, getDataLevels, getStates,} from "../../../../services/CommonServices/commonServices";
 import {ApiClient} from "../../../../services/RestServices/BaseRestServices";
 import {getEventById} from "../../../../services/RestServices/Modules/EventServices/EventsServices";
-import {LanguageIcon, LocationIconInfo, NextIcon} from '../../../../assests/svg/index'
+import {DocumentIcon, LanguageIcon, LocationIconInfo, NextIcon} from '../../../../assests/svg/index'
 import ImageCroper from "../../../shared/image-croper/ImageCroper";
 import ReactLoader from "../../../shared/loader/Loader";
+import CsvUploadModal from '../../../modals/CsvUploadModal'
+import moment from 'moment';
 import EventTitleModal from "./modals/EventTitleModal";
 import {tooltipClasses} from '@mui/material/Tooltip';
 import ReactDateTimePicker from '../../../date-time-picker'
+import {EventState} from "../../../../context/EventContext";
+import DeleteIcon from '@mui/icons-material/Delete';
+import {createEvent} from "../../../../services/RestServices/Modules/EventServices/CreateEventServices";
+import {isNotNullUndefinedOrEmpty} from "../../../../utils/NullUndefinedChecker";
 
 const HtmlTooltip = styled(({className, ...props}) => (
     <Tooltip {...props} classes={{popper: className}}/>
@@ -29,6 +45,7 @@ const HtmlTooltip = styled(({className, ...props}) => (
 }));
 
 export default function CreateEvent({isEdit, editData}) {
+    const {setShowCsvModal} = EventState();
     const {id} = useParams();
     const urlParams = new URLSearchParams(window.location.search);
     const publishedParamValue = urlParams.get('published');
@@ -38,7 +55,7 @@ export default function CreateEvent({isEdit, editData}) {
     const [image, setImage] = useState(null);
     const [loader, setLoader] = useState(false);
     const [allLanguages, setAllLanguages] = useState([]);
-    const [hasParentEvent,setHasParentEvent]=useState(false);  //verifies whether current event has parent or not
+    const [hasParentEvent, setHasParentEvent] = useState(false);  //verifies whether current event has parent or not
     const [formFieldValue, setFormFieldValue] = useState({
         selected_languages: ['en'],
         event_title: "",
@@ -54,7 +71,9 @@ export default function CreateEvent({isEdit, editData}) {
         has_sub_event: false,
         inherit_from_parent: false,
         status: "",
-        translated_title: {}
+        csv_file: null,
+        translated_title: {},
+        email: ""
     });
     const [openLanguageModal, setOpenLanguageModal] = useState(false);
     const [parentEventDetails, setParentEventDetails] = useState({
@@ -65,6 +84,16 @@ export default function CreateEvent({isEdit, editData}) {
         start_datetime: null, end_datetime: null
     })
 
+    useEffect(() => {
+        if (isEdit && id) {
+            formFieldUpdationByEdit();
+        }
+        if (!isEdit && id) {
+            getParentDetails(id);
+        }
+        getAllData();
+        getLanguages();
+    }, []);
 
     useEffect(() => {
         if (isEdit) {
@@ -87,19 +116,6 @@ export default function CreateEvent({isEdit, editData}) {
         }
 
     }, []);
-
-    useEffect(() => {
-        if (isEdit) {
-            formFieldUpdationByEdit();
-        }
-        if (!isEdit && id) {
-            getParentDetails(id);
-        }
-        getAllData();
-        getLanguages();
-    }, []);
-
-
     const getParentDetails = async (parent_id) => {
         setHasParentEvent(true);
         try {
@@ -176,10 +192,14 @@ export default function CreateEvent({isEdit, editData}) {
             toast.error(e?.message);
         }
 
-
     }
 
-
+    const deleteCsv = () => {
+        setFormFieldValue((prevData) => {
+            return {...prevData, csv_file: null, event_type: "open_event", email: ""}
+        });
+        setShowCsvModal(true);
+    }
     const handleLevelChange = (event, value) => {
         setFormFieldValue((prevFormValues) => ({
             ...prevFormValues, level_id: value.id,
@@ -223,7 +243,6 @@ export default function CreateEvent({isEdit, editData}) {
         } catch (error) {
             console.log("error is ", error);
         }
-
         try {
             const dataLevelResponse = await getDataLevels();
             if (dataLevelResponse?.data?.success) {
@@ -231,18 +250,12 @@ export default function CreateEvent({isEdit, editData}) {
                        const defaultId = dataLevelResponse?.data?.data[0]?.id;
                        setFormFieldValue((prevData) => ({...prevData, level_id: defaultId}))
                    }*/
-
                 setDataLevels(dataLevelResponse?.data?.data);
-
-
             }
         } catch (error) {
             console.log("error is ", error);
         }
-        // const data = await Promise.allSettled([getStates(), getDataLevels()]);
-        // console.log("data of promise all", data);
     };
-
     async function CreateEvents(type, id) {
         setLoader(true);
         const formData = new FormData();
@@ -258,8 +271,11 @@ export default function CreateEvent({isEdit, editData}) {
         formData.append('has_sub_event', formFieldValue?.has_sub_event)
         formData?.append('inherit_from_parent', formFieldValue?.inherit_from_parent);
         formData?.append('translated_title', JSON.stringify(formFieldValue?.translated_title));
-        if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
+        if (isNotNullUndefinedOrEmpty(formFieldValue?.parent_id)) {
             formData.append('parent_id', formFieldValue?.parent_id);
+        }
+        if (isNotNullUndefinedOrEmpty(formFieldValue?.csv_file)) {
+            formData.append('file', formFieldValue?.csv_file)
         }
         try {
             const response = await createEvent(formData, {event_id: id});
@@ -284,6 +300,7 @@ export default function CreateEvent({isEdit, editData}) {
         setLoader(false);
 
     }
+
 
     function setFormField(event, field) {
 
@@ -333,12 +350,10 @@ export default function CreateEvent({isEdit, editData}) {
 
 
     const isNextButtonDisabled = () => {
-
         for (let key in formFieldValue) {
             if (key === "status") {
-
             } else if (formFieldValue?.inherit_from_parent && (key === 'start_datetime' || key === 'end_datetime' || key === 'level_id' || key === 'state_obj' || key === "location_ids")) {
-
+                //incase of inherit from parent if these keys are not filled , button should be enabled
             } else if (key === 'translated_title') {
                 // check if input translated_title length is equal to selected_languages length
                 //if there are equal it means all respective event name is filled
@@ -346,16 +361,24 @@ export default function CreateEvent({isEdit, editData}) {
                 // if length are equal , we will return false, so that save button can be enabled
                 return Object.values(formFieldValue?.translated_title).filter(item => Boolean(item)).length !== formFieldValue?.selected_languages?.filter(item => item !== 'en')?.length;
             } else if (isEdit && key === "crop_data") {
-
+                //in case of edit don't need to check crop_data
             } else if (key === 'parent_id' && formFieldValue[key] === null) {
-
+                //parent_id could be null
             } else if (key === 'location_ids' || key === 'state_obj') {
                 if (formFieldValue[key].length === 0) {
                     return true;
                 }
+            } else if (key === 'csv_file' && formFieldValue['event_type'] === 'csv_upload') {
+                //in case of edit csv_file will not be present
+                if(isEdit){
+                    continue;
+                }
+                if (formFieldValue[key] === null || formFieldValue[key] === undefined) {
+                    return true;
+                }
             } else {
-
                 if (formFieldValue[key] === undefined || formFieldValue[key] === null || formFieldValue[key] === "" || !(/\S/.test(formFieldValue[key]))) {
+                    // if event title is blank ,or it only contains spaces
                     return true;
                 }
 
@@ -366,9 +389,9 @@ export default function CreateEvent({isEdit, editData}) {
     }
 
     const handleSelectLanguage = (language) => {
-        {/** don't unselect if it is english chip */}
-        if(language?.lang==='en')
-        {
+        {/** don't unselect if it is english chip */
+        }
+        if (language?.lang === 'en') {
             return;
         }
         const containsIncomingLanguage = formFieldValue?.selected_languages?.some((item) => item === language?.lang);
@@ -395,16 +418,18 @@ export default function CreateEvent({isEdit, editData}) {
         const minDate = startDateTimeValidation('minDate');
         const maxDate = startDateTimeValidation('maxDate');
 
-        if (minDate&&(dayjs(event.$d) < minDate)) {
-            {/** if selected startDateTime is smaller than its parent or children*/}
+        if (minDate && (dayjs(event.$d) < minDate)) {
+            {/** if selected startDateTime is smaller than its parent or children*/
+            }
             setFormField(minDate, "start_datetime");
             // if(hasParentEvent) {
             //     toast.info('Event start date cannot be smaller than the parent event\'s start date, so the event start date matches with parent\'s start date.', {autoClose: 5000})
             // }
-        } else if (maxDate&&(dayjs(event.$d) > maxDate)) {
-            {/** if selected startDateTime is greater than its parent or children*/}
+        } else if (maxDate && (dayjs(event.$d) > maxDate)) {
+            {/** if selected startDateTime is greater than its parent or children*/
+            }
             setFormField(maxDate, "start_datetime");
-             // toast.info('Event start date cannot be greater than the parent event\'s end date, so the event start date matches with parent\'s end date.', {autoClose: 5000})
+            // toast.info('Event start date cannot be greater than the parent event\'s end date, so the event start date matches with parent\'s end date.', {autoClose: 5000})
         } else {
             setFormField(event, "start_datetime");
             if (formFieldValue.end_datetime) {
@@ -420,14 +445,16 @@ export default function CreateEvent({isEdit, editData}) {
     const endDateTimeChangeHandler = (event) => {
         const minDate = endDateTimeValidation('minDate');
         const maxDate = endDateTimeValidation('maxDate');
-        if (minDate&&(dayjs(event.$d) < minDate)) {
-            {/** if selected endDateTime is smaller than its parent or children */}
+        if (minDate && (dayjs(event.$d) < minDate)) {
+            {/** if selected endDateTime is smaller than its parent or children */
+            }
             setFormField(minDate, "end_datetime");
             // if(hasParentEvent) {
             //     toast.info('Event end date cannot be smaller than the parent event\'s end date, so the event end date matches with parent\'s start date.', {autoClose: 5000})
             // }
-        } else if (maxDate&&(dayjs(event.$d) > maxDate)) {
-            {/** if selected endDatetime is greater than its parent or children*/}
+        } else if (maxDate && (dayjs(event.$d) > maxDate)) {
+            {/** if selected endDatetime is greater than its parent or children*/
+            }
             setFormField(maxDate, "end_datetime");
             // toast.info('Event end date cannot be greater than the parent event\'s end date, so the event end date matches with parent\'s end date.', {autoClose: 5000})
 
@@ -469,6 +496,7 @@ export default function CreateEvent({isEdit, editData}) {
                          openLanguageModal={openLanguageModal} setOpenLanguageModal={setOpenLanguageModal}
                          translated_title={formFieldValue?.translated_title}
                          languagesMap={formFieldValue?.selected_languages?.filter((language) => language !== 'en')}/>
+        <CsvUploadModal formFieldValue={formFieldValue} setFormFieldValue={setFormFieldValue}/>
         {loader ? <ReactLoader/> : (<></>)}
         <div className="container-adjust">
             <h3 className="font-weight-300">
@@ -482,7 +510,8 @@ export default function CreateEvent({isEdit, editData}) {
                         minWidth: "100px",
                         background: (formFieldValue?.selected_languages?.some((item) => item === language?.lang)) ? "#163560" : "",
                         color: (formFieldValue?.selected_languages?.some((item) => item === language?.lang)) ? "white" : "black",
-                    }}/>)}
+                    }}/>)
+                    }
                     {
                         formFieldValue?.selected_languages?.filter((item) => item !== 'en')?.length > 0 && <HtmlTooltip
                             title={
@@ -637,9 +666,17 @@ export default function CreateEvent({isEdit, editData}) {
                         row
                         value={formFieldValue?.event_type}
                         name="row-radio-buttons-group"
-                        onChange={(event) => setFormFieldValue((prevData) => {
-                            return {...prevData, event_type: event.target.value};
-                        })}
+                        onChange={(event) => {
+                            const {value} = event?.target;
+                            if (value === 'csv_upload') {
+                                setShowCsvModal(true)
+                            } else {
+                                setFormFieldValue((prevData) => {
+                                    return {...prevData, event_type: event.target.value};
+                                })
+                            }
+                        }
+                        }
                     >
                         <FormControlLabel
                             disabled={isEdit}
@@ -648,7 +685,32 @@ export default function CreateEvent({isEdit, editData}) {
                             label="Open event"
 
                         />
+                        <FormControlLabel
+                            disabled={isEdit}
+                            value="csv_upload"
+                            control={<Radio/>}
+                            label="CSV Upload"
+
+                        />
                     </RadioGroup>
+                    {formFieldValue?.csv_file && <div className={"csv-details-and-icon-main-container"}>
+                        <div className={"csv-details-container"}>
+                            <span className={"document-icon-container"}>
+                                <DocumentIcon className={"document-icon"}/>
+
+                            </span>
+                            <div>
+                                <div className={"csv-name"}>{formFieldValue?.csv_file?.name}</div>
+                                <div className={"csv-uplaod-time"}>{moment
+                                (formFieldValue?.csv_file?.lastModifiedDate).format('DD/MM/YYYY h:mm A')}</div>
+                            </div>
+                        </div>
+                        <IconButton onClick={deleteCsv}>
+                            <DeleteIcon/>
+                        </IconButton>
+
+                    </div>
+                    }
                 </div>
             </Box>
         </div>
@@ -676,7 +738,6 @@ export default function CreateEvent({isEdit, editData}) {
                     style={{
                         background: "black", color: "white", height: "40px", width: "150px",
                     }}
-
                     onClick={() => submit('go_to_form', id)}
                 > Go to form
                 </button>}

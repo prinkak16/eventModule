@@ -11,6 +11,7 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import RoutesWithBreadcrumbs from "./RoutesWithBreadcrumbs";
 import EventDetails from "./components/pages/events/event-details/EventDetails";
 import FormDetails from "./components/pages/form/form-details/FormDetails";
+import ViewCsv from "./components/pages/events/view-csv/ViewCsv";
 
 const Router = () => {
     return (
@@ -25,12 +26,13 @@ const Router = () => {
                 <Route element={<RoutesWithBreadcrumbs/>}>
                     <Route path="/events/create/:id?" element={<CreateEvent/>}/>
                     <Route path="/events/edit/:id" element={<EditEvent/>}/>
-                    <Route path="/events/view/:id" element={<ViewEvents/>}/>
+                    <Route path="/events/view-csv/:id" element={<ViewCsv/>}/>
                     <Route path="/events/:id" element={<EventDetails/>}/>
                 </Route>
             </Route>
-            <Route path="/*" element={<Navigate to="/" replace={true}/>}/>
-        </Routes>)
+       <Route path="/*" element={<Navigate to="/" replace={true}  />} />
+        </Routes>
+    )
 }
 
-export default Router;
+export  default Router;

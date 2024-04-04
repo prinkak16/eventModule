@@ -42,6 +42,10 @@ Rails.application.routes.draw do
       get 'event/pin', to: 'event#pin_event'
       post 'event/update_position', to: 'event#update_position'
       post 'event/hide_event', to: 'event#set_event_to_hidden'
+      get 'event/latest_uploads', to: 'event#get_latest_uploaded_csv'
+      get 'event/event_user_location', to: 'event#get_event_user_location'
+      delete 'event/event_user', to: 'event#remove_event_user_location'
+      post 'event/event_user_location', to: 'event#schedule_event_user_location_job'
   end
   #noinspection RailsParamDefResolve
   match '*path', to: 'home#index', via: :all, constraints: lambda { |req|

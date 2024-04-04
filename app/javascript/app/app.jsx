@@ -69,7 +69,6 @@ function App() {
                 }
             >
             <ThemeProvider theme={theme}>
-
                 <HeaderBar/>
                 <Router/>
                 <ToastContainer theme="colored"

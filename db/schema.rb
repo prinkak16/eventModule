@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_13_063509) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_04_082001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -67,26 +67,52 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_13_063509) do
   create_table "event_submissions", force: :cascade do |t|
     t.string "form_id"
     t.string "submission_id"
+    t.bigint "user_id", null: false
     t.bigint "event_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id"
     t.datetime "deleted_at"
     t.index ["created_at"], name: "index_event_submissions_on_created_at", order: :desc
     t.index ["deleted_at"], name: "index_event_submissions_on_deleted_at"
+    t.index ["event_id", "user_id", "submission_id", "form_id"], name: "index_event_submissions_on_event_user_submission_form"
     t.index ["event_id"], name: "index_event_submissions_on_event_id"
+    t.index ["user_id"], name: "index_event_submissions_on_user_id"
+  end
+
+  create_table "event_user_locations", force: :cascade do |t|
+    t.bigint "event_user_id"
+    t.string "location_type"
+    t.bigint "location_id"
+    t.integer "country_state_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "phone_number"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_event_user_locations_on_deleted_at"
+  end
+
+  create_table "event_users", force: :cascade do |t|
+    t.bigint "event_id"
+    t.boolean "disabled"
+    t.string "phone_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_event_users_on_deleted_at"
+    t.index ["event_id", "phone_number"], name: "index_event_users_on_event_id_and_phone_number", unique: true
   end
 
   create_table "events", force: :cascade do |t|
     t.string "name"
     t.string "image_url"
+    t.bigint "data_level_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "status_aasm_state", default: "upcoming"
     t.string "event_type"
-    t.integer "state_id"
     t.datetime "start_date"
     t.datetime "end_date"
+    t.bigint "created_by_id", null: false
     t.datetime "deleted_at"
     t.boolean "published", default: false
     t.integer "parent_id"
@@ -94,9 +120,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_13_063509) do
     t.jsonb "translated_title"
     t.integer "position"
     t.boolean "pinned", default: false
-    t.integer "created_by_id"
-    t.integer "data_level_id"
     t.boolean "is_hidden", default: false
+    t.index ["created_by_id"], name: "index_events_on_created_by_id"
+    t.index ["data_level_id"], name: "index_events_on_data_level_id"
     t.index ["deleted_at"], name: "index_events_on_deleted_at"
     t.index ["translated_title"], name: "index_events_on_translated_title", using: :gin
   end
@@ -105,4 +131,5 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_13_063509) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "event_locations", "events"
   add_foreign_key "event_submissions", "events"
+  add_foreign_key "event_user_locations", "event_users"
 end

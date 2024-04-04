@@ -73,7 +73,12 @@ class Api::EventController < Api::ApplicationController
           EventForm.create!(event_id: event.id, form_id: SecureRandom.uuid) if params[:allow_create_sub_event].blank? #only leaf event can create form
         end
         event = Event.find(event.id)
-        render json: { success: true, message: "Event Submitted Successfully", event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
+        message = "Event Created Successfully."
+        if event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email].split(',')])
+          Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email].split(',') )
+          message = "Job For event users creation has been scheduled successfully you will be kept updated of the process on email."
+        end
+        render json: { success: true, message: message, event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
         raise ActiveRecord::Rollback
@@ -131,7 +136,8 @@ class Api::EventController < Api::ApplicationController
     offset = params[:offset].present? ? params[:offset] : 0
     date = DateTime.now
     state_id = params[:state_id].present? ? params[:state_id] : current_user.country_state_id
-    events = Event.where(parent_id: nil, has_sub_event: true).or(Event.where(parent_id: nil, has_sub_event: false, published: true)).where("end_date >= ? AND start_date <= ?", date, date).where(is_hidden: false)
+    events = Event.includes(:event_users)
+    events = events.where(parent_id: nil, has_sub_event: true).or(events.where(parent_id: nil, has_sub_event: false, published: true)).or(events.where(event_users: { phone_number: current_user.phone_number })).where("end_date >= ? AND start_date <= ?", date, date).where(is_hidden: false)
     events = events.joins(:event_locations).where(event_locations: { state_id: state_id })
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
     events = events.where(pinned: false)
@@ -274,6 +280,7 @@ class Api::EventController < Api::ApplicationController
       if operation == false
         event.update!(position: nil)
       end
+      render json: { success: true, message: "Event Pinned Successfully" }, status: :ok
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
     end
@@ -312,4 +319,79 @@ class Api::EventController < Api::ApplicationController
     end
   end
 
+  def get_latest_uploaded_csv
+    begin
+      data = Rails.cache.fetch("get_latest_uploaded_csv_#{params[:event_id]}", expires_in: 24.hours) do
+        csv_records = Event.find_by(id: params[:event_id]).csv_file.order(created_at: :desc).limit(5)
+        csv_records.map { |file| { file_name: file.filename.to_s, date: file.created_at.strftime("%d-%m-%y %I:%M:%S %p") } }
+      end
+      render json: { success: true, message: "Record Fetched Successfully", data: data }, status: :ok
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
+
+  def get_event_user_location
+    begin
+      limit = params[:limit].present? ? params[:limit] : 10
+      offset = params[:offset].present? ? params[:offset] : 0
+      search_query = params[:search_query].present? ? params[:search_query] : ""
+      event_user_ids = EventUser.where(event_id: params[:event_id]).pluck(:id)
+      headers = [ "Phone Number" , "State", "Location Type", "Location Name", "Location Filter" ]
+      if event_user_ids.present?
+        data = []
+        location_data = EventUserLocation.where(event_user_id: event_user_ids).group(:location_type).count
+        total_count = 0
+        location_data.each_value do |value|
+          total_count += value
+        end
+        location_data["Total Count"] = total_count
+        event_user_location = EventUserLocation.joins(:event_user).where(event_user_id: event_user_ids).where("event_users.phone_number LIKE ?", "%#{search_query}%")
+        count = event_user_location.count
+        event_user_location = event_user_location.limit(limit).offset(offset)
+        event_user_location.each do |doc|
+          data << [ doc.event_user.phone_number, doc.country_state.name, doc.location_type, doc.location_id ]
+        end
+      else
+        location_data = Hash.new
+        location_data["Total Count"] = 0
+        data = []
+      end
+      render json: { success: true, message: "Record Fetched Successfully", location_data: location_data , data: data, headers: headers, count: count }, status: :ok
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
+
+  def remove_event_user_location
+    begin
+      event_user = EventUser.find_by(event_id: params[:event_id], phone_number: params[:phone_number])
+      country_state_id = CountryState.find_by(name: params[:country_state_name])
+      if event_user.present?
+        event_user_location = EventUserLocation.find_by(event_user_id: event_user.id, location_type: params[:location_type], location_id: params[:location_id], country_state_id: country_state_id)
+        event_user_location.destroy
+        locations = EventUserLocation.where(event_user_id: event_user.id)
+        if locations.size.blank?
+          event_user.destroy
+        end
+      end
+      render json: { success: true, message: "Record Deleted Successfully" }, status: :ok
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
+
+  def schedule_event_user_location_job
+    begin
+      event = Event.find_by(id: params[:event_id])
+      event.csv_file.attach(params[:file])
+      if !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email].split(',')])
+        Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email].split(',') )
+        Rails.cache.delete("get_latest_uploaded_csv_#{params[:event_id]}")
+      end
+      render json: { success: true, message: "Event User Creation has been started Successfully."}, status: :ok
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+  end
 end

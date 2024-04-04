@@ -250,4 +250,44 @@
 .go-to-form-button[disabled] {
   opacity: 50%;
 }
-  
+
+.csv-details-and-icon-main-container{
+  display: flex;
+  justify-content:space-between;
+  background-color: #F2F2F8FF;
+  padding:15px;
+  max-width: 482px;
+  border-radius:10px;
+  .document-icon-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: white;
+    border-radius: 50%;
+    padding:8px;
+    .document-icon{
+      width:20px;
+      height:20px;
+    }
+
+  }
+  .csv-details-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+    .csv-name{
+      font-family: Quicksand;
+      font-size: 13px;
+      font-weight: 700;
+      
+    }
+    .csv-uplaod-time{
+      font-family: Quicksand;
+      font-size: 9px;
+      font-weight: 600;
+      color: #939191;
+
+    }
+  }
+}

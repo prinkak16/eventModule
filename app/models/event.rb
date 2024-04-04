@@ -12,7 +12,8 @@ class Event < ApplicationRecord
   belongs_to :created_by, class_name: 'User'
   belongs_to :parent, class_name: 'Event',  optional: true
   has_many :children, class_name: 'Event', foreign_key: 'parent_id'
-  has_one_attached :csv_file
+  has_many :event_users
+  has_many_attached :csv_file
   has_one_attached :report_file
   acts_as_list scope: :parent
 

@@ -96,3 +96,4 @@ gem 'acts_as_list'
 gem "google-cloud-storage", "~> 1.8", require: false
 gem 'open-uri'
 gem 'resque-web', require: 'resque_web', git: 'https://github.com/jarvisconsulting/resque-web', branch: :ruby_3_2_0
+gem 'activerecord-import'

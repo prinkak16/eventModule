@@ -108,7 +108,6 @@ const HomeComponent = () => {
                     getEventsList();
                 } else {
                     setPage(1)
-
                 }
             }
         }, 1000);

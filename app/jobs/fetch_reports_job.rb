@@ -118,27 +118,41 @@ module FetchReportsJob
             deleted_data[data[i]["submissionId"]] = true
           end
         end
-        begin
-          puts "trying with UTF-8"
-          file = URI.open(event.report_file.url)
-          file.set_encoding(Encoding.find("UTF-8"))
-        rescue => _
-          puts "trying with ISO"
-          file = URI.open(event.report_file.url)
-          file.set_encoding(Encoding.find("ISO-8859-1"))
-        end
-        chunk_size = 50000
+        batch_size = 10000
+        blob = event.report_file.blob
         CSV.open(csv_file, 'a+') do |csv|
           csv << headers
-          CSV.parse(file.read, headers: true).each_slice(chunk_size) do |chunk|
-            chunk.each do |row|
-              if deleted_data[row['Submission Id']]
-                hashed_data.delete(row['Submission Id'])
-              elsif hashed_data[row['Submission Id']].present?
-                csv << hashed_data[row['Submission Id']]
-                hashed_data.delete(row['Submission Id'])
-              else
-                csv << row
+          batch = []
+          if blob.present?
+            blob.open do |file|
+              CSV.foreach(file, headers: true) do |row|
+                if batch.size < batch_size
+                  batch << row
+                  next
+                end
+                batch.each do |batch_row|
+                  if deleted_data[batch_row["Submission Id"]].present?
+                    hashed_data.delete(batch_row["Submission Id"])
+                  elsif hashed_data[batch_row["Submission Id"]].present?
+                    csv << hashed_data[batch_row["Submission Id"]]
+                    hashed_data.delete(batch_row["Submission Id"])
+                  else
+                    csv << batch_row
+                  end
+                end
+                batch = []
+              end
+              if batch.present?
+                batch.each do |batch_row|
+                  if deleted_data[batch_row["Submission Id"]].present?
+                    hashed_data.delete(batch_row["Submission Id"])
+                  elsif hashed_data[batch_row["Submission Id"]].present?
+                    csv << hashed_data[batch_row["Submission Id"]]
+                    hashed_data.delete(batch_row["Submission Id"])
+                  else
+                    csv << batch_row
+                  end
+                end
               end
             end
           end
@@ -242,7 +256,7 @@ module FetchReportsJob
           '$or': [
             {
               updatedAt: {
-                '$gte': event.report_file.created_at
+                '$gte': event.report_file.created_at - 30.minutes
               }
             },
             {
