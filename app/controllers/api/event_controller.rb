@@ -74,8 +74,8 @@ class Api::EventController < Api::ApplicationController
         end
         event = Event.find(event.id)
         message = "Event Created Successfully."
-        if event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email_id].split(',')])
-          Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email_id].split(',') )
+        if event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email].split(',')])
+          Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email].split(',') )
           message = "Job For event users creation has been scheduled successfully you will be kept updated of the process on email."
         end
         render json: { success: true, message: message, event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
@@ -385,8 +385,8 @@ class Api::EventController < Api::ApplicationController
     begin
       event = Event.find_by(id: params[:event_id])
       event.csv_file.attach(params[:file])
-      if !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email_id].split(',')])
-        Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email_id].split(',') )
+      if !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email].split(',')])
+        Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email].split(',') )
         Rails.cache.delete("get_latest_uploaded_csv_#{params[:event_id]}")
       end
       render json: { success: true, message: "Event User Creation has been started Successfully."}, status: :ok
