@@ -31,6 +31,7 @@ import ReactDateTimePicker from '../../../date-time-picker'
 import {EventState} from "../../../../context/EventContext";
 import DeleteIcon from '@mui/icons-material/Delete';
 import {createEvent} from "../../../../services/RestServices/Modules/EventServices/CreateEventServices";
+import {isNotNullUndefinedOrEmpty} from "../../../../utils/NullUndefinedChecker";
 
 const HtmlTooltip = styled(({className, ...props}) => (
     <Tooltip {...props} classes={{popper: className}}/>
@@ -270,10 +271,10 @@ export default function CreateEvent({isEdit, editData}) {
         formData.append('has_sub_event', formFieldValue?.has_sub_event)
         formData?.append('inherit_from_parent', formFieldValue?.inherit_from_parent);
         formData?.append('translated_title', JSON.stringify(formFieldValue?.translated_title));
-        if (formFieldValue?.parent_id !== null && formFieldValue?.parent_id !== undefined) {
+        if (isNotNullUndefinedOrEmpty(formFieldValue?.parent_id)) {
             formData.append('parent_id', formFieldValue?.parent_id);
         }
-        if (formFieldValue?.csv_file !== null && formFieldValue?.csv_file !== undefined) {
+        if (isNotNullUndefinedOrEmpty(formFieldValue?.csv_file)) {
             formData.append('file', formFieldValue?.csv_file)
         }
         try {

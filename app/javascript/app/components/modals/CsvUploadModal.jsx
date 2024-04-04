@@ -12,6 +12,7 @@ import {TextField} from "@mui/material";
 import {EventState} from "../../context/EventContext";
 import {toast} from "react-toastify";
 import {useParams} from "react-router";
+import {isNotNullUndefinedOrEmpty} from "../../utils/NullUndefinedChecker";
 
 
 const style = {
@@ -91,9 +92,9 @@ export default function CsvModal    ({formFieldValue={},setFormFieldValue=()=>{}
     }
 
     const disableUploadButton=()=>{
-        for(let key in formData){
-            if(formData[key]===null||formData[key]===undefined||formData[key]==="")
-                return true;
+            for(let key in formData){
+                if(!isNotNullUndefinedOrEmpty(formData[key]))
+                     return true;
         }
     }
 
