@@ -322,7 +322,7 @@ class Api::EventController < Api::ApplicationController
   def get_latest_uploaded_csv
     begin
       data = Rails.cache.fetch("get_latest_uploaded_csv_#{params[:event_id]}", expires_in: 24.hours) do
-        csv_records = Event.find_by(name: params[:event_id]).csv_file.order(created_at: :desc).limit(5)
+        csv_records = Event.find_by(id: params[:event_id]).csv_file.order(created_at: :desc).limit(5)
         csv_records.map { |file| { file_name: file.filename.to_s, date: file.created_at.strftime("%d-%m-%y %I:%M:%S %p") } }
       end
       render json: { success: true, message: "Record Fetched Successfully", data: data }, status: :ok
