@@ -266,7 +266,7 @@ export default function CreateEvent({isEdit, editData}) {
         formData.append("location_ids", formFieldValue?.location_ids);
         formData.append("event_type", formFieldValue?.event_type);
         formData.append("crop_data", formFieldValue?.crop_data ?? "");
-
+        formData.append('email',formFieldValue?.email);
         formData.append("img", formFieldValue?.img ?? "");
         formData.append('has_sub_event', formFieldValue?.has_sub_event)
         formData?.append('inherit_from_parent', formFieldValue?.inherit_from_parent);
