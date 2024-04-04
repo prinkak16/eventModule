@@ -36,7 +36,6 @@ RUN useradd -m -r -s /bin/bash Jarvis && \
     chown -R Jarvis:Jarvis $APP_HOME && \
     chmod -R 755 $APP_HOME
 
-# WORKDIR /usr/src/
 WORKDIR ${APP_HOME}
 COPY Gemfile Gemfile
 #COPY Gemfile.lock Gemfile.lock
@@ -48,6 +47,7 @@ RUN bundle install
 #RUN bundle update saral-locatable
 
 RUN bundle exec rails assets:precompile
+USER Jarvis
 EXPOSE 3000
 
 # Configure the main process to run when running the image
