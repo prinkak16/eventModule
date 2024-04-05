@@ -369,7 +369,7 @@ export default function CreateEvent({isEdit, editData}) {
                     return true;
                 }
             } else if ((key==='email'||key==='csv_file')&&formFieldValue['event_type']==='open_event'){
-                //email and csv_file will be present if event_type is open_event
+                //email and csv_file will not be present if event_type is open_event
                 if(!isNotNullUndefinedOrEmpty(formFieldValue[key]))
                     return false;
             }
