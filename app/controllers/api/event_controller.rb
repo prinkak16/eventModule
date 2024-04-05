@@ -28,8 +28,10 @@ class Api::EventController < Api::ApplicationController
     ActiveRecord::Base.transaction do
       begin
         locations = CountryState.where(id: [params[:location_ids].split(',')])
+        event_edit = false
         if params[:event_id].present?
           event = Event.find_by(id: params[:event_id])
+          event_edit = true
         else
           event = Event.new
         end
@@ -74,7 +76,7 @@ class Api::EventController < Api::ApplicationController
         end
         event = Event.find(event.id)
         message = "Event Created Successfully."
-        if event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email].split(',')])
+        if event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email].split(',')]) && !event_edit
           Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email].split(',') )
           message = "Job For event users creation has been scheduled successfully you will be kept updated of the process on email."
         end
