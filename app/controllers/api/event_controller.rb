@@ -74,7 +74,7 @@ class Api::EventController < Api::ApplicationController
         end
         event = Event.find(event.id)
         message = "Event Created Successfully."
-        if event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email].split(',')])
+        if new_record && event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email].split(',')])
           Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email].split(',') )
           message = "Job For event users creation has been scheduled successfully you will be kept updated of the process on email."
         end
