@@ -368,7 +368,7 @@ class Api::EventController < Api::ApplicationController
       event_user = EventUser.find_by(event_id: params[:event_id], phone_number: params[:phone_number])
       country_state_id = CountryState.find_by(name: params[:country_state_name])
       if event_user.present?
-        event_user_location = EventUserLocation.find_by(event_user_id: event_user.id, location_type: params[:location_type], location_id: params[:location_id], country_state_id: country_state_id)
+        event_user_location = EventUserLocation.find_by(event_user_id: event_user.id, country_state_id: country_state_id, location_type: params[:location_type], location_id: params[:location_id])
         event_user_location.destroy
         locations = EventUserLocation.where(event_user_id: event_user.id)
         if locations.size.blank?
