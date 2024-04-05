@@ -5,12 +5,12 @@ module UserUploadCsvJob
   @queue = :user_upload
 
   def self.perform(event_id = nil, file_id = nil, mail_ids = nil)
+    event = Event.find_by(id: event_id)
     subject = "Event Users Creation for event #{event.name}"
     content = "Event Users Creation for event - #{event.name} requested at #{DateTime.now.in_ist.strftime("%B %e, %Y %H:%M:%S")} has been started."
     content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
     ApplicationController.helpers.send_email(subject, content, mail_ids)
     errors = []
-    event = Event.find_by(id: event_id)
     blob = event.csv_file.find_by(id: file_id).blob
     batch_size = 5000
     order = get_event_location_order(event.data_level.name)
@@ -28,9 +28,10 @@ module UserUploadCsvJob
           batch.each do |batch_row|
             begin
               if batch_row['operation'] == 'delete'
-                event_user = EventUser.find_by(event_id: event_id, phone_number: batch_row['phone_number'])
+                event_user = EventUser.with_deleted.find_by(event_id: event_id, phone_number: batch_row['phone_number'])
+                event_user.restore if event_user.deleted_at.present?
                 country_state_id = CountryState.find_by(name: batch_row['country_state'])
-                event_user_location = EventUserLocation.find_by(event_user_id: event_user.id, location_type: batch_row['location_type'], location_id: batch_row['location_name'], country_state_id: country_state_id)
+                event_user_location = EventUserLocation.find_by(event_user_id: event_user.id, country_state_id: country_state_id, location_type: batch_row['location_type'], location_id: batch_row['location_name'])
                 event_user_location.destroy
                 locations = EventUserLocation.where(event_user_id: event_user)
                 if locations.size.blank?
@@ -89,9 +90,10 @@ module UserUploadCsvJob
           batch.each do |batch_row|
             begin
               if batch_row['operation'] == 'delete'
-                event_user = EventUser.find_by(event_id: event_id, phone_number: batch_row['phone_number'])
+                event_user = EventUser.with_deleted.find_by(event_id: event_id, phone_number: batch_row['phone_number'])
+                event_user.restore if event_user.deleted_at.present?
                 country_state_id = CountryState.find_by(name: batch_row['country_state'])
-                event_user_location = EventUserLocation.find_by(event_user_id: event_user.id, location_type: batch_row['location_type'], location_id: batch_row['location_name'], country_state_id: country_state_id)
+                event_user_location = EventUserLocation.find_by(event_user_id: event_user.id, country_state_id: country_state_id, location_type: batch_row['location_type'], location_id: batch_row['location_name'])
                 event_user_location.destroy
                 locations = EventUserLocation.where(event_user_id: event_user.id)
                 if locations.size.blank?

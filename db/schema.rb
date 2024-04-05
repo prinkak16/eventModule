@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_03_092725) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_04_082001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -87,6 +87,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_03_092725) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "phone_number"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_event_user_locations_on_deleted_at"
   end
 
   create_table "event_users", force: :cascade do |t|
@@ -95,6 +97,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_03_092725) do
     t.string "phone_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_event_users_on_deleted_at"
     t.index ["event_id", "phone_number"], name: "index_event_users_on_event_id_and_phone_number", unique: true
   end
 
