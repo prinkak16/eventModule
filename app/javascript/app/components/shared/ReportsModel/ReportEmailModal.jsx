@@ -11,7 +11,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import {reportTimeline} from "../constants";
+import {reportStatus, reportTimeline} from "../constants";
+import CircularProgress from "@mui/material/CircularProgress";
 
 
 const style = {
@@ -20,7 +21,7 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 400,
-    height:300,
+    height:370,
     bgcolor: 'background.paper',
     boxShadow: 24,
     pt: 2,
@@ -31,27 +32,33 @@ const style = {
 
 
 export default function ReportEmailModal({reportModal, setReportModal, reportEventId,}) {
-    const [formData,setFormData]=useState({email:"",reportTimeline:""});
+    const [formData,setFormData]=useState({email:"",reportTimeline:"",status:""});
     const [disableSendButton,setDisableSendButton]=useState(false);
-    const handleClose = () => setReportModal(false);
+    const [loader,setLoader]=useState(false);
+    const handleClose = () => {
+        setFormData({email: "",reportTimeline: "",status: ""})
+        setReportModal(false);
+    }
 
-        const fetchReport = () => {
-            (async () => {
+        const fetchReport =async () => {
                 setDisableSendButton(true);
+                setLoader(true);
                 try {
-                    const {data} = await ApiClient.get(`/event/reports?email_id=${formData?.email}&event_id=${reportEventId}&report_timeline=${formData?.reportTimeline}`);
+                    const {data} = await ApiClient.get(`/event/reports?email_id=${formData?.email}&event_id=${reportEventId}&report_timeline=${formData?.reportTimeline}&status=${formData?.status}`);
                     if (data?.success) {
                         toast.success(data?.message);
                         setReportModal(false);
                        setFormData({email: "",reportTimeline: ""})
+                    }else{
+                        toast.error(data?.message);
                     }
                 } catch(error) {
-                    toast.error('Failed to fetch Reports')
+                    toast.error(error?.message)
                 } finally {
-                    console.log("triggered Successfully");
+                    setLoader(false)
                     setDisableSendButton(false);
                 }
-            })();
+
         }
     const sendReportToEmail = ()=>{
         let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -59,6 +66,8 @@ export default function ReportEmailModal({reportModal, setReportModal, reportEve
             toast.error('Email is not valid');
         }else if(!formData?.reportTimeline){
             toast.error('Select report timeline')
+        }else if(!formData?.status){
+            toast.error('Select status')
         }
         else{
             fetchReport();
@@ -73,11 +82,10 @@ export default function ReportEmailModal({reportModal, setReportModal, reportEve
     return (
         <Modal
             open={reportModal}
-            onClose={handleClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={style}>
+            <Box sx={style} >
                 <div>
                     <label>Report Download</label>
                     <br/>
@@ -101,7 +109,24 @@ export default function ReportEmailModal({reportModal, setReportModal, reportEve
                     <br/>
                     <br/>
 
-                    <Button disabled={disableSendButton} variant="contained" onClick={sendReportToEmail} component="label"
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">Select submission status</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            name={"status"}
+                            label="Select submission status"
+                            value={formData?.status}
+                            onChange={handleChange}
+                        >
+                            {reportStatus?.map((status) => <MenuItem value={status}>{status}</MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
+                    <br/>
+                    <br/>
+                    <div style={{display:"flex",gap:"10px"}}>
+                    <Button  variant="contained" onClick={handleClose} component="label"
                             size="medium"
                             style={{textTransform: "none", border: "1px solid #fffff"}}
                             sx={{
@@ -112,7 +137,21 @@ export default function ReportEmailModal({reportModal, setReportModal, reportEve
                                 fontFamily: "Quicksand",
                                 color: "#3f3f3f",
                                 fontStyle: "normal",
-                            }}>Send</Button>
+                            }}>Cancel</Button>
+
+                    <Button disabled={loader} variant="contained" onClick={sendReportToEmail} component="label"
+                            size="medium"
+                            style={{textTransform: "none", border: "1px solid #fffff"}}
+                            sx={{
+                                ":hover": {background: "#f77f00"},
+                                background: "#F3F7FF",
+                                borderRadius: 2,
+                                fontSize: 20,
+                                fontFamily: "Quicksand",
+                                color: "#3f3f3f",
+                                fontStyle: "normal",
+                            }}>{loader?<CircularProgress />:"Send"}</Button>
+                    </div>
                 </div>
             </Box>
         </Modal>
