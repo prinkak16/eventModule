@@ -33,11 +33,13 @@ export default function CsvModal    ({formFieldValue={},setFormFieldValue=()=>{}
     const {showCsvModal,setShowCsvModal}=EventState();
     const [formData,setFormData]=useState({
         email:"",
-        csvFile:null
+        csvFile:null,
+        csv_upload_time:""
     });
     const {id}=useParams();
     const handleClose = () => {
-       resetFormData();
+        setFormFieldValue((prevState)=>({...prevState,event_type:""}))
+        resetFormData();
         setShowCsvModal(false);
     }
     const VisuallyHiddenInput = styled('input')({
@@ -58,14 +60,16 @@ export default function CsvModal    ({formFieldValue={},setFormFieldValue=()=>{}
             toast.error('Invalid email');
             return;
         }
-        setFormFieldValue((prevData)=>{return{...prevData,email:formData?.email,csv_file:formData?.csvFile,event_type:"csv_upload"}})
+        setFormFieldValue((prevData)=>{return{...prevData,email:formData?.email,csv_file:formData?.csvFile,csv_upload_time:formData?.csv_upload_time}})
         uploadCsv({...formData,id}); //if function is present api of upload csv would be called
-        handleClose();
+        resetFormData();
+        setShowCsvModal(false);
     }
 
     const handleFileUpload=(e)=>{
         const file=e.target.files[0];
-        setFormData(prevState => ({...prevState,csvFile: file}));
+        const csv_upload_time=new Date();
+        setFormData(prevState => ({...prevState,csvFile: file,csv_upload_time: csv_upload_time}));
         e.target.files=null;
     }
 
@@ -80,7 +84,8 @@ export default function CsvModal    ({formFieldValue={},setFormFieldValue=()=>{}
     const handleDrop = (e) => {
         e.preventDefault();
         const file = e.dataTransfer.files[0];
-        setFormData(prevState => ({...prevState,csvFile: file}));
+        const csv_upload_time=new Date();
+        setFormData(prevState => ({...prevState,csvFile: file,csv_upload_time: csv_upload_time}));
     };
 
     const resetFormData=()=>{
@@ -118,12 +123,12 @@ export default function CsvModal    ({formFieldValue={},setFormFieldValue=()=>{}
 
         // Headers for each column
         let headers = [
-            "S.No.",
-            "Phone No.",
-            "State",
-            "Location Type",
-            "Location Name/No.",
-            "Location Filter",
+            "operation",
+            "country_state",
+            "phone_number",
+            "location_type",
+            "location_name",
+            "location_filter",
         ];
 
         downloadFile({

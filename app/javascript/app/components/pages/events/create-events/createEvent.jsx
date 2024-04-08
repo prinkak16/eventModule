@@ -63,7 +63,7 @@ export default function CreateEvent({isEdit, editData}) {
         end_datetime: "",
         level_id: "",
         location_ids: [],
-        event_type: "open_event",
+        event_type: "",
         img: "",
         crop_data: "",
         state_obj: [],
@@ -73,7 +73,8 @@ export default function CreateEvent({isEdit, editData}) {
         status: "",
         csv_file: null,
         translated_title: {},
-        email: ""
+        email: "",
+        csv_upload_time:""
     });
     const [openLanguageModal, setOpenLanguageModal] = useState(false);
     const [parentEventDetails, setParentEventDetails] = useState({
@@ -196,7 +197,7 @@ export default function CreateEvent({isEdit, editData}) {
 
     const deleteCsv = () => {
         setFormFieldValue((prevData) => {
-            return {...prevData, csv_file: null, event_type: "open_event", email: ""}
+            return {...prevData, csv_file: null, event_type: "csv_upload", email: ""}
         });
         setShowCsvModal(true);
     }
@@ -343,13 +344,7 @@ export default function CreateEvent({isEdit, editData}) {
 
         }
     }
-    //
-    // useEffect(() => {
-    //     console.log("form value s", formFieldValue);
-    // }, [formFieldValue]);
-
-
-    const isNextButtonDisabled = () => {
+     const isNextButtonDisabled = () => {
         for (let key in formFieldValue) {
             if (key === "status") {
             } else if (formFieldValue?.inherit_from_parent && (key === 'start_datetime' || key === 'end_datetime' || key === 'level_id' || key === 'state_obj' || key === "location_ids")) {
@@ -368,12 +363,12 @@ export default function CreateEvent({isEdit, editData}) {
                 if (formFieldValue[key].length === 0) {
                     return true;
                 }
-            } else if ((key==='email'||key==='csv_file')&&formFieldValue['event_type']==='open_event'){
+            } else if ((key==='email'||key==='csv_file'||key==='csv_upload_time')&&formFieldValue['event_type']==='open_event'){
                 //email and csv_file will not be present if event_type is open_event
                 if(!isNotNullUndefinedOrEmpty(formFieldValue[key]))
                     return false;
             }
-            else if ((key === 'csv_file'||key==='email') && formFieldValue['event_type'] === 'csv_upload') {
+            else if ((key === 'csv_file'||key==='email'||key==='csv_upload_time') && formFieldValue['event_type'] === 'csv_upload') {
                 //in case of edit csv_file will not be present
                 if(isEdit){
                     continue;
@@ -675,11 +670,11 @@ export default function CreateEvent({isEdit, editData}) {
                             const {value} = event?.target;
                             if (value === 'csv_upload') {
                                 setShowCsvModal(true)
-                            } else {
+                            }
                                 setFormFieldValue((prevData) => {
                                     return {...prevData, event_type: event.target.value};
                                 })
-                            }
+
                         }
                         }
                     >
@@ -706,8 +701,7 @@ export default function CreateEvent({isEdit, editData}) {
                             </span>
                             <div>
                                 <div className={"csv-name"}>{formFieldValue?.csv_file?.name}</div>
-                                <div className={"csv-uplaod-time"}>{moment
-                                (formFieldValue?.csv_file?.lastModifiedDate).format('DD/MM/YYYY h:mm A')}</div>
+                                <div className={"csv-uplaod-time"}>{moment(formFieldValue?.csv_upload_time).format('DD/MM/YYYY h:mm A')}</div>
                             </div>
                         </div>
                         <IconButton onClick={deleteCsv}>
