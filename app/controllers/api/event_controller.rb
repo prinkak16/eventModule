@@ -25,6 +25,8 @@ class Api::EventController < Api::ApplicationController
 
   # Create or update event and their event locations
   def create_event
+    new_record = nil
+    event = nil
     ActiveRecord::Base.transaction do
       begin
         locations = CountryState.where(id: [params[:location_ids].split(',')])
@@ -74,15 +76,17 @@ class Api::EventController < Api::ApplicationController
         end
         event = Event.find(event.id)
         message = "Event Created Successfully."
-        if new_record && event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email].split(',')])
-          Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email].split(',') )
-          message = "Job For event users creation has been scheduled successfully you will be kept updated of the process on email."
+        if new_record && event.event_type == 'csv_upload'
+          message += "Job For event users creation has been scheduled successfully you will be kept updated of the process on email."
         end
         render json: { success: true, message: message, event: ActiveModelSerializers::SerializableResource.new(event, each_serializer: EventSerializer, state_id: nil, current_user: current_user) }, status: 200
       rescue Exception => e
         render json: { success: false, message: e.message }, status: 400
         raise ActiveRecord::Rollback
       end
+    end
+    if new_record && event.event_type == 'csv_upload' && !check_if_already_in_progress( queue: "user_upload", args: [event.id, event.csv_file.last.id, params[:email].split(',')])
+      Resque.enqueue(UserUploadCsvJob, event.id, event.csv_file.last.id, params[:email].split(',') )
     end
   end
 
@@ -93,7 +97,9 @@ class Api::EventController < Api::ApplicationController
     query_conditions[:data_level] = params[:level_id] if params[:level_id].present?
     event_status = params[:event_status]
     event_level = params[:event_level].present? ? params[:event_level] : ""
-    event_ids = Event.joins(:event_locations).where(event_locations: { state_id: country_states_with_create_permission.pluck(:id) }).pluck(:id).uniq
+    #user will be shown events for csv_upload irrespective of their state but solely on the basis of the csv uploaded
+    list_events = Event.includes(:event_locations, :event_users)
+    event_ids = list_events.where(event_type: "open_event" ,event_locations: { state_id: country_states_with_create_permission.pluck(:id) }).or(list_events.where(event_type: "csv_upload").where(event_users: { phone_number: current_user.phone_number })).pluck(:id).uniq
     events = Event.where(query_conditions).where(id: event_ids)
     if event_level == Event::TYPE_INTERMEDIATE
       events = events.where.not(parent_id: nil).where.not(has_sub_event: false)
@@ -136,9 +142,8 @@ class Api::EventController < Api::ApplicationController
     offset = params[:offset].present? ? params[:offset] : 0
     date = DateTime.now
     state_id = params[:state_id].present? ? params[:state_id] : current_user.country_state_id
-    events = Event.includes(:event_users)
-    events = events.where(parent_id: nil, has_sub_event: true).or(events.where(parent_id: nil, has_sub_event: false, published: true)).or(events.where(event_users: { phone_number: current_user.phone_number })).where("end_date >= ? AND start_date <= ?", date, date).where(is_hidden: false)
-    events = events.joins(:event_locations).where(event_locations: { state_id: state_id })
+    events = Event.includes(:event_users, :event_locations)
+    events = events.where(parent_id: nil, has_sub_event: true, event_locations: { state_id: state_id }, event_type: "open_event").or(events.where(parent_id: nil, has_sub_event: false, published: true, event_locations: { state_id: state_id }, event_type: "open_event")).or(events.where(event_users: { phone_number: current_user.phone_number }, event_type: "csv_upload")).where("end_date >= ? AND start_date <= ?", date, date).where(is_hidden: false)
     events = events.where("lower(name) LIKE ?", "%#{params[:search_query].downcase}%") if params[:search_query].present?
     events = events.where(pinned: false)
     pinned_events = events.where(pinned: true)
