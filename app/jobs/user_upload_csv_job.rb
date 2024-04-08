@@ -5,7 +5,8 @@ module UserUploadCsvJob
   @queue = :user_upload
 
   def self.perform(event_id = nil, file_id = nil, mail_ids = nil)
-    event = Event.find_by(id: event_id)
+    puts "Event Id - #{event_id}, File Id - #{file_id}, Mail IDs - #{mail_ids}"
+    event = Event.find(event_id)
     subject = "Event Users Creation for event #{event.name}"
     content = "Event Users Creation for event - #{event.name} requested at #{DateTime.now.in_ist.strftime("%B %e, %Y %H:%M:%S")} has been started."
     content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
