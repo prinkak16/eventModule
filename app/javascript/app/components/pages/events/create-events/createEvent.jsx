@@ -368,12 +368,17 @@ export default function CreateEvent({isEdit, editData}) {
                 if (formFieldValue[key].length === 0) {
                     return true;
                 }
-            } else if (key === 'csv_file' && formFieldValue['event_type'] === 'csv_upload') {
+            } else if ((key==='email'||key==='csv_file')&&formFieldValue['event_type']==='open_event'){
+                //email and csv_file will not be present if event_type is open_event
+                if(!isNotNullUndefinedOrEmpty(formFieldValue[key]))
+                    return false;
+            }
+            else if ((key === 'csv_file'||key==='email') && formFieldValue['event_type'] === 'csv_upload') {
                 //in case of edit csv_file will not be present
                 if(isEdit){
                     continue;
                 }
-                if (formFieldValue[key] === null || formFieldValue[key] === undefined) {
+                if (!isNotNullUndefinedOrEmpty(formFieldValue[key])) {
                     return true;
                 }
             } else {
