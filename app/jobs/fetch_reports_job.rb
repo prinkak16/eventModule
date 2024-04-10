@@ -51,19 +51,24 @@ module FetchReportsJob
       ).allow_disk_use(true).to_json)
       puts "Question Query ended"
       db = mongo_db[:formsubmissions]
+      csv_headers = ['Username', 'User Phone Number', 'Submission Id']
       headers = ['Username', 'User Phone Number', 'Submission Id']
       for i in 0...questions.first["question"].size
         if questions.first["question"][i]["title"].first["value"] != "Provide your event location."
           if questions.first["question"][i]["isHidden"] == true
-            headers << questions.first["question"][i]["title"].first["value"] + "(isHidden)"
+            csv_headers << questions.first["question"][i]["title"].first["value"] + "(isHidden)"
           else
-            headers << questions.first["question"][i]["title"].first["value"]
+            csv_headers << questions.first["question"][i]["title"].first["value"]
           end
+          headers << questions.first["question"][i]["title"].first["value"]
         end
       end
       headers << 'createdAt'
       headers << 'updatedAt'
       headers << 'status'
+      csv_headers << 'createdAt'
+      csv_headers << 'updatedAt'
+      csv_headers << 'status'
       file_name = "#{event.name}_#{DateTime.now.to_date}.csv"
       csv_file = Tempfile.new([file_name, ''])
       phone_numbers = Hash.new
@@ -121,7 +126,7 @@ module FetchReportsJob
         batch_size = 10000
         blob = event.report_file.blob
         CSV.open(csv_file, 'a+') do |csv|
-          csv << headers
+          csv << csv_headers
           batch = []
           if blob.present?
             blob.open do |file|
@@ -162,7 +167,7 @@ module FetchReportsJob
         end
       else
         CSV.open(csv_file, 'w') do |csv|
-          csv << headers
+          csv << csv_headers
           offset = 0
           limit = 50000
           pipeline = pipeline_query(event, offset, limit)
