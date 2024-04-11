@@ -2,8 +2,8 @@ class Api::ReportsController < ApplicationController
   before_action :authenticate_user_permission
   def fetch_reports
     begin
-      if !check_if_already_in_progress( queue: "report", args: [params[:event_id], params[:email_id].split(','), params[:report_timeline]])
-        Resque.enqueue(FetchReportsJob, params[:event_id], params[:email_id].split(','), params[:report_timeline])
+      if !check_if_already_in_progress( queue: "report", args: [params[:event_id], params[:email_id].split(','), params[:report_timeline], params[:status]])
+        Resque.enqueue(FetchReportsJob, params[:event_id], params[:email_id].split(','), params[:report_timeline], params[:status])
         render json: { success: true, message: "The report will be sent to #{params[:email_id]}." }, status: :ok
       else
         raise StandardError.new "Job is already in progress"

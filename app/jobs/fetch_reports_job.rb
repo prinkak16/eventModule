@@ -4,11 +4,17 @@ module FetchReportsJob
   include ApplicationHelper
   @queue = :report
 
-  def self.perform(event_id = nil, mail_ids = nil, time_limit = nil)
+  def self.perform(event_id = nil, mail_ids = nil, time_limit = nil, status = nil)
     if time_limit.split(' ')[0] == "Last"
       check = true
     else
       check = false
+    end
+    status_filter = nil
+    if status.strip == "Completed"
+      status_filter = "COMPLETED"
+    elsif status.strip == "Partial"
+      status_filter = "PARTIAL"
     end
     event = Event.find_by(id: event_id)
     event_form = EventForm.find_by(event_id: event_id)
@@ -76,7 +82,7 @@ module FetchReportsJob
       event_submissions.each do |submission|
         phone_numbers[submission.submission_id] = submission.user.phone_number
       end
-      if !check && event.report_file.attached?
+      if !check && event.report_file.attached? && !status_filter
         pipeline = conditional_pipeline_query(event)
         data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
         hashed_data = Hash.new
@@ -171,7 +177,19 @@ module FetchReportsJob
           offset = 0
           limit = 50000
           pipeline = pipeline_query(event, offset, limit)
-          if check
+          if check && status_filter
+            time = time_limit.split(' ')
+            match_stage = {
+              '$match': {
+                status: "#{status_filter}",
+                'createdAt': {
+                  '$gte': Time.now - (time[1].to_i).hours
+                }
+              }
+            }
+            pipeline.unshift(match_stage)
+            count = db.find({ eventId: "#{event_id}", deletedAt: nil, status: "#{status_filter}" ,'createdAt': { '$gte': Time.now - (time[1].to_i).hours } }).count()
+          elsif check
             time = time_limit.split(' ')
             match_stage = {
               '$match': {
@@ -181,7 +199,15 @@ module FetchReportsJob
               }
             }
             pipeline.unshift(match_stage)
-            count = db.find({ eventId: "#{event_id}", deletedAt: nil, 'createdAt': { '$gte': Time.now - (time[1].to_i).hours } }).count()
+            count = db.find({ eventId: "#{event_id}", deletedAt: nil,'createdAt': { '$gte': Time.now - (time[1].to_i).hours } }).count()
+          elsif status_filter
+            match_stage = {
+              '$match': {
+                status: "#{status_filter}"
+              }
+            }
+            pipeline.unshift(match_stage)
+            count = db.find({ eventId: "#{event_id}", deletedAt: nil, status: "#{status_filter}" }).count()
           else
             count = db.find({ eventId: "#{event_id}", deletedAt: nil }).count()
           end
@@ -232,14 +258,14 @@ module FetchReportsJob
         end
       end
       attachment = []
-      if check
+      if check || status_filter
         attachment << csv_file.path
       else
         event.report_file.attach(io: csv_file, filename: file_name, content_type: 'text/csv')
         file_url = event.report_file.url
       end
       subject = "Event Report Download for event #{event.name}"
-      if check
+      if check || status_filter
         content = "The event report for #{event.name} requested at #{DateTime.now.in_ist.strftime("%B %e, %Y %H:%M:%S")} has been attached to the email. Please find the attachment."
         content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
         ApplicationController.helpers.send_email(subject, content, mail_ids, attachment)
