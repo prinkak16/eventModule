@@ -66,7 +66,7 @@ module FetchReportsJob
           else
             csv_headers << questions.first["question"][i]["title"].first["value"]
           end
-          headers << questions.first["question"][i]["questionId"}
+          headers << questions.first["question"][i]["questionId"]
         end
       end
       csv_headers << 'createdAt'
