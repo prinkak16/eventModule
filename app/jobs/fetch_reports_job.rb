@@ -58,7 +58,7 @@ module FetchReportsJob
       puts "Question Query ended"
       db = mongo_db[:formsubmissions]
       csv_headers = ['Username', 'User Phone Number', 'Submission Id']
-      headers = ['Username', 'User Phone Number', 'Submission Id']
+      headers = []
       for i in 0...questions.first["question"].size
         if questions.first["question"][i]["title"].first["value"] != "Provide your event location."
           if questions.first["question"][i]["isHidden"] == true
@@ -66,12 +66,9 @@ module FetchReportsJob
           else
             csv_headers << questions.first["question"][i]["title"].first["value"]
           end
-          headers << questions.first["question"][i]["title"].first["value"]
+          headers << questions.first["question"][i]["questionId"}
         end
       end
-      headers << 'createdAt'
-      headers << 'updatedAt'
-      headers << 'status'
       csv_headers << 'createdAt'
       csv_headers << 'updatedAt'
       csv_headers << 'status'
@@ -107,13 +104,13 @@ module FetchReportsJob
                   end
                 end
               end
-              hash[data[i]["questions"][j]["question"]] = temp.chop
+              hash[data[i]["questions"][j]["questionId"]] = temp.chop
             else
-              hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
+              hash[data[i]["questions"][j]["questionId"]] = data[i]["questions"][j]["answer"].join(',')
             end
           end
-          k = 3
-          while k < (headers.size - 3)
+          k = 0
+          while k < (headers.size)
             if hash[headers[k]].present?
               row_data << hash[headers[k]]
             else
@@ -234,13 +231,13 @@ module FetchReportsJob
                       end
                     end
                   end
-                  hash[data[i]["questions"][j]["question"]] = temp.chop
+                  hash[data[i]["questions"][j]["questionId"]] = temp.chop
                 else
-                  hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
+                  hash[data[i]["questions"][j]["questionId"]] = data[i]["questions"][j]["answer"].join(',')
                 end
               end
-              k = 3
-              while k < (headers.size - 3)
+              k = 0
+              while k < (headers.size)
                 if hash[headers[k]].present?
                   row_data << hash[headers[k]]
                 else
