@@ -4,11 +4,17 @@ module FetchReportsJob
   include ApplicationHelper
   @queue = :report
 
-  def self.perform(event_id = nil, mail_ids = nil, time_limit = nil)
+  def self.perform(event_id = nil, mail_ids = nil, time_limit = nil, status = nil)
     if time_limit.split(' ')[0] == "Last"
       check = true
     else
       check = false
+    end
+    status_filter = nil
+    if status.strip == "Completed"
+      status_filter = "COMPLETED"
+    elsif status.strip == "Partial"
+      status_filter = "PARTIAL"
     end
     event = Event.find_by(id: event_id)
     event_form = EventForm.find_by(event_id: event_id)
@@ -42,7 +48,8 @@ module FetchReportsJob
               question: {
                 '$push': {
                   'title': '$questions.title',
-                  'isHidden': '$questions.isHidden'
+                  'isHidden': '$questions.isHidden',
+                  'questionId': '$questions.questionId',
                 }
               }
             }
@@ -52,7 +59,7 @@ module FetchReportsJob
       puts "Question Query ended"
       db = mongo_db[:formsubmissions]
       csv_headers = ['Username', 'User Phone Number', 'Submission Id']
-      headers = ['Username', 'User Phone Number', 'Submission Id']
+      headers = []
       for i in 0...questions.first["question"].size
         if questions.first["question"][i]["title"].first["value"] != "Provide your event location."
           if questions.first["question"][i]["isHidden"] == true
@@ -60,12 +67,9 @@ module FetchReportsJob
           else
             csv_headers << questions.first["question"][i]["title"].first["value"]
           end
-          headers << questions.first["question"][i]["title"].first["value"]
+          headers << questions.first["question"][i]["questionId"]
         end
       end
-      headers << 'createdAt'
-      headers << 'updatedAt'
-      headers << 'status'
       csv_headers << 'createdAt'
       csv_headers << 'updatedAt'
       csv_headers << 'status'
@@ -76,7 +80,7 @@ module FetchReportsJob
       event_submissions.each do |submission|
         phone_numbers[submission.submission_id] = submission.user.phone_number
       end
-      if !check && event.report_file.attached?
+      if !check && event.report_file.attached? && !status_filter
         pipeline = conditional_pipeline_query(event)
         data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
         hashed_data = Hash.new
@@ -101,13 +105,13 @@ module FetchReportsJob
                   end
                 end
               end
-              hash[data[i]["questions"][j]["question"]] = temp.chop
+              hash[data[i]["questions"][j]["questionId"]] = temp.chop
             else
-              hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
+              hash[data[i]["questions"][j]["questionId"]] = data[i]["questions"][j]["answer"].join(',')
             end
           end
-          k = 3
-          while k < (headers.size - 3)
+          k = 0
+          while k < (headers.size)
             if hash[headers[k]].present?
               row_data << hash[headers[k]]
             else
@@ -171,7 +175,19 @@ module FetchReportsJob
           offset = 0
           limit = 50000
           pipeline = pipeline_query(event, offset, limit)
-          if check
+          if check && status_filter
+            time = time_limit.split(' ')
+            match_stage = {
+              '$match': {
+                status: "#{status_filter}",
+                'createdAt': {
+                  '$gte': Time.now - (time[1].to_i).hours
+                }
+              }
+            }
+            pipeline.unshift(match_stage)
+            count = db.find({ eventId: "#{event_id}", deletedAt: nil, status: "#{status_filter}" ,'createdAt': { '$gte': Time.now - (time[1].to_i).hours } }).count()
+          elsif check
             time = time_limit.split(' ')
             match_stage = {
               '$match': {
@@ -181,7 +197,15 @@ module FetchReportsJob
               }
             }
             pipeline.unshift(match_stage)
-            count = db.find({ eventId: "#{event_id}", deletedAt: nil, 'createdAt': { '$gte': Time.now - (time[1].to_i).hours } }).count()
+            count = db.find({ eventId: "#{event_id}", deletedAt: nil,'createdAt': { '$gte': Time.now - (time[1].to_i).hours } }).count()
+          elsif status_filter
+            match_stage = {
+              '$match': {
+                status: "#{status_filter}"
+              }
+            }
+            pipeline.unshift(match_stage)
+            count = db.find({ eventId: "#{event_id}", deletedAt: nil, status: "#{status_filter}" }).count()
           else
             count = db.find({ eventId: "#{event_id}", deletedAt: nil }).count()
           end
@@ -208,13 +232,13 @@ module FetchReportsJob
                       end
                     end
                   end
-                  hash[data[i]["questions"][j]["question"]] = temp.chop
+                  hash[data[i]["questions"][j]["questionId"]] = temp.chop
                 else
-                  hash[data[i]["questions"][j]["question"]] = data[i]["questions"][j]["answer"].join(',')
+                  hash[data[i]["questions"][j]["questionId"]] = data[i]["questions"][j]["answer"].join(',')
                 end
               end
-              k = 3
-              while k < (headers.size - 3)
+              k = 0
+              while k < (headers.size)
                 if hash[headers[k]].present?
                   row_data << hash[headers[k]]
                 else
@@ -232,14 +256,14 @@ module FetchReportsJob
         end
       end
       attachment = []
-      if check
+      if check || status_filter
         attachment << csv_file.path
       else
         event.report_file.attach(io: csv_file, filename: file_name, content_type: 'text/csv')
         file_url = event.report_file.url
       end
       subject = "Event Report Download for event #{event.name}"
-      if check
+      if check || status_filter
         content = "The event report for #{event.name} requested at #{DateTime.now.in_ist.strftime("%B %e, %Y %H:%M:%S")} has been attached to the email. Please find the attachment."
         content += "<br/>This is a automated mail. Do not reply. Jarvis Technology & Strategy Consulting"
         ApplicationController.helpers.send_email(subject, content, mail_ids, attachment)
@@ -308,6 +332,7 @@ module FetchReportsJob
             }
           }
         },
+        questionId: "$questions.questionId",
         createdAt: 1,
         updatedAt: 1,
         deletedAt: 1,
@@ -328,7 +353,8 @@ module FetchReportsJob
         questions: {
           '$push': {
             question: "$question",
-            answer: "$answer"
+            answer: "$answer",
+            questionId: "$questionId",
           }
         }
       }
@@ -396,6 +422,7 @@ module FetchReportsJob
             }
           }
         },
+        questionId: "$questions.questionId",
         createdAt: 1,
         updatedAt: 1,
         status: 1
@@ -414,7 +441,8 @@ module FetchReportsJob
         questions: {
           '$push': {
             question: "$question",
-            answer: "$answer"
+            answer: "$answer",
+            questionId: "$questionId",
           }
         }
       }
