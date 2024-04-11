@@ -48,7 +48,8 @@ module FetchReportsJob
               question: {
                 '$push': {
                   'title': '$questions.title',
-                  'isHidden': '$questions.isHidden'
+                  'isHidden': '$questions.isHidden',
+                  'questionId': '$questions.questionId',
                 }
               }
             }
@@ -331,6 +332,7 @@ module FetchReportsJob
             }
           }
         },
+        questionId: "$questions.questionId",
         createdAt: 1,
         updatedAt: 1,
         deletedAt: 1,
@@ -351,7 +353,8 @@ module FetchReportsJob
         questions: {
           '$push': {
             question: "$question",
-            answer: "$answer"
+            answer: "$answer",
+            questionId: "$questionId",
           }
         }
       }
@@ -419,6 +422,7 @@ module FetchReportsJob
             }
           }
         },
+        questionId: "$questions.questionId",
         createdAt: 1,
         updatedAt: 1,
         status: 1
@@ -437,7 +441,8 @@ module FetchReportsJob
         questions: {
           '$push': {
             question: "$question",
-            answer: "$answer"
+            answer: "$answer",
+            questionId: "$questionId",
           }
         }
       }
