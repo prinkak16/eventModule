@@ -1,2 +1,2 @@
-export const reportTimeline=["Last 1 hour","Last 2 hours","Last 3 hours","Last 4 hours","Last 5 hours","Last 6 hours","Last 7 hours","Last 8 hours","Last 9 hours","Last 10 hours","Last 11 hours","Last 12 hours","All-time"]
+export const reportTimeline=["Last 24 hours","Last 1 week","Last 1 month","All-time"]
 export const reportStatus=["Completed","Partial","Both completed and partial"];
