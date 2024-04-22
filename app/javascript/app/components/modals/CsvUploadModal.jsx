@@ -133,7 +133,7 @@ export default function CsvModal    ({formFieldValue={},setFormFieldValue=()=>{}
 
         downloadFile({
             data: [...headers],
-            fileName: "CsvReportSample.csv",
+            fileName: "CsvUploadUsersSample.csv",
             fileType: "text/csv",
         });
     };
