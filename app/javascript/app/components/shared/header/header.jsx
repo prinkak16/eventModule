@@ -81,7 +81,9 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                     className={redirectFor === 'mobile' ? 'header-form-bg header-form-bg-mobile' : 'header-form-bg'}>
                     <div id={"nav_back_button"} className="header-form-back-button" onClick={() => {
                         if (redirectFor === 'in_app_web') {
-                            //Handle yourself in mobile app
+                            if (window.MobileApp && window.MobileApp.onBackPressed) {
+                                window.MobileApp.onBackPressed();
+                            }
                         } else {
                             navigate(-1)
                         }
