@@ -5,15 +5,24 @@ module FetchReportsJob
   @queue = :report
 
   def self.perform(event_id = nil, mail_ids = nil, time_limit = nil, status = nil)
+    time_filter = nil
     if time_limit.split(' ')[0] == "Last"
       check = true
+      case time_limit.split(' ')[2]
+      when 'day'
+        time_filter = Date.today - 1.day
+      when 'week'
+        time_filter = Date.today - 1.week
+      when 'month'
+        time_filter = Date.today - 1.month
+      end
     else
       check = false
     end
     status_filter = nil
-    if status.strip == "Completed"
+    if status.strip.downcase == "completed"
       status_filter = "COMPLETED"
-    elsif status.strip == "Partial"
+    elsif status.strip.downcase == "partial"
       status_filter = "PARTIAL"
     end
     event = Event.find_by(id: event_id)
@@ -176,28 +185,26 @@ module FetchReportsJob
           limit = 50000
           pipeline = pipeline_query(event, offset, limit)
           if check && status_filter
-            time = time_limit.split(' ')
             match_stage = {
               '$match': {
                 status: "#{status_filter}",
                 'createdAt': {
-                  '$gte': Time.now - (time[1].to_i).hours
+                  '$gte': time_filter
                 }
               }
             }
             pipeline.unshift(match_stage)
-            count = db.find({ eventId: "#{event_id}", deletedAt: nil, status: "#{status_filter}" ,'createdAt': { '$gte': Time.now - (time[1].to_i).hours } }).count()
+            count = db.find({ eventId: "#{event_id}", deletedAt: nil, status: "#{status_filter}" ,'createdAt': { '$gte': time_filter } }).count()
           elsif check
-            time = time_limit.split(' ')
             match_stage = {
               '$match': {
                 'createdAt': {
-                  '$gte': Time.now - (time[1].to_i).hours
+                  '$gte': time_filter
                 }
               }
             }
             pipeline.unshift(match_stage)
-            count = db.find({ eventId: "#{event_id}", deletedAt: nil,'createdAt': { '$gte': Time.now - (time[1].to_i).hours } }).count()
+            count = db.find({ eventId: "#{event_id}", deletedAt: nil,'createdAt': { '$gte': time_filter } }).count()
           elsif status_filter
             match_stage = {
               '$match': {
