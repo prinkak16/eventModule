@@ -20,7 +20,7 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
     const navigate = useNavigate()
     const {pathname} = useLocation();
     const {eventName, setEventName, isSubmissionPage, setIsSubmissionPage} = EventState();
-    const {t}=useTranslation();
+    const {t} = useTranslation();
 
 
     useEffect(() => {
@@ -77,20 +77,26 @@ const HeaderBar = ({isSaralUser = '', language = '', userName = 'Ram Avtar'}) =>
                     )}
                 </Toolbar> :
 
-                <Toolbar className={redirectFor === 'mobile' ? 'header-form-bg header-form-bg-mobile' : 'header-form-bg'}>
-                    <div id={"nav_back_button"} className="header-form-back-button" onClick={() =>
-                        navigate(-1)
-                    }>
-                            <IconButton>
-                                <ArrowBackIosIcon/>
-                            </IconButton>
+                <Toolbar
+                    className={redirectFor === 'mobile' ? 'header-form-bg header-form-bg-mobile' : 'header-form-bg'}>
+                    <div id={"nav_back_button"} className="header-form-back-button" onClick={() => {
+                        if (redirectFor === 'in_app_web') {
+                            //Handle yourself in mobile app
+                        } else {
+                            navigate(-1)
+                        }
+                    }}>
+                        <IconButton>
+                            <ArrowBackIosIcon/>
+                        </IconButton>
                     </div>
 
                     <h2 className="event-name-heading">Events</h2>
                     <div className={"header-form-button-and-lang-select-container"}>
 
                         {(JSON.parse(document.getElementById("app").getAttribute("data-create"))) && !isSubmissionPage &&
-                            <button className={"header-form-create-button"} onClick={() => navigate('/events')}>{t("Create Event")}</button>
+                            <button className={"header-form-create-button"}
+                                    onClick={() => navigate('/events')}>{t("Create Event")}</button>
                         }
                         <LangaugeSwitchSelect/>
                         <Dialer phoneNumber={"8287809809"}/>
