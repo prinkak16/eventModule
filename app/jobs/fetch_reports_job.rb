@@ -24,6 +24,8 @@ module FetchReportsJob
       status_filter = "COMPLETED"
     elsif status.strip.downcase == "partial"
       status_filter = "PARTIAL"
+    elsif status.strip.downcase == "deleted"
+      status_filter = "DELETED"
     end
     event = Event.find_by(id: event_id)
     event_form = EventForm.find_by(event_id: event_id)
@@ -184,37 +186,76 @@ module FetchReportsJob
           offset = 0
           limit = 50000
           pipeline = pipeline_query(event, offset, limit)
+          count = nil
           if check && status_filter
-            match_stage = {
-              '$match': {
-                status: "#{status_filter}",
-                'createdAt': {
-                  '$gte': time_filter
+            if status_filter == 'COMPLETED' || status_filter == 'PARTIAL'
+              match_stage = {
+                '$match': {
+                  status: "#{status_filter}",
+                  deletedAt: nil,
+                  'createdAt': {
+                    '$gte': time_filter
+                  }
                 }
               }
-            }
-            pipeline.unshift(match_stage)
-            count = db.find({ eventId: "#{event_id}", deletedAt: nil, status: "#{status_filter}" ,'createdAt': { '$gte': time_filter } }).count()
+              pipeline.unshift(match_stage)
+              count = db.find({ eventId: "#{event_id}", deletedAt: nil, status: "#{status_filter}" ,'createdAt': { '$gte': time_filter } }).count()
+            elsif status_filter == 'DELETED'
+              match_stage = {
+                '$match': {
+                  'deletedAt': {
+                    '$exists': true,
+                    '$ne': nil
+                  },
+                  'createdAt': {
+                    '$gte': time_filter
+                  }
+                }
+              }
+              pipeline.unshift(match_stage)
+              count = db.find({ eventId: "#{event_id}", 'deletedAt': { '$exists': true, '$ne': nil }, 'createdAt': { '$gte': time_filter } }).count()
+            end
           elsif check
             match_stage = {
               '$match': {
                 'createdAt': {
                   '$gte': time_filter
-                }
+                },
+                deletedAt: nil
               }
             }
             pipeline.unshift(match_stage)
             count = db.find({ eventId: "#{event_id}", deletedAt: nil,'createdAt': { '$gte': time_filter } }).count()
           elsif status_filter
+            if status_filter == 'COMPLETED' || status_filter == 'PARTIAL'
+              match_stage = {
+                '$match': {
+                  status: "#{status_filter}",
+                  deletedAt: nil
+                }
+              }
+              pipeline.unshift(match_stage)
+              count = db.find({ eventId: "#{event_id}", deletedAt: nil, status: "#{status_filter}" }).count()
+            elsif status_filter == 'DELETED'
+              match_stage = {
+                '$match': {
+                  'deletedAt': {
+                    '$exists': true,
+                    '$ne': nil
+                  }
+                }
+              }
+              pipeline.unshift(match_stage)
+              count = db.find({ eventId: "#{event_id}", 'deletedAt': { '$exists': true, '$ne': nil } }).count()
+            end
+          else
             match_stage = {
               '$match': {
-                status: "#{status_filter}"
+                deletedAt: nil
               }
             }
             pipeline.unshift(match_stage)
-            count = db.find({ eventId: "#{event_id}", deletedAt: nil, status: "#{status_filter}" }).count()
-          else
-            count = db.find({ eventId: "#{event_id}", deletedAt: nil }).count()
+            count = db.find({ eventId: "#{event_id}", deletedAt: nil}).count()
           end
           begin
             data = JSON.parse(db.aggregate(pipeline).allow_disk_use(true).to_json)
@@ -386,8 +427,7 @@ module FetchReportsJob
     [
       {
         '$match': {
-          eventId: "#{event.id}",
-          deletedAt: nil
+          eventId: "#{event.id}"
         }
       },
       { "$sort": { "createdAt": -1 } },
