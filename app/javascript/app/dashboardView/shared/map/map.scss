@@ -1,0 +1,59 @@
+#content .map path {
+  fill: #aaa;
+  stroke: #56575A;
+}
+#content {
+  background: #fff;
+  padding: 5px;
+  border-radius: 15px;
+  box-shadow: 2px 6px 6px 6px rgba(0, 0, 0, 0.03);
+}
+#tooltip {
+  position: absolute;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  pointer-events: none;
+}
+#tooltip-legend {
+  position: absolute;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  pointer-events: none;
+}
+#content>svg {
+  margin-left: 12%;
+}
+.centroid {
+  animation: growAndFade 3s infinite ease-out;
+  fill: dodgerblue;
+  opacity: 0;
+  pointer-events: none; /* Prevent mouse events on the circles */
+  r: 0;
+}
+
+@keyframes growAndFade {
+  0% {
+    opacity: 1;
+    r: 0;
+  }
+  25% {
+    opacity: 0.75;
+    r: 4;
+  }
+  50% {
+    opacity: 0.5;
+    r: 8;
+  }
+  75% {
+    opacity: 0.25;
+    r: 12;
+  }
+  100% {
+    opacity: 0.5;
+    r: 16; /* Change the final radius as needed */
+  }
+}

@@ -1,0 +1,28 @@
+.dropdown-icon{
+  color: #0000008a;
+}
+.profile{
+    border: 1px solid #ECECEC;
+    border-radius: 1rem;
+    box-shadow: 0 3.5px 5.5px 0 rgba(0, 0, 0, 0.0196078431);
+    display: flex;
+    flex-grow: 1;
+    span{
+      border-radius: 1rem 0 0 1rem;
+    }
+    div{
+      flex-grow: 1;
+      text-align: center;
+      padding: 0.5rem;
+      h6, p{
+        font-size: 0.8rem;
+        font-weight: 600;
+        line-height: 13px;
+
+      }
+      p{
+        color:#BDBDBD
+      }
+    }
+
+  }

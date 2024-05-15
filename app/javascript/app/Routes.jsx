@@ -12,11 +12,13 @@ import RoutesWithBreadcrumbs from "./RoutesWithBreadcrumbs";
 import EventDetails from "./components/pages/events/event-details/EventDetails";
 import FormDetails from "./components/pages/form/form-details/FormDetails";
 import ViewCsv from "./components/pages/events/view-csv/ViewCsv";
+import EventDashboard from "./dashboardView/eventDashboard";
 
 const Router = () => {
     return (
         <Routes>
-            <Route path="/" element={<Navigate to="/forms" replace={true}/>}/>
+            <Route path="/" element={<EventDashboard/>}/>
+            {/*<Route path="/" element={<Navigate to="/forms" replace={true}/>}/>*/}
             <Route path="/forms" element={<FormComponent/>}/>
             <Route element={<RoutesWithBreadcrumbs/>}>
                 <Route path={"/forms/:id"} element={<FormDetails/>}/>

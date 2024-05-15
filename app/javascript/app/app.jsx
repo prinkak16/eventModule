@@ -69,7 +69,7 @@ function App() {
                 }
             >
             <ThemeProvider theme={theme}>
-                <HeaderBar/>
+                {/*<HeaderBar/>*/}
                 <Router/>
                 <ToastContainer theme="colored"
                                 hideProgressBar={true}

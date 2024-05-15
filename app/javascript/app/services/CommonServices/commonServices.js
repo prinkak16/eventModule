@@ -1,4 +1,5 @@
 import {ApiClient} from "../RestServices/BaseRestServices";
+import axios from "axios";
 
 /**
  * @param {object} queryParams -  Query parameter in Json format
@@ -55,4 +56,15 @@ export const postEventCsvData=(body)=>{
  */
 export const getLatestCsvUploads=(queryParams)=>{
     return ApiClient.get('event/latest_uploads',{params:queryParams});
+}
+
+export const getEventCards=(queryParams)=>{
+    return axios.get('https://eventmodule-1eaad-default-rtdb.firebaseio.com/newevents.json', {params:queryParams});
+}
+
+export const getReports = (queryParams)=>{
+    return axios.get('https://eventmodule-1eaad-default-rtdb.firebaseio.com/users.json', {params:queryParams});
+}
+export  const getContributors = (queryParams) =>{
+    return axios.get("https://eventmodule-1eaad-default-rtdb.firebaseio.com/contributers.json", {params:queryParams})
 }

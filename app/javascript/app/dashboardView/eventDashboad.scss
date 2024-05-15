@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+$text-family: 'Montserrat', sans-serif;
+.main-heading{
+  background: #FF9559;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 36px;
+  color: #fff;
+  h3{
+    font-family: $text-family;
+  }
+ span{
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 30px;
+    font-family: $text-family;
+  }
+}
+.event-card-wrap{
+  box-shadow: 0 3.5px 5.5px 0 #00000005;
+  border-radius: 0 0 16px 16px;
+  padding: 1rem;
+  background: #fff;
+}

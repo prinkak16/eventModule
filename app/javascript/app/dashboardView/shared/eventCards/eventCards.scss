@@ -1,0 +1,23 @@
+.cardevent{
+  border-radius: 1.5rem;
+  background: #EFF4FF;
+  box-shadow: 0 3.5px 5.5px 0 #00000005;
+  padding:  1rem;
+  align-items: center;
+  h5{
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 18px;
+    color: #6D6D6D;
+  }
+  span{
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 25.2px;
+  }
+  .calendar-icon {
+    background: #fff;
+    padding: 5px 4px 8px 4px;
+    border-radius: 0.5rem;
+  }
+}
